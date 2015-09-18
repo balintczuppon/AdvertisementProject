@@ -7,5 +7,29 @@
 .mytheme {
   @include addons;
   @include mytheme;
+  
+    .v-ui{
+        background: url("images/money.jpg") no-repeat;
+    }
 
+    .v-button.navigationbutton{
+        background: none;
+        box-shadow: none;
+        border: 0;
+    } 
+
+    .v-panel.bannerpanel{
+        background: white;
+        background-image: url("images/vlogo.png");
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+
+    .v-panel{
+        background: none;
+    }
+
+    .v-panel-content{
+        text-align: center;
+    }
 }
