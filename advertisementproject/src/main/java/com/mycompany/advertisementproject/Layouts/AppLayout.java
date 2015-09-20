@@ -1,6 +1,8 @@
 package com.mycompany.advertisementproject.Layouts;
 
-import static com.mycompany.advertisementproject.Enums.Views.*;
+import static com.mycompany.advertisementproject.Enums.Views.ADVERTS;
+import static com.mycompany.advertisementproject.Enums.Views.LOGIN;
+import static com.mycompany.advertisementproject.Enums.Views.REGISTRATION;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
@@ -17,10 +19,13 @@ public class AppLayout extends VerticalLayout implements ViewDisplay, ViewChange
     private View view;
 
     private VerticalLayout content = new VerticalLayout();
+    private VerticalLayout header = new VerticalLayout();
+    
     private HorizontalLayout navigation = new HorizontalLayout();
     private VerticalLayout banner = new VerticalLayout();
 
     private String nodePath;
+    
     private Button btnNav1;
     private Button btnNav2;
     private Button btnNav3;
@@ -31,8 +36,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay, ViewChange
 
     public AppLayout() {
         super();
-        buildNavigation();
-        addBanner();
+        buildHeader();
         addListeners();
     }
 
@@ -57,8 +61,15 @@ public class AppLayout extends VerticalLayout implements ViewDisplay, ViewChange
     public void afterViewChange(ViewChangeEvent event) {
     }
 
-    private void buildNavigation() {
-        btnNav1 = new Button("Home");
+    private void buildHeader() {
+        addNavigation();
+        addBanner();
+        header.setHeightUndefined();
+        this.addComponent(header);
+    }
+
+    private void addNavigation() {
+        btnNav1 = new Button("Hirdetések");
         btnNav1.setStyleName("navigationbutton");
         btnNav2 = new Button("Bejelentkezés");
         btnNav2.setStyleName("navigationbutton");
@@ -71,18 +82,20 @@ public class AppLayout extends VerticalLayout implements ViewDisplay, ViewChange
 
         navigation.setHeightUndefined();
 
-        addComponent(navigation);
-        this.setComponentAlignment(navigation, Alignment.TOP_CENTER);
+        header.addComponent(navigation);
+        header.setComponentAlignment(navigation, Alignment.TOP_CENTER);
     }
 
     private void addBanner() {
         bannerPanel = new Panel();
-        bannerPanel.setSizeFull();
         bannerPanel.setHeight(bannerHeight);
         bannerPanel.setStyleName("bannerpanel");
+
         banner.addComponent(bannerPanel);
-        addComponent(banner);
-        this.setComponentAlignment(banner, Alignment.TOP_CENTER);
+        banner.setHeightUndefined();
+
+        header.addComponent(banner);
+        header.setComponentAlignment(banner, Alignment.TOP_CENTER);
     }
 
     private void addListeners() {
@@ -116,4 +129,18 @@ public class AppLayout extends VerticalLayout implements ViewDisplay, ViewChange
     private void onMenuClick(String nodePath) {
         UI.getCurrent().getNavigator().navigateTo(nodePath);
     }
+
+    public Button getBtnNav1() {
+        return btnNav1;
+    }
+
+    public Button getBtnNav2() {
+        return btnNav2;
+    }
+
+    public Button getBtnNav3() {
+        return btnNav3;
+    }
+
+    
 }

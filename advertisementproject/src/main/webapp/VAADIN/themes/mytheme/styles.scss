@@ -5,11 +5,11 @@
 // The actual styles should be defined in mytheme.scss
 
 .mytheme {
-  @include addons;
-  @include mytheme;
-  
+    @include addons;
+    @include mytheme;
+
     .v-ui{
-        background: url("images/money.jpg") no-repeat;
+        background: url("images/wallpaper.jpg") no-repeat;
     }
 
     .v-button.navigationbutton{
@@ -31,5 +31,11 @@
 
     .v-panel-content{
         text-align: center;
+    }
+
+    .v-label.title{
+        color: black;
+        font-size: xx-large;
+        font-weight: bold;
     }
 }

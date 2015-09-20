@@ -4,9 +4,9 @@ import static com.mycompany.advertisementproject.Enums.Views.*;
 import com.mycompany.advertisementproject.Layouts.AppLayout;
 import com.mycompany.advertisementproject.UIs.Views.AdvertRegistrationView;
 import com.mycompany.advertisementproject.UIs.Views.AdvertView;
-import com.mycompany.advertisementproject.UIs.Views.StartView;
 import com.mycompany.advertisementproject.UIs.Views.LogInView;
 import com.mycompany.advertisementproject.UIs.Views.RegistrationView;
+import com.mycompany.advertisementproject.UIs.Views.StartView;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
@@ -45,6 +45,7 @@ public class RootUI extends UI {
         navigator.addView(REGISTRATION.toString(), new RegistrationView());
         navigator.addView(LOGIN.toString(), new LogInView());
         navigator.addView(ADVERTREG.toString(), new AdvertRegistrationView());
+        navigator.addView(START.toString(), new StartView());
 
         navigator.setErrorView(new Navigator.EmptyView());
         navigator.addViewChangeListener(mainLayout);

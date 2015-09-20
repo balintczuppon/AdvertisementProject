@@ -84,6 +84,11 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-themes</artifactId>
 		</dependency>
+	 <dependency>
+	  <groupId>org.vaadin.addons</groupId>
+	  <artifactId>pagingcomponent</artifactId>
+	  <version>0.9.6</version>
+	 </dependency>
 	</dependencies>
 
 	<build>
