@@ -1,8 +1,13 @@
 package com.mycompany.advertisementproject.Layouts;
 
+import com.mycompany.advertisementproject.Enums.StyleNames;
+import static com.mycompany.advertisementproject.Enums.StyleNames.BANNERPANEL;
+import static com.mycompany.advertisementproject.Enums.StyleNames.NAVBUTTON;
+import static com.mycompany.advertisementproject.Enums.Views.ADVERTREG;
 import static com.mycompany.advertisementproject.Enums.Views.ADVERTS;
 import static com.mycompany.advertisementproject.Enums.Views.LOGIN;
 import static com.mycompany.advertisementproject.Enums.Views.REGISTRATION;
+import static com.mycompany.advertisementproject.Enums.Views.USERPAGE;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
@@ -20,15 +25,17 @@ public class AppLayout extends VerticalLayout implements ViewDisplay, ViewChange
 
     private VerticalLayout content = new VerticalLayout();
     private VerticalLayout header = new VerticalLayout();
-    
+
     private HorizontalLayout navigation = new HorizontalLayout();
     private VerticalLayout banner = new VerticalLayout();
 
     private String nodePath;
-    
+
     private Button btnNav1;
     private Button btnNav2;
     private Button btnNav3;
+    private Button btnNav4;
+    private Button btnNav5;
 
     private Panel bannerPanel;
 
@@ -50,6 +57,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay, ViewChange
         content.removeAllComponents();
         content.addComponent((Component) view);
         addComponent(content);
+        content.setSizeFull();
     }
 
     @Override
@@ -70,15 +78,21 @@ public class AppLayout extends VerticalLayout implements ViewDisplay, ViewChange
 
     private void addNavigation() {
         btnNav1 = new Button("Hirdetések");
-        btnNav1.setStyleName("navigationbutton");
+        btnNav1.setStyleName(NAVBUTTON.toString());
         btnNav2 = new Button("Bejelentkezés");
-        btnNav2.setStyleName("navigationbutton");
+        btnNav2.setStyleName(NAVBUTTON.toString());
         btnNav3 = new Button("Regisztráció");
-        btnNav3.setStyleName("navigationbutton");
+        btnNav3.setStyleName(NAVBUTTON.toString());
+        btnNav4 = new Button("Hirdetés feladás");
+        btnNav4.setStyleName(NAVBUTTON.toString());
+        btnNav5 = new Button("Fiókom");
+        btnNav5.setStyleName(NAVBUTTON.toString());
 
         navigation.addComponent(btnNav1);
         navigation.addComponent(btnNav2);
         navigation.addComponent(btnNav3);
+        navigation.addComponent(btnNav4);
+        navigation.addComponent(btnNav5);
 
         navigation.setHeightUndefined();
 
@@ -89,7 +103,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay, ViewChange
     private void addBanner() {
         bannerPanel = new Panel();
         bannerPanel.setHeight(bannerHeight);
-        bannerPanel.setStyleName("bannerpanel");
+        bannerPanel.setStyleName(BANNERPANEL.toString());
 
         banner.addComponent(bannerPanel);
         banner.setHeightUndefined();
@@ -124,6 +138,22 @@ public class AppLayout extends VerticalLayout implements ViewDisplay, ViewChange
                 onMenuClick(nodePath);
             }
         });
+        btnNav4.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                nodePath = ADVERTREG.toString();
+                onMenuClick(nodePath);
+            }
+        });
+        btnNav5.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                nodePath = USERPAGE.toString();
+                onMenuClick(nodePath);
+            }
+        });
     }
 
     private void onMenuClick(String nodePath) {
@@ -141,6 +171,4 @@ public class AppLayout extends VerticalLayout implements ViewDisplay, ViewChange
     public Button getBtnNav3() {
         return btnNav3;
     }
-
-    
 }

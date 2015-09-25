@@ -5,7 +5,7 @@
  */
 package com.mycompany.advertisementproject.UIs.Views;
 
-import com.mycompany.advertisementproject.Layouts.AdverLayout;
+import com.mycompany.advertisementproject.Layouts.AdvertRegLayout;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Alignment;
@@ -16,21 +16,21 @@ import com.vaadin.ui.VerticalLayout;
  *
  * @author balin
  */
-public class AdvertView extends VerticalLayout implements View{
+public class AdvertRegView extends VerticalLayout implements View {
 
-    
-    AdverLayout adverLayout;
-    
+    final AdvertRegLayout advertRegLayout;
+
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-       Notification.show("Under Developement.");
+        Notification.show("Under Developement.");
     }
-    
-    public AdvertView(){
-        this.setSizeFull();
-        adverLayout = new AdverLayout();
-        addComponent(adverLayout);
-        this.setComponentAlignment(adverLayout, Alignment.TOP_CENTER);
+
+    public AdvertRegView() {
+        advertRegLayout = new AdvertRegLayout();
+        setSizeFull();
+        VerticalLayout vl = advertRegLayout.buildView();
+        addComponent(vl);
+        setComponentAlignment(vl, Alignment.TOP_CENTER);
     }
-    
+
 }

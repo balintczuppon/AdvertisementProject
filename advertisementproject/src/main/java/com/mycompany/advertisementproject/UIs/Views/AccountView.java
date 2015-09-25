@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.advertisementproject.Enums;
+package com.mycompany.advertisementproject.UIs.Views;
 
 /**
  *
- * @author Admin
+ * @author balin
  */
-public enum Views {
-    START,ADVERTS,REGISTRATION,LOGIN,ADVERTREG,USERPAGE;
+public class AccountView {
+    
 }

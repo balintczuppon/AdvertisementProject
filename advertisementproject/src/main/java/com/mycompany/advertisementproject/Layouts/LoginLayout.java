@@ -17,7 +17,7 @@ import com.vaadin.ui.VerticalLayout;
  *
  * @author balin
  */
-public class LoginLayout extends VerticalLayout{
+public class LoginLayout {
 
     private String eMailText = "E-mail cím";
     private String passWordText1 = "Jelszó";
@@ -30,43 +30,41 @@ public class LoginLayout extends VerticalLayout{
 
     private Button btnRegistration;
 
-    private FormLayout fl = new FormLayout();
+    private FormLayout fl;
+    private VerticalLayout vl;
 
-    public LoginLayout() {
-        this.setSizeFull();
-        this.setSpacing(true);
-        buildPage();
-    }
-
-    private void buildPage() {
+    public VerticalLayout buildView() {
+        vl = new VerticalLayout();
         addTitle();
         addForm();
         addButton();
         markFields();
+        return vl;
     }
 
     private void addTitle() {
         lblTitle = new Label("Bejelentkezés");
         lblTitle.setStyleName("title");
         lblTitle.setSizeUndefined();
-        addComponent(lblTitle);
-        setComponentAlignment(lblTitle, Alignment.TOP_CENTER);
+        vl.addComponent(lblTitle);
+        vl.setComponentAlignment(lblTitle, Alignment.TOP_CENTER);
     }
 
     private void addForm() {
+        fl = new FormLayout();
         tfEmail = new TextField(eMailText);
         fl.addComponent(tfEmail);
         pfPassWord1 = new PasswordField(passWordText1);
         fl.addComponent(pfPassWord1);
-        addComponent(fl);
+        vl.addComponent(fl);
         fl.setWidthUndefined();
-        setComponentAlignment(fl, Alignment.MIDDLE_CENTER);
+        vl.setComponentAlignment(fl, Alignment.MIDDLE_CENTER);
     }
 
     private void addButton() {
         btnRegistration = new Button(regButtonText);
-        addComponent(btnRegistration);
-        setComponentAlignment(btnRegistration, Alignment.MIDDLE_CENTER);
+        vl.addComponent(btnRegistration);
+        vl.setComponentAlignment(btnRegistration, Alignment.MIDDLE_CENTER);
     }
 
     private void markFields() {

@@ -9,7 +9,7 @@ import com.vaadin.ui.VerticalLayout;
 
 public class RegistrationView extends VerticalLayout implements View {
 
-    RegistrationLayout registrationLayout;
+    final RegistrationLayout registrationLayout;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -19,7 +19,8 @@ public class RegistrationView extends VerticalLayout implements View {
     public RegistrationView() {
         this.setSizeFull();
         registrationLayout = new RegistrationLayout();
-        addComponent(registrationLayout);
-        this.setComponentAlignment(registrationLayout, Alignment.TOP_LEFT);
+        VerticalLayout vl = registrationLayout.buildView();
+        addComponent(vl);
+        this.setComponentAlignment(vl, Alignment.TOP_CENTER);
     }
 }

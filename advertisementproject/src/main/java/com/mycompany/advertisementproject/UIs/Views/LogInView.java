@@ -9,18 +9,19 @@ import com.vaadin.ui.VerticalLayout;
 
 public class LogInView extends VerticalLayout implements View {
 
-    LoginLayout LoginLayout;
-    
+    final LoginLayout loginLayout;
+
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         Notification.show("Under Developement.");
     }
-    
-    public LogInView(){
-        LoginLayout = new LoginLayout();
+
+    public LogInView() {
+        loginLayout = new LoginLayout();
         this.setSizeFull();
-        addComponent(LoginLayout);
-        this.setComponentAlignment(LoginLayout, Alignment.TOP_CENTER);
+        VerticalLayout vl = loginLayout.buildView();
+        addComponent(vl);
+        this.setComponentAlignment(vl, Alignment.TOP_CENTER);
     }
 
 }

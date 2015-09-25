@@ -2,8 +2,8 @@ package com.mycompany.advertisementproject.UIs;
 
 import static com.mycompany.advertisementproject.Enums.Views.*;
 import com.mycompany.advertisementproject.Layouts.AppLayout;
-import com.mycompany.advertisementproject.UIs.Views.AdvertRegistrationView;
-import com.mycompany.advertisementproject.UIs.Views.AdvertView;
+import com.mycompany.advertisementproject.UIs.Views.AdvertRegView;
+import com.mycompany.advertisementproject.UIs.Views.AdvertListView;
 import com.mycompany.advertisementproject.UIs.Views.LogInView;
 import com.mycompany.advertisementproject.UIs.Views.RegistrationView;
 import com.mycompany.advertisementproject.UIs.Views.StartView;
@@ -41,10 +41,10 @@ public class RootUI extends UI {
     private void initNavigator(AppLayout mainLayout) {
         navigator = new Navigator(this, (ViewDisplay) mainLayout);
 
-        navigator.addView(ADVERTS.toString(), new AdvertView());
+        navigator.addView(ADVERTS.toString(), new AdvertListView());
         navigator.addView(REGISTRATION.toString(), new RegistrationView());
         navigator.addView(LOGIN.toString(), new LogInView());
-        navigator.addView(ADVERTREG.toString(), new AdvertRegistrationView());
+        navigator.addView(ADVERTREG.toString(), new AdvertRegView());
         navigator.addView(START.toString(), new StartView());
 
         navigator.setErrorView(new Navigator.EmptyView());

@@ -1,27 +1,24 @@
-
 package com.mycompany.advertisementproject.Layouts;
 
 import com.vaadin.ui.*;
 
 /**
  *
- * @author Czuppon Bálint 
+ * @author Czuppon Bálint
  */
-public class StartLayout extends HorizontalLayout {
+public class StartLayout {
 
     private Button btnSearch;
     private TextField txtFldSearch;
-    
-    public StartLayout(){
-        buildView();
-    }
 
-    private void buildView() {
-        setSpacing(true);
-        setMargin(true);
+    public HorizontalLayout buildView() {
+        HorizontalLayout hl = new HorizontalLayout();
+        hl.setSpacing(true);
+        hl.setMargin(true);
         txtFldSearch = new TextField();
         btnSearch = new Button("Keresés");
-        addComponent(txtFldSearch);
-        addComponent(btnSearch);
-    }  
+        hl.addComponent(txtFldSearch);
+        hl.addComponent(btnSearch);
+        return hl;
+    }
 }

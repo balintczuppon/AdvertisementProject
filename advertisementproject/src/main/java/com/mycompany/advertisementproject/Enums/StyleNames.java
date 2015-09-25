@@ -7,8 +7,8 @@ package com.mycompany.advertisementproject.Enums;
 
 /**
  *
- * @author Admin
+ * @author balin
  */
-public enum Views {
-    START,ADVERTS,REGISTRATION,LOGIN,ADVERTREG,USERPAGE;
+public enum StyleNames {
+    NAVBUTTON,BANNERPANEL,PICLABEL;
 }

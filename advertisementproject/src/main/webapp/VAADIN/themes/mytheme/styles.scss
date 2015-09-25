@@ -9,16 +9,16 @@
     @include mytheme;
 
     .v-ui{
-        background: url("images/wallpaper.jpg") no-repeat;
+        background: url("images/parchment-paper-texture-picture-free-graph_1173989.jpg") no-repeat;
     }
 
-    .v-button.navigationbutton{
+    .v-button.NAVBUTTON{
         background: none;
         box-shadow: none;
         border: 0;
     } 
 
-    .v-panel.bannerpanel{
+    .v-panel.BANNERPANEL{
         background: white;
         background-image: url("images/vlogo.png");
         background-repeat: no-repeat;
@@ -37,5 +37,22 @@
         color: black;
         font-size: xx-large;
         font-weight: bold;
+    }
+
+    .v-label{
+        font-size: 14px;
+        font-weight: bold;
+    }
+    
+    .v-label.PICLABEL{
+        background-color: coral;
+    }
+
+    .v-button{
+        font-size: 14px;
+    }
+    
+    .v-panel{
+        background-color: #ffffff;
     }
 }
