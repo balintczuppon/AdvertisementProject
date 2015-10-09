@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.mycompany.advertisementproject.Layouts;
 
 import com.vaadin.ui.Alignment;
@@ -13,10 +9,6 @@ import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-/**
- *
- * @author balin
- */
 public class RegistrationLayout {
 
     private String eMailText = "E-mail cím";

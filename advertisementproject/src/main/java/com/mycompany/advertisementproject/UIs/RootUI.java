@@ -2,57 +2,36 @@ package com.mycompany.advertisementproject.UIs;
 
 import static com.mycompany.advertisementproject.Enums.Views.*;
 import com.mycompany.advertisementproject.Layouts.AppLayout;
-import com.mycompany.advertisementproject.UIs.Views.AdvertRegView;
-import com.mycompany.advertisementproject.UIs.Views.AdvertListView;
-import com.mycompany.advertisementproject.UIs.Views.LogInView;
-import com.mycompany.advertisementproject.UIs.Views.RegistrationView;
-import com.mycompany.advertisementproject.UIs.Views.StartView;
-import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
+import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import javax.inject.Inject;
 
 @Theme("mytheme")
 @Widgetset("com.mycompany.advertisementproject.MyAppWidgetset")
+@CDIUI("")
 public class RootUI extends UI {
 
-    Navigator navigator;
-    AppLayout appLayout;
+    @Inject
+    private CDIViewProvider viewProvider;
+
+    private Navigator navigator;
 
     @Override
-    protected void init(VaadinRequest vaadinRequest) {
-        initAppContent();
-    }
-
-    private void initAppContent() {
-        setSizeFull();
-        appLayout = new AppLayout();
-        setContent(appLayout);
-        initNavigator(appLayout);
-        getNavigator().navigateTo(START.toString());
-    }
-
-    private void initNavigator(AppLayout mainLayout) {
-        navigator = new Navigator(this, (ViewDisplay) mainLayout);
-
-        navigator.addView(ADVERTS.toString(), new AdvertListView());
-        navigator.addView(REGISTRATION.toString(), new RegistrationView());
-        navigator.addView(LOGIN.toString(), new LogInView());
-        navigator.addView(ADVERTREG.toString(), new AdvertRegView());
-        navigator.addView(START.toString(), new StartView());
-
-        navigator.setErrorView(new Navigator.EmptyView());
-        navigator.addViewChangeListener(mainLayout);
-    }
-
-    @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
-    @VaadinServletConfiguration(ui = RootUI.class, productionMode = false)
-    public static class MyUIServlet extends VaadinServlet {
+    protected void init(VaadinRequest request) {
+        AppLayout appLayout = new AppLayout();
+        VerticalLayout mainLayout = new VerticalLayout();
+        
+        navigator = new Navigator(this, mainLayout);
+        navigator.addProvider(viewProvider);
+        
+        setContent(new VerticalLayout(appLayout,mainLayout));
+        navigator.navigateTo(START.toString());
     }
 }

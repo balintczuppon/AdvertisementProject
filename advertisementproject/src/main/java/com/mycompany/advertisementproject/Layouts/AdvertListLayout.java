@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.mycompany.advertisementproject.Layouts;
 
 import static com.mycompany.advertisementproject.Enums.StyleNames.PICLABEL;
@@ -27,10 +23,6 @@ import org.vaadin.pagingcomponent.button.ButtonPageNavigator;
 import org.vaadin.pagingcomponent.customizer.adaptator.GlobalCustomizer;
 import org.vaadin.pagingcomponent.listener.impl.LazyPagingComponentListener;
 
-/**
- *
- * @author balin
- */
 public class AdvertListLayout {
 
     private VerticalLayout vl;

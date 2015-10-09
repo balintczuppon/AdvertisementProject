@@ -2,10 +2,6 @@ package com.mycompany.advertisementproject.Layouts;
 
 import com.vaadin.ui.*;
 
-/**
- *
- * @author Czuppon Bálint
- */
 public class StartLayout {
 
     private Button btnSearch;

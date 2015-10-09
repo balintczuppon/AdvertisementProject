@@ -6,6 +6,7 @@
 package com.mycompany.advertisementproject.UIs.Views;
 
 import com.mycompany.advertisementproject.Layouts.AdvertRegLayout;
+import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Alignment;
@@ -16,6 +17,7 @@ import com.vaadin.ui.VerticalLayout;
  *
  * @author balin
  */
+@CDIView("ADVERTREG")
 public class AdvertRegView extends VerticalLayout implements View {
 
     final AdvertRegLayout advertRegLayout;
