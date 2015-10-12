@@ -7,18 +7,20 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import javax.annotation.PostConstruct;
 
 @CDIView("LOGIN")
 public class LogInView extends VerticalLayout implements View {
 
-    final LoginLayout loginLayout;
+    private LoginLayout loginLayout;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         Notification.show("Under Developement.");
     }
 
-    public LogInView() {
+    @PostConstruct
+    public void initContent() {
         loginLayout = new LoginLayout();
         this.setSizeFull();
         VerticalLayout vl = loginLayout.buildView();
