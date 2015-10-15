@@ -28,4 +28,6 @@ public class MaincategoryFacade extends AbstractFacade<Maincategory> {
         super(Maincategory.class);
     }
     
+    
+    
 }

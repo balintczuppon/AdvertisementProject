@@ -9,7 +9,7 @@
 	<name>advertisementproject</name>
 
 	<properties>
-		<vaadin.version>7.5.6</vaadin.version>
+		<vaadin.version>7.5.7</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
 		<project.source.version>1.7</project.source.version>
@@ -120,12 +120,6 @@
             <scope>provided</scope>
         </dependency>
 	 <dependency>
-	  <groupId>com.vaadin</groupId>
-	  <artifactId>vaadin</artifactId>
-	  <version>6.8-SNAPSHOT</version>
-	  <type>jar</type>
-	 </dependency>
-	 <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
             <version>7.0</version>
@@ -180,6 +174,7 @@
                     <style>OBF</style>
                     <strict>true</strict>
                     <runTarget>http://localhost:8080/advertisementproject</runTarget>
+                    <force>true</force>
                 </configuration>
                 <executions>
                     <execution>
