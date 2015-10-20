@@ -65,6 +65,8 @@ public class AdvertListLayout {
         vl.setComponentAlignment(searchBarLayout, Alignment.TOP_CENTER);
         vl.setComponentAlignment(contentLayout, Alignment.TOP_CENTER);
         return vl;
+        
+        
     }
 
     private HorizontalLayout addSearchBar() {

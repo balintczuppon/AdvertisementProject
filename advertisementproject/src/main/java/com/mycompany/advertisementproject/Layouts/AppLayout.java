@@ -2,6 +2,7 @@ package com.mycompany.advertisementproject.Layouts;
 
 import static com.mycompany.advertisementproject.Enums.StyleNames.*;
 import static com.mycompany.advertisementproject.Enums.Views.*;
+import com.mycompany.advertisementproject.UIs.Views.LogInView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.ui.Alignment;
@@ -16,11 +17,12 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
 
     private String nodePath;
 
-    private Button btnNav1;
-    private Button btnNav2;
-    private Button btnNav3;
-    private Button btnNav4;
-    private Button btnNav5;
+    private static Button btnNav1;
+    private static Button btnNav2;
+    private static Button btnNav3;
+    private static Button btnNav4;
+    private static Button btnNav5;
+    private static Button btnNav6;
 
     public AppLayout() {
         buildHeader();
@@ -43,8 +45,13 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         btnNav3.setStyleName(NAVBUTTON.toString());
         btnNav4 = new Button("Hirdetés feladás");
         btnNav4.setStyleName(NAVBUTTON.toString());
+        btnNav4.setVisible(false);
         btnNav5 = new Button("Fiókom");
         btnNav5.setStyleName(NAVBUTTON.toString());
+        btnNav5.setVisible(false);
+        btnNav6 = new Button("Kilépés");
+        btnNav6.setStyleName(NAVBUTTON.toString());
+        btnNav6.setVisible(false);
 
         HorizontalLayout navigation = new HorizontalLayout();
 
@@ -53,6 +60,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         navigation.addComponent(btnNav3);
         navigation.addComponent(btnNav4);
         navigation.addComponent(btnNav5);
+        navigation.addComponent(btnNav6);
 
         navigation.setHeightUndefined();
 
@@ -116,6 +124,14 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
                 onMenuClick(nodePath);
             }
         });
+        btnNav6.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                logout();
+                nodePath = ADVERTS.toString();
+                onMenuClick(nodePath);
+            }
+        });
     }
 
     private void onMenuClick(String nodePath) {
@@ -125,4 +141,45 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
     @Override
     public void showView(View view) {
     }
+
+    private void logout() {
+        btnNav2.setVisible(true);
+        btnNav3.setVisible(true);
+        btnNav4.setVisible(false);
+        btnNav5.setVisible(false);
+        btnNav6.setVisible(false);
+    }
+
+    public static void login() {
+        btnNav2.setVisible(false);
+        btnNav3.setVisible(false);
+        btnNav4.setVisible(true);
+        btnNav5.setVisible(true);
+        btnNav6.setVisible(true);
+    }
+
+    public static Button getBtnNav1() {
+        return btnNav1;
+    }
+
+    public static Button getBtnNav2() {
+        return btnNav2;
+    }
+
+    public static Button getBtnNav3() {
+        return btnNav3;
+    }
+
+    public static Button getBtnNav4() {
+        return btnNav4;
+    }
+
+    public static Button getBtnNav5() {
+        return btnNav5;
+    }
+
+    public static Button getBtnNav6() {
+        return btnNav6;
+    }
+
 }

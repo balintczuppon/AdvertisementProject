@@ -6,6 +6,7 @@
 package com.mycompany.advertisementproject.facades;
 
 import com.mycompany.advertisementproject.entities.Advertisement;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,6 +17,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class AdvertisementFacade extends AbstractFacade<Advertisement> {
+
     @PersistenceContext(unitName = "com.mycompany_advertisementproject_war_1.0-SNAPSHOTPU")
     private EntityManager em;
 
@@ -27,5 +29,8 @@ public class AdvertisementFacade extends AbstractFacade<Advertisement> {
     public AdvertisementFacade() {
         super(Advertisement.class);
     }
-    
+
+    public List<Advertisement> getMyAdvertisements() {
+        return em.createQuery("SELECT c FROM Advertisement WHERE c.advertiserId = null", Advertisement.class).getResultList();
+    }
 }

@@ -23,15 +23,21 @@ public class RootUI extends UI {
 
     private Navigator navigator;
 
+    private  AppLayout appLayout;
+
     @Override
     protected void init(VaadinRequest request) {
-        AppLayout appLayout = new AppLayout();
+        appLayout = new AppLayout();
         VerticalLayout mainLayout = new VerticalLayout();
-        
+
         navigator = new Navigator(this, mainLayout);
         navigator.addProvider(viewProvider);
-        
-        setContent(new VerticalLayout(appLayout,mainLayout));
+
+        setContent(new VerticalLayout(appLayout, mainLayout));
         navigator.navigateTo(START.toString());
+    }
+
+    public AppLayout getAppLayout() {
+        return appLayout;
     }
 }

@@ -98,6 +98,7 @@ public class AdvertRegView extends HorizontalLayout implements View {
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         Notification.show("Under Developement.");
+        getUI().focus();
     }
 
     private void addListeners() {
@@ -121,9 +122,9 @@ public class AdvertRegView extends HorizontalLayout implements View {
         advertisement.setPrice(Integer.valueOf(txtFldPrice.getValue()));
         advertisement.setRegistrationDate(currentDate());
         advertisement.setTitle(txtFieldTitle.getValue());
-        
+
         advertisementFacade.create(advertisement);
-        
+
         for (File f : files) {
             picture = new Picture();
             picture.setAccessPath(f.getAbsolutePath());

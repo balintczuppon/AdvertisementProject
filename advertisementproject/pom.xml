@@ -119,7 +119,7 @@
             <version>2.5.2</version>
             <scope>provided</scope>
         </dependency>
-	 <dependency>
+        <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
             <version>7.0</version>
@@ -128,6 +128,11 @@
             <groupId>org.vaadin.addon</groupId>
             <artifactId>easyuploads</artifactId>
             <version>7.4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>loginform</artifactId>
+            <version>0.5.2</version>
         </dependency>
     </dependencies>
 
