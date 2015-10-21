@@ -34,8 +34,10 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Subcategory.findAll", query = "SELECT s FROM Subcategory s"),
     @NamedQuery(name = "Subcategory.findById", query = "SELECT s FROM Subcategory s WHERE s.id = :id"),
-    @NamedQuery(name = "Subcategory.findByName", query = "SELECT s FROM Subcategory s WHERE s.name = :name")})
+    @NamedQuery(name = "Subcategory.findByName", query = "SELECT s FROM Subcategory s WHERE s.name = :name"),
+    @NamedQuery(name = "Subcategory.findByMainCategoryId", query = "SELECT s FROM Subcategory s WHERE s.mainCategoryId = :id")})
 public class Subcategory implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -115,5 +117,5 @@ public class Subcategory implements Serializable {
     public String toString() {
         return "com.mycompany.advertisementproject.Enums.Subcategory[ id=" + id + " ]";
     }
-    
+
 }

@@ -33,4 +33,15 @@ public class AdvertisementFacade extends AbstractFacade<Advertisement> {
     public List<Advertisement> getMyAdvertisements() {
         return em.createQuery("SELECT c FROM Advertisement WHERE c.advertiserId = null", Advertisement.class).getResultList();
     }
+
+    public List<Advertisement> findAdvertsByFilters(Object category, Object subcategory, Object local, Object state, Object type, String min, String max) {
+        return em.createNamedQuery("Advertisement.findByAll")
+                .setParameter("minprice", Integer.valueOf(min))
+                .setParameter("maxprice", Integer.valueOf(max))
+                .setParameter("mCatId", category)
+                .setParameter("sCatId", subcategory)
+                .setParameter("stateId", state)
+                .setParameter("typeId", type)
+                .setParameter("localId", local).getResultList();
+    }
 }

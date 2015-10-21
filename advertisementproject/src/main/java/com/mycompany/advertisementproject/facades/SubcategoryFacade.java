@@ -5,10 +5,14 @@
  */
 package com.mycompany.advertisementproject.facades;
 
+import com.mycompany.advertisementproject.entities.Maincategory;
 import com.mycompany.advertisementproject.entities.Subcategory;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaQuery;
 
 /**
  *
@@ -16,6 +20,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class SubcategoryFacade extends AbstractFacade<Subcategory> {
+
     @PersistenceContext(unitName = "com.mycompany_advertisementproject_war_1.0-SNAPSHOTPU")
     private EntityManager em;
 
@@ -27,5 +32,10 @@ public class SubcategoryFacade extends AbstractFacade<Subcategory> {
     public SubcategoryFacade() {
         super(Subcategory.class);
     }
-    
+
+    public Iterable<Subcategory> findByMainCategoryId(Maincategory mcat) {
+        Query query = em.createNamedQuery("Subcategory.findByMainCategoryId").setParameter("id", mcat);
+        return query.getResultList();
+    }
+
 }

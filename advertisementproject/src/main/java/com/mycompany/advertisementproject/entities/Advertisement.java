@@ -39,8 +39,13 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Advertisement.findByTitle", query = "SELECT a FROM Advertisement a WHERE a.title = :title"),
     @NamedQuery(name = "Advertisement.findByDescription", query = "SELECT a FROM Advertisement a WHERE a.description = :description"),
     @NamedQuery(name = "Advertisement.findByRegistrationDate", query = "SELECT a FROM Advertisement a WHERE a.registrationDate = :registrationDate"),
-    @NamedQuery(name = "Advertisement.findByPrice", query = "SELECT a FROM Advertisement a WHERE a.price = :price")})
+    @NamedQuery(name = "Advertisement.findByPrice", query = "SELECT a FROM Advertisement a WHERE a.price = :price"),
+    @NamedQuery(name = "Advertisement.findByAll",
+            query = "SELECT a FROM Advertisement a WHERE a.price BETWEEN :minprice AND :maxprice AND "
+            + "a.mainCategoryId = :mCatId AND a.subCategoryId = :sCatId AND a.advertStateId = :stateId AND"
+            + " a.advertTypeId = :typeId AND a.localityId = :localId")})
 public class Advertisement implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,6 +63,8 @@ public class Advertisement implements Serializable {
     private Date registrationDate;
     @Column(name = "price")
     private Integer price;
+    @Column(name = "subCategoryId")
+    private Integer subCategoryId;
     @JoinColumn(name = "advertiserId", referencedColumnName = "id")
     @ManyToOne
     private Advertiser advertiserId;
@@ -174,6 +181,14 @@ public class Advertisement implements Serializable {
         this.mapId = mapId;
     }
 
+    public Integer getSubCategoryId() {
+        return subCategoryId;
+    }
+
+    public void setSubCategoryId(Integer subCategoryId) {
+        this.subCategoryId = subCategoryId;
+    }
+
     @XmlTransient
     public Collection<Picture> getPictureCollection() {
         return pictureCollection;
@@ -207,5 +222,4 @@ public class Advertisement implements Serializable {
     public String toString() {
         return "com.mycompany.advertisementproject.Enums.Advertisement[ id=" + id + " ]";
     }
-    
 }
