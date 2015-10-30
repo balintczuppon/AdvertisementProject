@@ -1,6 +1,7 @@
 package com.mycompany.advertisementproject.UIs.Views;
 
 import com.mycompany.advertisementproject.entities.Advertisement;
+import com.mycompany.advertisementproject.entities.Advertiser;
 import com.mycompany.advertisementproject.facades.AdvertisementFacade;
 import com.mycompany.advertisementproject.facades.AdvertstateFacade;
 import com.mycompany.advertisementproject.facades.AdverttypeFacade;
@@ -11,6 +12,7 @@ import com.mycompany.advertisementproject.facades.SubcategoryFacade;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -26,7 +28,7 @@ public class AccountView extends VerticalLayout implements View {
 
     private List<Advertisement> myadverts = new ArrayList<>();
 
-    private TabSheet tabsheet = new TabSheet();
+    private TabSheet tabsheet;
 
     private VerticalLayout advertLayout;
     private VerticalLayout postBoxLayout;
@@ -68,31 +70,23 @@ public class AccountView extends VerticalLayout implements View {
     private void buildTabs() {
         tabsheet = new TabSheet();
         tabsheet.setWidthUndefined();
-        tabsheet.addTab(addMyAdverts()).setCaption("Hirdetéseim");
-        tabsheet.addTab(addPostBox()).setCaption("Postaláda");
-        tabsheet.addTab(addSettings()).setCaption("Beállítások");
-    }
-
-    private VerticalLayout addMyAdverts() {
         advertLayout = new VerticalLayout();
-
-        return advertLayout;
-    }
-
-    private VerticalLayout addPostBox() {
+        tabsheet.addTab(advertLayout).setCaption("Hirdetéseim");
         postBoxLayout = new VerticalLayout();
-
-        return postBoxLayout;
-
-    }
-
-    private VerticalLayout addSettings() {
+        tabsheet.addTab(postBoxLayout).setCaption("Postaláda");
         settingLayout = new VerticalLayout();
-
-        return settingLayout;
+        tabsheet.addTab(settingLayout).setCaption("Beállítások");
     }
 
     private void showContent() {
+        Advertiser advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute("current_user");
+        
+        myadverts = advertisementFacade.getMyAdvertisements(advertiser);
+        
+        for (Advertisement a : myadverts) {
+            advertLayout.addComponent(new Label(a.getTitle()));
+        }
+        Notification.show(advertiser.getId() + " "+myadverts.size());
     }
 
 }

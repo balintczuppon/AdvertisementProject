@@ -25,9 +25,6 @@ import javax.inject.Inject;
 @CDIView("LOGIN")
 public class LogInView extends VerticalLayout implements View {
 
-    private static int currentUser;
-    private static int authorityLevel;
-
     private List<Advertiser> users = new ArrayList<>();
 
     @Inject
@@ -125,19 +122,9 @@ public class LogInView extends VerticalLayout implements View {
             }
 
             private void revealSecuredContex(Advertiser a) {
+                AppLayout.login(a);
                 getUI().getNavigator().navigateTo(USERPAGE.toString());
-                AppLayout.login();
-                currentUser = a.getId();
-                authorityLevel = a.getAuthorityId().getId();
             }
         });
-    }
-
-    public static int getCurrentUser() {
-        return currentUser;
-    }
-
-    public static int getAuthorityLevel() {
-        return authorityLevel;
     }
 }

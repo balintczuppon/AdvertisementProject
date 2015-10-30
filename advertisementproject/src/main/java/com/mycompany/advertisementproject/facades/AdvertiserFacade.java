@@ -6,6 +6,7 @@
 package com.mycompany.advertisementproject.facades;
 
 import com.mycompany.advertisementproject.entities.Advertiser;
+import com.mycompany.advertisementproject.entities.Postbox;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,6 +17,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class AdvertiserFacade extends AbstractFacade<Advertiser> {
+
     @PersistenceContext(unitName = "com.mycompany_advertisementproject_war_1.0-SNAPSHOTPU")
     private EntityManager em;
 
@@ -27,5 +29,4 @@ public class AdvertiserFacade extends AbstractFacade<Advertiser> {
     public AdvertiserFacade() {
         super(Advertiser.class);
     }
-    
 }

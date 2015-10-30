@@ -6,22 +6,19 @@
 package com.mycompany.advertisementproject.entities;
 
 import java.io.Serializable;
-import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -33,6 +30,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Advertiser.findAll", query = "SELECT a FROM Advertiser a"),
     @NamedQuery(name = "Advertiser.findById", query = "SELECT a FROM Advertiser a WHERE a.id = :id"),
+    @NamedQuery(name = "Advertiser.findByAuthority", query = "SELECT a FROM Advertiser a WHERE a.authority = :authority"),
     @NamedQuery(name = "Advertiser.findByPassword", query = "SELECT a FROM Advertiser a WHERE a.password = :password"),
     @NamedQuery(name = "Advertiser.findByName", query = "SELECT a FROM Advertiser a WHERE a.name = :name"),
     @NamedQuery(name = "Advertiser.findByPhonenumber", query = "SELECT a FROM Advertiser a WHERE a.phonenumber = :phonenumber"),
@@ -41,10 +39,12 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Advertiser implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Column(name = "authority")
+    private Integer authority;
     @Size(max = 20)
     @Column(name = "password")
     private String password;
@@ -60,14 +60,8 @@ public class Advertiser implements Serializable {
     private String email;
     @Column(name = "newsletter")
     private Boolean newsletter;
-    @JoinColumn(name = "authorityId", referencedColumnName = "id")
-    @ManyToOne
-    private Authority authorityId;
-    @JoinColumn(name = "postboxId", referencedColumnName = "id")
-    @ManyToOne
-    private Postbox postboxId;
-    @OneToMany(mappedBy = "advertiserId")
-    private Collection<Advertisement> advertisementCollection;
+    @OneToOne(cascade = CascadeType.PERSIST, mappedBy = "advertiser")
+    private Postbox postbox;
 
     public Advertiser() {
     }
@@ -82,6 +76,14 @@ public class Advertiser implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getAuthority() {
+        return authority;
+    }
+
+    public void setAuthority(Integer authority) {
+        this.authority = authority;
     }
 
     public String getPassword() {
@@ -124,29 +126,12 @@ public class Advertiser implements Serializable {
         this.newsletter = newsletter;
     }
 
-    public Authority getAuthorityId() {
-        return authorityId;
+    public Postbox getPostbox() {
+        return postbox;
     }
 
-    public void setAuthorityId(Authority authorityId) {
-        this.authorityId = authorityId;
-    }
-
-    public Postbox getPostboxId() {
-        return postboxId;
-    }
-
-    public void setPostboxId(Postbox postboxId) {
-        this.postboxId = postboxId;
-    }
-
-    @XmlTransient
-    public Collection<Advertisement> getAdvertisementCollection() {
-        return advertisementCollection;
-    }
-
-    public void setAdvertisementCollection(Collection<Advertisement> advertisementCollection) {
-        this.advertisementCollection = advertisementCollection;
+    public void setPostbox(Postbox postbox) {
+        this.postbox = postbox;
     }
 
     @Override
@@ -171,7 +156,7 @@ public class Advertiser implements Serializable {
 
     @Override
     public String toString() {
-        return "com.mycompany.advertisementproject.Enums.Advertiser[ id=" + id + " ]";
+        return "com.mycompany.advertisementproject.entities.Advertiser[ id=" + id + " ]";
     }
     
 }

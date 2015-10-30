@@ -7,6 +7,7 @@ package com.mycompany.advertisementproject.entities;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -42,7 +43,7 @@ public class Picture implements Serializable {
     @Column(name = "accessPath")
     private String accessPath;
     @JoinColumn(name = "advertisementId", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Advertisement advertisementId;
 
     public Picture() {

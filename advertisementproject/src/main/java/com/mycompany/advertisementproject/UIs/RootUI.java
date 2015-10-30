@@ -12,10 +12,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import javax.inject.Inject;
-import org.vaadin.appfoundation.authorization.Permissions;
-import org.vaadin.appfoundation.authorization.Resource;
-import org.vaadin.appfoundation.authorization.Role;
-import org.vaadin.appfoundation.authorization.memory.MemoryPermissionManager;
 
 @Theme("mytheme")
 @Widgetset("com.mycompany.advertisementproject.MyAppWidgetset")
@@ -30,14 +26,6 @@ public class RootUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-//        Permissions.initialize(this, new MemoryPermissionManager());
-//        
-//        Role visitors = getVisitorRole();
-//        Role regUsers = getRegisteredUsersRoles();
-        
-//        Resource accountView = getAccountView();
-//        
-//        Permissions.allow(regUsers,"design",acountView);
 
         appLayout = new AppLayout();
         VerticalLayout mainLayout = new VerticalLayout();
@@ -49,15 +37,11 @@ public class RootUI extends UI {
         navigator.navigateTo(START.toString());
     }
 
+    public static RootUI getCurrent() {
+        return (RootUI) UI.getCurrent();
+    }
+
     public AppLayout getAppLayout() {
         return appLayout;
     }
-
-//    private Role getVisitorRole() {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    private Role getRegisteredUsersRoles() {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
 }

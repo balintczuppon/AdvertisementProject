@@ -3,6 +3,8 @@
   <persistence-unit name="com.mycompany_advertisementproject_war_1.0-SNAPSHOTPU" transaction-type="JTA">
     <jta-data-source>advertisementdb</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
-    <properties/>
+     <properties>
+         <property name="eclipselink.ddl-generation" value = "none" />
+     </properties>
   </persistence-unit>
 </persistence>

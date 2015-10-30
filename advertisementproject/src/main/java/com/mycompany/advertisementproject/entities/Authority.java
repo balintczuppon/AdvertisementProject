@@ -42,8 +42,6 @@ public class Authority implements Serializable {
     @Size(max = 20)
     @Column(name = "name")
     private String name;
-    @OneToMany(mappedBy = "authorityId")
-    private Collection<Advertiser> advertiserCollection;
 
     public Authority() {
     }
@@ -66,15 +64,6 @@ public class Authority implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @XmlTransient
-    public Collection<Advertiser> getAdvertiserCollection() {
-        return advertiserCollection;
-    }
-
-    public void setAdvertiserCollection(Collection<Advertiser> advertiserCollection) {
-        this.advertiserCollection = advertiserCollection;
     }
 
     @Override

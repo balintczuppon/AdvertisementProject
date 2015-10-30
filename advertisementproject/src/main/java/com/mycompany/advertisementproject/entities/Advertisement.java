@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,11 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Advertisement.findByTitle", query = "SELECT a FROM Advertisement a WHERE a.title = :title"),
     @NamedQuery(name = "Advertisement.findByDescription", query = "SELECT a FROM Advertisement a WHERE a.description = :description"),
     @NamedQuery(name = "Advertisement.findByRegistrationDate", query = "SELECT a FROM Advertisement a WHERE a.registrationDate = :registrationDate"),
-    @NamedQuery(name = "Advertisement.findByPrice", query = "SELECT a FROM Advertisement a WHERE a.price = :price"),
-    @NamedQuery(name = "Advertisement.findByAll",
-            query = "SELECT a FROM Advertisement a WHERE a.price BETWEEN :minprice AND :maxprice AND "
-            + "a.mainCategoryId = :mCatId AND a.subCategoryId = :sCatId AND a.advertStateId = :stateId AND"
-            + " a.advertTypeId = :typeId AND a.localityId = :localId")})
+    @NamedQuery(name = "Advertisement.findByPrice", query = "SELECT a FROM Advertisement a WHERE a.price = :price")})
 public class Advertisement implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -83,7 +80,7 @@ public class Advertisement implements Serializable {
     @JoinColumn(name = "mapId", referencedColumnName = "id")
     @ManyToOne
     private Map mapId;
-    @OneToMany(mappedBy = "advertisementId")
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "advertisementId")
     private Collection<Picture> pictureCollection;
 
     public Advertisement() {

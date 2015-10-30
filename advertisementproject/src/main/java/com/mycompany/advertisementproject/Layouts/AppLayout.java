@@ -2,15 +2,21 @@ package com.mycompany.advertisementproject.Layouts;
 
 import static com.mycompany.advertisementproject.Enums.StyleNames.*;
 import static com.mycompany.advertisementproject.Enums.Views.*;
+import com.mycompany.advertisementproject.UIs.RootUI;
 import com.mycompany.advertisementproject.UIs.Views.LogInView;
+import com.mycompany.advertisementproject.entities.Advertiser;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.RolesAllowed;
 
+//@DeclareRoles({"admin", "registeredUser", "visitor"})
 public class AppLayout extends VerticalLayout implements ViewDisplay {
 
     private VerticalLayout header = new VerticalLayout();
@@ -142,20 +148,33 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
     public void showView(View view) {
     }
 
+    @RolesAllowed({"admin", "registeredUer"})
     private void logout() {
         btnNav2.setVisible(true);
         btnNav3.setVisible(true);
         btnNav4.setVisible(false);
         btnNav5.setVisible(false);
         btnNav6.setVisible(false);
+        try {
+            VaadinSession.getCurrent().getLockInstance().lock();
+            VaadinSession.getCurrent().setAttribute("current_user", null);
+        } finally {
+            VaadinSession.getCurrent().getLockInstance().unlock();
+        }
     }
 
-    public static void login() {
+    public static void login(Advertiser a) {
         btnNav2.setVisible(false);
         btnNav3.setVisible(false);
         btnNav4.setVisible(true);
         btnNav5.setVisible(true);
         btnNav6.setVisible(true);
+        try {
+            VaadinSession.getCurrent().getLockInstance().lock();
+            VaadinSession.getCurrent().setAttribute("current_user", a);
+        } finally {
+            VaadinSession.getCurrent().getLockInstance().unlock();
+        }
     }
 
     public static Button getBtnNav1() {

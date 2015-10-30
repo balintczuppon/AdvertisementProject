@@ -16,6 +16,7 @@ import com.mycompany.advertisementproject.facades.PictureFacade;
 import com.mycompany.advertisementproject.facades.SubcategoryFacade;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.data.Property;
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Alignment;
@@ -45,6 +46,9 @@ import org.vaadin.pagingcomponent.listener.impl.LazyPagingComponentListener;
 public class AdvertListView extends VerticalLayout implements View {
 
     private List<Advertisement> filteredAdverts = new ArrayList<>();
+
+    private VerticalLayout advertList;
+    private VerticalLayout filterForm;
 
     @Inject
     MaincategoryFacade maincategoryFacade;
@@ -83,17 +87,16 @@ public class AdvertListView extends VerticalLayout implements View {
 
     private List<HorizontalLayout> adverts = new ArrayList<>();
 
-    private List<String> categorys = new ArrayList<>();
-    private List<String> subCategorys = new ArrayList<>();
-    private List<String> subSubCategorys = new ArrayList<>();
-
-    private String title = "Eladó Autó";
-    private String price = "230000";
-    private String category = "Jármű";
-    private String subcategory = "Személygépkocsi";
-    private String city = "Budapest";
-    private String date = "2015.02.12";
-
+//    private List<String> categorys = new ArrayList<>();
+//    private List<String> subCategorys = new ArrayList<>();
+//    private List<String> subSubCategorys = new ArrayList<>();
+//
+//    private String title = "Eladó Autó";
+//    private String price = "230000";
+//    private String category = "Jármű";
+//    private String subcategory = "Személygépkocsi";
+//    private String city = "Budapest";
+//    private String date = "2015.02.12";
     private Label lblTitle;
     private Label lblPrice;
     private Label lblCategory;
@@ -105,6 +108,7 @@ public class AdvertListView extends VerticalLayout implements View {
 
     private ComboBox cmbBxCategory;
     private ComboBox cmbBxSubCategory;
+    private ComboBox cmbBxCountry;
     private ComboBox cmbBxCity;
     private ComboBox cmbBxType;
     private ComboBox cmbBxState;
@@ -117,10 +121,13 @@ public class AdvertListView extends VerticalLayout implements View {
         contentLayout = new HorizontalLayout();
         contentLayout.setSpacing(true);
 
-        fillExamples();
+        loadAdverts();
 
-        contentLayout.addComponent(addFilters());
-        contentLayout.addComponent(pageAdverts());
+        addFilters();
+        pageAdverts();
+
+        contentLayout.addComponent(filterForm);
+        contentLayout.addComponent(advertList);
         vl.addComponent(addSearchBar());
         vl.addComponent(contentLayout);
 
@@ -143,9 +150,10 @@ public class AdvertListView extends VerticalLayout implements View {
         return searchBarLayout;
     }
 
-    private HorizontalLayout buildAdvert1() {
+    private HorizontalLayout buildAdvert(final Advertisement adv) {
 
         HorizontalLayout advertHorizontal = new HorizontalLayout();
+
         advertHorizontal.setSpacing(true);
 
         VerticalLayout advertLeftVertical = new VerticalLayout();
@@ -153,36 +161,57 @@ public class AdvertListView extends VerticalLayout implements View {
         VerticalLayout advertRightVertical = new VerticalLayout();
 
         advertMiddleVertical.setSpacing(true);
+        advertRightVertical.setSpacing(true);
+        advertLeftVertical.setSpacing(true);
 
         lblpicture = new Label();
         lblpicture.setWidth("100");
         lblpicture.setHeight("100");
         lblpicture.setStyleName(PICLABEL.toString());
         advertLeftVertical.addComponent(lblpicture);
-        lblTitle = new Label(title);
+        lblTitle = new Label(adv.getTitle());
         lblTitle.setWidth("300");
         advertMiddleVertical.addComponent(lblTitle);
-        lblPrice = new Label(price);
+        lblPrice = new Label(adv.getPrice() + "");
         advertMiddleVertical.addComponent(lblPrice);
-        lblCategory = new Label(category);
-        advertRightVertical.addComponent(lblCategory);
-        lblSubCategory = new Label(subcategory);
-        advertRightVertical.addComponent(lblSubCategory);
-        lblCity = new Label(city);
-        advertRightVertical.addComponent(lblCity);
-        lblDate = new Label(date);
+        for (Maincategory m : maincategoryFacade.findAll()) {
+            if (m.getId().equals(adv.getMainCategoryId())) {
+                lblCategory = new Label(m.getName());
+                advertRightVertical.addComponent(lblCategory);
+            }
+        }
+        for (Subcategory s : subcategoryFacade.findAll()) {
+            if (s.getId().equals(adv.getSubCategoryId())) {
+                lblSubCategory = new Label(s.getName());
+                advertRightVertical.addComponent(lblSubCategory);
+            }
+        }
+        for (Locality l : localityFacade.findAll()) {
+            if (l.getId().equals(adv.getLocalityId())) {
+                lblCity = new Label(l.getStationname());
+                advertRightVertical.addComponent(lblCity);
+            }
+        }
+        lblDate = new Label(adv.getRegistrationDate() + "");
         advertRightVertical.addComponent(lblDate);
 
         advertHorizontal.addComponent(advertLeftVertical);
         advertHorizontal.addComponent(advertMiddleVertical);
         advertHorizontal.addComponent(advertRightVertical);
 
+        advertHorizontal.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
+            @Override
+            public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+                selectedAdvert(adv);
+            }
+        });
+
         return advertHorizontal;
     }
 
-    private VerticalLayout addFilters() {
-        VerticalLayout filterLayout = new VerticalLayout();
-        filterLayout.setSpacing(true);
+    private void addFilters() {
+        filterForm = new VerticalLayout();
+        filterForm.setSpacing(true);
 
         cmbBxCategory = new ComboBox("Kategória");
         cmbBxCategory.addValueChangeListener(new Property.ValueChangeListener() {
@@ -198,28 +227,40 @@ public class AdvertListView extends VerticalLayout implements View {
         });
         cmbBxSubCategory = new ComboBox("AlKategória");
         cmbBxSubCategory.setEnabled(false);
+        cmbBxCountry = new ComboBox("Megye");
+        cmbBxCountry.addValueChangeListener(new Property.ValueChangeListener() {
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                if (cmbBxCountry.getValue() != null) {
+                    fillCmbBxCity(cmbBxCountry.getValue());
+                } else {
+                    cmbBxCity.setEnabled(false);
+                }
+            }
+        });
         cmbBxCity = new ComboBox("Város");
+        cmbBxCity.setEnabled(false);
         cmbBxType = new ComboBox("Típus");
         cmbBxState = new ComboBox("Állapot");
         txtFldMinPrice = new TextField("Minimum Ár");
         txtFldMaxPrice = new TextField("Maximum Ár");
         btnFilter = new Button("Szűrés");
 
-        filterLayout.addComponent(cmbBxCity);
-        filterLayout.addComponent(cmbBxCategory);
-        filterLayout.addComponent(cmbBxSubCategory);
-        filterLayout.addComponent(cmbBxType);
-        filterLayout.addComponent(cmbBxState);
-        filterLayout.addComponent(txtFldMinPrice);
-        filterLayout.addComponent(txtFldMaxPrice);
-        filterLayout.addComponent(btnFilter);
-
-        return filterLayout;
+        filterForm.addComponent(cmbBxCountry);
+        filterForm.addComponent(cmbBxCity);
+        filterForm.addComponent(cmbBxCategory);
+        filterForm.addComponent(cmbBxSubCategory);
+        filterForm.addComponent(cmbBxType);
+        filterForm.addComponent(cmbBxState);
+        filterForm.addComponent(txtFldMinPrice);
+        filterForm.addComponent(txtFldMaxPrice);
+        filterForm.addComponent(btnFilter);
     }
 
-    private VerticalLayout pageAdverts() {
+    private void pageAdverts() {
 
-        final VerticalLayout mainLayout = new VerticalLayout();
+        advertList = new VerticalLayout();
         final VerticalLayout itemsArea = new VerticalLayout();
 
         GlobalCustomizer adaptator = new GlobalCustomizer() {
@@ -309,16 +350,9 @@ public class AdvertListView extends VerticalLayout implements View {
                 }).build();
 
         itemsArea.setSpacing(true);
-        mainLayout.addComponent(itemsArea);
-        mainLayout.setComponentAlignment(itemsArea, Alignment.TOP_CENTER);
-        mainLayout.addComponent(pagingComponent);
-        return mainLayout;
-    }
-
-    private void fillExamples() {
-        for (int i = 0; i < 200; i++) {
-            adverts.add(buildAdvert1());
-        }
+        advertList.addComponent(itemsArea);
+        advertList.setComponentAlignment(itemsArea, Alignment.TOP_CENTER);
+        advertList.addComponent(pagingComponent);
     }
 
     private void fillComboBoxes() {
@@ -333,7 +367,7 @@ public class AdvertListView extends VerticalLayout implements View {
                 cmbBxType.addItem(a.getName());
             }
             for (Locality l : localityFacade.findAll()) {
-                cmbBxCity.addItem(l.getStationname());
+                cmbBxCountry.addItem(l.getCountry());
             }
             filled = true;
         }
@@ -351,6 +385,16 @@ public class AdvertListView extends VerticalLayout implements View {
         }
     }
 
+    private void fillCmbBxCity(Object value) {
+        cmbBxCity.removeAllItems();
+        cmbBxCity.setEnabled(true);
+        for (Locality loc : localityFacade.findAll()) {
+            if (loc.getCountry().equals(value)) {
+                cmbBxCity.addItem(loc.getStationname());
+            }
+        }
+    }
+
     private void addListeners() {
         btnFilter.addClickListener(new Button.ClickListener() {
             @Override
@@ -363,34 +407,61 @@ public class AdvertListView extends VerticalLayout implements View {
     private void filterAdverts() {
         Maincategory mcategory = null;
         int subCategoryId = 0;
+        int minPrice = 0;
+        int maxPrice = 0;
         Locality locality = null;
         Advertstate state = null;
         Adverttype type = null;
-        
+
         for (Maincategory m : maincategoryFacade.findAll()) {
-            if (cmbBxCategory.getValue().equals(m.getName())) {
-                mcategory = m;
+            if (!cmbBxCategory.isEmpty()) {
+                if (cmbBxCategory.getValue().equals(m.getName())) {
+                    mcategory = m;
+                }
             }
         }
         for (Subcategory s : subcategoryFacade.findAll()) {
-            if (cmbBxSubCategory.getValue().equals(s.getName())) {
-                subCategoryId = s.getId();
+            if (!cmbBxSubCategory.isEmpty()) {
+                if (cmbBxSubCategory.getValue().equals(s.getName())) {
+                    subCategoryId = s.getId();
+                }
             }
         }
         for (Locality l : localityFacade.findAll()) {
-            if (cmbBxCity.getValue().equals(l.getStationname())) {
-                locality = l;
+            if (!cmbBxCountry.isEmpty()) {
+                if (cmbBxCountry.getValue().equals(l.getCountry())) {
+                    locality = l;
+                }
+            }
+        }
+        for (Locality l : localityFacade.findAll()) {
+            if (!cmbBxCity.isEmpty()) {
+                if (cmbBxCity.getValue().equals(l.getStationname())) {
+                    locality = l;
+                }
             }
         }
         for (Advertstate a : advertstateFacade.findAll()) {
-            if (cmbBxState.getValue().equals(a.getName())) {
-                state = a;
+            if (!cmbBxState.isEmpty()) {
+                if (cmbBxState.getValue().equals(a.getName())) {
+                    state = a;
+                }
             }
         }
         for (Adverttype a : adverttypeFacade.findAll()) {
-            if (cmbBxType.getValue().equals(a.getName())) {
-                type = a;
+            if (!cmbBxType.isEmpty()) {
+                if (cmbBxType.getValue().equals(a.getName())) {
+                    type = a;
+                }
             }
+        }
+
+        if (!txtFldMinPrice.isEmpty()) {
+            minPrice = Integer.valueOf(txtFldMinPrice.getValue());
+        }
+
+        if (!txtFldMaxPrice.isEmpty()) {
+            maxPrice = Integer.valueOf(txtFldMaxPrice.getValue());
         }
 
         filteredAdverts = advertisementFacade.findAdvertsByFilters(
@@ -399,13 +470,29 @@ public class AdvertListView extends VerticalLayout implements View {
                 locality,
                 state,
                 type,
-                txtFldMinPrice.getValue(),
-                txtFldMaxPrice.getValue()
+                minPrice,
+                maxPrice
         );
-        
-        int i = 0;
+
+        adverts.clear();
+        contentLayout.removeComponent(advertList);
         for (Advertisement a : filteredAdverts) {
-            addComponent(new Label(i+""));
+            adverts.add(buildAdvert(a));
         }
+        pageAdverts();
+        contentLayout.addComponent(advertList);
+        vl.setComponentAlignment(contentLayout, Alignment.TOP_CENTER);
+    }
+
+    public void loadAdverts() {
+        adverts.clear();
+        for (Advertisement a : advertisementFacade.findAll()) {
+            adverts.add(buildAdvert(a));
+        }
+    }
+
+    public void selectedAdvert(Advertisement a) {
+        SelectedAdvert.setAdvertisement(a);
+        getUI().getNavigator().navigateTo("SELECTED");
     }
 }

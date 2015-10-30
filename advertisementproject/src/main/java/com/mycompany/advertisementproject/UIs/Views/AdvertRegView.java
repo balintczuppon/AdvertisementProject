@@ -1,11 +1,14 @@
 package com.mycompany.advertisementproject.UIs.Views;
 
+import com.mycompany.advertisementproject.UIs.RootUI;
 import com.mycompany.advertisementproject.entities.*;
 import com.mycompany.advertisementproject.facades.*;
 import com.vaadin.cdi.CDIView;
+import com.vaadin.data.Property;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.*;
 import java.io.File;
 import java.sql.Date;
@@ -49,8 +52,10 @@ public class AdvertRegView extends HorizontalLayout implements View {
     private ComboBox cmbbxSubCategory;
     private ComboBox cmbbxAdvertType;
     private ComboBox cmbbxAdvertState;
+    private ComboBox cmbbxCountry;
+    private ComboBox cmbbxCity;
+
     private TextField txtFldPrice;
-    private TextField txtFldPostalCode;
     private MultiFileUpload mfu;
     private Button btnRegister;
 
@@ -62,6 +67,7 @@ public class AdvertRegView extends HorizontalLayout implements View {
         addPictureLayout();
         addListeners();
         fillComboBoxes();
+
     }
 
     public void addForm() {
@@ -73,11 +79,36 @@ public class AdvertRegView extends HorizontalLayout implements View {
         txtAreaDescription.setWidth("300");
         txtAreaDescription.setHeight("100");
         cmbbxCategory = new ComboBox("Kategória");
+        cmbbxCategory.addValueChangeListener(new Property.ValueChangeListener() {
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                if (cmbbxCategory.getValue() != null) {
+                    fillCmbBxSubCategory(cmbbxCategory.getValue());
+                } else {
+                    cmbbxSubCategory.setEnabled(false);
+                }
+            }
+        });
         cmbbxSubCategory = new ComboBox("Alkategória");
+        cmbbxSubCategory.setEnabled(false);
         cmbbxAdvertType = new ComboBox("Hirdetés típusa");
         cmbbxAdvertState = new ComboBox("Állapot");
         txtFldPrice = new TextField("Ár");
-        txtFldPostalCode = new TextField("Irányítószám");
+        cmbbxCountry = new ComboBox("Megye");
+        cmbbxCountry.addValueChangeListener(new Property.ValueChangeListener() {
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                if (cmbbxCountry.getValue() != null) {
+                    fillCmbBxCity(cmbbxCountry.getValue());
+                } else {
+                    cmbbxCity.setEnabled(false);
+                }
+            }
+        });
+        cmbbxCity = new ComboBox("Város");
+        cmbbxCity.setEnabled(false);
         btnRegister = new Button("Feladás");
 
         formLayout.addComponent(txtFieldTitle);
@@ -87,7 +118,8 @@ public class AdvertRegView extends HorizontalLayout implements View {
         formLayout.addComponent(cmbbxAdvertType);
         formLayout.addComponent(cmbbxAdvertState);
         formLayout.addComponent(txtFldPrice);
-        formLayout.addComponent(txtFldPostalCode);
+        formLayout.addComponent(cmbbxCountry);
+        formLayout.addComponent(cmbbxCity);
         formLayout.addComponent(btnRegister);
         formLayout.setWidthUndefined();
 
@@ -111,28 +143,29 @@ public class AdvertRegView extends HorizontalLayout implements View {
     }
 
     private void registerAdvert() {
+        Advertiser advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute("current_user");
         Advertisement advertisement = new Advertisement();
 
+        advertisement.setAdvertiserId(advertiser);
         advertisement.setAdvertStateId(selectedState());
         advertisement.setAdvertTypeId(selectedType());
-        advertisement.setAdvertiserId(null);
         advertisement.setDescription(txtAreaDescription.getValue());
         advertisement.setLocalityId(selectedLocality());
         advertisement.setMainCategoryId(selectedMainCategory());
+        advertisement.setSubCategoryId(selectedSubCategory());
         advertisement.setPrice(Integer.valueOf(txtFldPrice.getValue()));
         advertisement.setRegistrationDate(currentDate());
         advertisement.setTitle(txtFieldTitle.getValue());
-
-        advertisementFacade.create(advertisement);
 
         for (File f : files) {
             picture = new Picture();
             picture.setAccessPath(f.getAbsolutePath());
             picture.setAdvertisementId(advertisement);
             pictureCollection.add(picture);
-            pictureFacade.create(picture);
         }
-
+        
+        advertisement.setPictureCollection(pictureCollection);
+        advertisementFacade.create(advertisement);
     }
 
     private Advertstate selectedState() {
@@ -158,8 +191,10 @@ public class AdvertRegView extends HorizontalLayout implements View {
     private Locality selectedLocality() {
         List<Locality> localites = localityFacade.findAll();
         for (Locality locality : localites) {
-            if (locality.getPostalCode().equals(txtFldPostalCode.getValue())) {
-                return locality;
+            if (locality.getCountry().equals(cmbbxCountry.getValue())) {
+                if (locality.getStationname().equals(cmbbxCity.getValue())) {
+                    return locality;
+                }
             }
         }
         return null;
@@ -175,15 +210,14 @@ public class AdvertRegView extends HorizontalLayout implements View {
         return null;
     }
 
-    private Subcategory selectedSubCategory() {
+    private int selectedSubCategory() {
         List<Subcategory> categoires = subcategoryFacade.findAll();
         for (Subcategory category : categoires) {
             if (category.getName().equals(cmbbxSubCategory.getValue())) {
-            } else {
-                return category;
+                return category.getId();
             }
         }
-        return null;
+        return 0;
     }
 
     private Date currentDate() {
@@ -203,10 +237,32 @@ public class AdvertRegView extends HorizontalLayout implements View {
             for (Adverttype a : adverttypeFacade.findAll()) {
                 cmbbxAdvertType.addItem(a.getName());
             }
-            for (Subcategory s : subcategoryFacade.findAll()) {
-                cmbbxSubCategory.addItem(s.getName());
+            for (Locality l : localityFacade.findAll()) {
+                cmbbxCountry.addItem(l.getCountry());
             }
             filled = true;
+        }
+    }
+
+    private void fillCmbBxSubCategory(Object value) {
+        cmbbxSubCategory.removeAllItems();
+        cmbbxSubCategory.setEnabled(true);
+        for (Maincategory mcat : maincategoryFacade.findAll()) {
+            if (mcat.getName().equals(value)) {
+                for (Subcategory s : subcategoryFacade.findByMainCategoryId(mcat)) {
+                    cmbbxSubCategory.addItem(s.getName());
+                }
+            }
+        }
+    }
+
+    private void fillCmbBxCity(Object value) {
+        cmbbxCity.removeAllItems();
+        cmbbxCity.setEnabled(true);
+        for (Locality loc : localityFacade.findAll()) {
+            if (loc.getCountry().equals(value)) {
+                cmbbxCity.addItem(loc.getStationname());
+            }
         }
     }
 
