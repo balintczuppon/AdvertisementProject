@@ -1,6 +1,7 @@
 package com.mycompany.advertisementproject.UIs.Views;
 
-import com.mycompany.advertisementproject.UIs.RootUI;
+import com.mycompany.advertisementproject.Tools.MyMultiFileUpload;
+import static com.mycompany.advertisementproject.Enums.Views.USERPAGE;
 import com.mycompany.advertisementproject.entities.*;
 import com.mycompany.advertisementproject.facades.*;
 import com.vaadin.cdi.CDIView;
@@ -9,23 +10,29 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import java.io.File;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import org.vaadin.easyuploads.FileBuffer;
-import org.vaadin.easyuploads.MultiFileUpload;
 
 @CDIView("ADVERTREG")
-public class AdvertRegView extends HorizontalLayout implements View {
+public class AdvertRegView extends VerticalLayout implements View {
 
     private static final String TEMP_FILE_DIR = new File(System.getProperty("java.io.tmpdir")).getPath();
 
     private List<File> files = new ArrayList<>();
     private List<Picture> pictureCollection = new ArrayList<>();
+
+    private FormLayout regFormLayout;
+
+    private Panel adverRegPanel;
+    private Panel picturePanel;
 
     @Inject
     MaincategoryFacade maincategoryFacade;
@@ -56,29 +63,41 @@ public class AdvertRegView extends HorizontalLayout implements View {
     private ComboBox cmbbxCity;
 
     private TextField txtFldPrice;
-    private MultiFileUpload mfu;
+    private MyMultiFileUpload mfu;
+
+    private String btnText;
     private Button btnRegister;
 
     private VerticalLayout pictureLayout;
+    private VerticalLayout advertDataLayout;
 
     @PostConstruct
     public void initComponent() {
+        addPictureUpload();
         addForm();
-        addPictureLayout();
-        addListeners();
         fillComboBoxes();
-
     }
 
     public void addForm() {
         setSizeFull();
-        FormLayout formLayout = new FormLayout();
+        setMargin(true);
+        setSpacing(true);
 
-        txtFieldTitle = new TextField("Hirdetés címe");
-        txtAreaDescription = new TextArea("Hirdetés leírása");
-        txtAreaDescription.setWidth("300");
-        txtAreaDescription.setHeight("100");
-        cmbbxCategory = new ComboBox("Kategória");
+        regFormLayout = new FormLayout();
+        regFormLayout.setSpacing(true);
+        regFormLayout.setMargin(true);
+
+        txtFieldTitle = new TextField();
+        txtFieldTitle.setWidth("500");
+        txtFieldTitle.setInputPrompt("Hirdetés címe");
+
+        txtAreaDescription = new TextArea();
+        txtAreaDescription.setWidth("500");
+        txtAreaDescription.setHeight("200");
+        txtAreaDescription.setInputPrompt("Hirdetés leírása");
+
+        cmbbxCategory = new ComboBox();
+        cmbbxCategory.setInputPrompt("Kategória");
         cmbbxCategory.addValueChangeListener(new Property.ValueChangeListener() {
 
             @Override
@@ -90,12 +109,17 @@ public class AdvertRegView extends HorizontalLayout implements View {
                 }
             }
         });
-        cmbbxSubCategory = new ComboBox("Alkategória");
+        cmbbxSubCategory = new ComboBox();
+        cmbbxSubCategory.setInputPrompt("Alkategória");
         cmbbxSubCategory.setEnabled(false);
-        cmbbxAdvertType = new ComboBox("Hirdetés típusa");
-        cmbbxAdvertState = new ComboBox("Állapot");
-        txtFldPrice = new TextField("Ár");
-        cmbbxCountry = new ComboBox("Megye");
+        cmbbxAdvertType = new ComboBox();
+        cmbbxAdvertType.setInputPrompt("Hirdetés típusa");
+        cmbbxAdvertState = new ComboBox();
+        cmbbxAdvertState.setInputPrompt("Állapot");
+        txtFldPrice = new TextField();
+        txtFldPrice.setInputPrompt("Ár");
+        cmbbxCountry = new ComboBox();
+        cmbbxCountry.setInputPrompt("Megye");
         cmbbxCountry.addValueChangeListener(new Property.ValueChangeListener() {
 
             @Override
@@ -107,42 +131,52 @@ public class AdvertRegView extends HorizontalLayout implements View {
                 }
             }
         });
-        cmbbxCity = new ComboBox("Város");
+        cmbbxCity = new ComboBox();
+        cmbbxCity.setInputPrompt("Város");
         cmbbxCity.setEnabled(false);
-        btnRegister = new Button("Feladás");
 
-        formLayout.addComponent(txtFieldTitle);
-        formLayout.addComponent(txtAreaDescription);
-        formLayout.addComponent(cmbbxCategory);
-        formLayout.addComponent(cmbbxSubCategory);
-        formLayout.addComponent(cmbbxAdvertType);
-        formLayout.addComponent(cmbbxAdvertState);
-        formLayout.addComponent(txtFldPrice);
-        formLayout.addComponent(cmbbxCountry);
-        formLayout.addComponent(cmbbxCity);
-        formLayout.addComponent(btnRegister);
-        formLayout.setWidthUndefined();
+        btnRegister = new Button();
 
-        addComponent(formLayout);
-        setComponentAlignment(formLayout, Alignment.TOP_RIGHT);
+        regFormLayout.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+
+        regFormLayout.addComponent(txtFieldTitle);
+        regFormLayout.addComponent(txtAreaDescription);
+        regFormLayout.addComponent(cmbbxCategory);
+        regFormLayout.addComponent(cmbbxSubCategory);
+        regFormLayout.addComponent(cmbbxAdvertType);
+        regFormLayout.addComponent(cmbbxAdvertState);
+        regFormLayout.addComponent(txtFldPrice);
+        regFormLayout.addComponent(cmbbxCountry);
+        regFormLayout.addComponent(cmbbxCity);
+        regFormLayout.setSizeFull();
+
+        adverRegPanel = new Panel();
+        adverRegPanel.setHeightUndefined();
+        adverRegPanel.setWidth("600");
+
+        advertDataLayout = new VerticalLayout();
+        advertDataLayout.setSpacing(true);
+        advertDataLayout.setMargin(true);
+        advertDataLayout.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+        advertDataLayout.addComponent(new Label("Hirdetés adatainak megadása"));
+        advertDataLayout.addComponent(new Label("<hr />", ContentMode.HTML));
+        advertDataLayout.addComponent(regFormLayout);
+        advertDataLayout.addComponent(btnRegister);
+
+        adverRegPanel.setContent(advertDataLayout);
+
+        addComponent(adverRegPanel);
+        setComponentAlignment(adverRegPanel, Alignment.TOP_CENTER);
     }
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         Notification.show("Under Developement.");
         getUI().focus();
+        checkSessionAttribute();
     }
 
-    private void addListeners() {
-        btnRegister.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                registerAdvert();
-            }
-        });
-    }
-
-    private void registerAdvert() {
+    private Advertisement handleAdvert() {
         Advertiser advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute("current_user");
         Advertisement advertisement = new Advertisement();
 
@@ -163,9 +197,8 @@ public class AdvertRegView extends HorizontalLayout implements View {
             picture.setAdvertisementId(advertisement);
             pictureCollection.add(picture);
         }
-        
         advertisement.setPictureCollection(pictureCollection);
-        advertisementFacade.create(advertisement);
+        return advertisement;
     }
 
     private Advertstate selectedState() {
@@ -222,7 +255,7 @@ public class AdvertRegView extends HorizontalLayout implements View {
 
     private Date currentDate() {
         java.util.Date utilDate = new java.util.Date();
-        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+        java.sql.Date sqlDate = new Date(utilDate.getTime());
         return sqlDate;
     }
 
@@ -249,7 +282,7 @@ public class AdvertRegView extends HorizontalLayout implements View {
         cmbbxSubCategory.setEnabled(true);
         for (Maincategory mcat : maincategoryFacade.findAll()) {
             if (mcat.getName().equals(value)) {
-                for (Subcategory s : subcategoryFacade.findByMainCategoryId(mcat)) {
+                for (Subcategory s : mcat.getSubcategoryCollection()) {
                     cmbbxSubCategory.addItem(s.getName());
                 }
             }
@@ -266,36 +299,15 @@ public class AdvertRegView extends HorizontalLayout implements View {
         }
     }
 
+    private Button removeBtn;
+    private HorizontalLayout innerPictureLayout;
+
     private void setUpLoadField() {
-        mfu = new MultiFileUpload() {
+        mfu = new MyMultiFileUpload() {
             @Override
             protected void handleFile(final File file, String fileName, String mimeType, long length) {
                 files.add(file);
-
-                final HorizontalLayout innerPictureLayout = new HorizontalLayout();
-                innerPictureLayout.setSpacing(true);
-
-                final Embedded image = new Embedded();
-                image.setHeight("100");
-                image.setWidth("100");
-                image.setSource(new FileResource(file));
-
-                innerPictureLayout.addComponent(image);
-
-                final Button btn = new Button("X");
-                btn.addClickListener(new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(Button.ClickEvent event) {
-                        file.delete();
-                        files.remove(file);
-                        innerPictureLayout.removeComponent(image);
-                        innerPictureLayout.removeComponent(btn);
-                        pictureLayout.removeComponent(innerPictureLayout);
-                    }
-                });
-                innerPictureLayout.addComponent(btn);
-                innerPictureLayout.setComponentAlignment(btn, Alignment.MIDDLE_LEFT);
-                pictureLayout.addComponent(innerPictureLayout);
+                showImage(file);
             }
 
             @Override
@@ -305,17 +317,137 @@ public class AdvertRegView extends HorizontalLayout implements View {
                 return receiver;
             }
         };
+        mfu.setRootDirectory(TEMP_FILE_DIR);
+        mfu.setCaption("Dobd ide a képet!");
     }
 
-    private void addPictureLayout() {
+    private void showImage(File file) {
+        final Embedded image = new Embedded();
+        image.setHeight("96");
+        image.setWidth("128");
+        image.setSource(new FileResource(file));
+
+        innerPictureLayout = new HorizontalLayout();
+        innerPictureLayout.setSpacing(true);
+
+        innerPictureLayout.addComponent(image);
+        removeBtn = new Button("X");
+        addRemoveButtonToPicture(file, image);
+
+        innerPictureLayout.addComponent(removeBtn);
+        innerPictureLayout.setComponentAlignment(removeBtn, Alignment.MIDDLE_LEFT);
+        pictureLayout.addComponent(innerPictureLayout);
+    }
+
+    private void addRemoveButtonToPicture(final File file, final Embedded image) {
+        removeBtn.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                file.delete();
+                files.remove(file);
+                innerPictureLayout.removeComponent(image);
+                innerPictureLayout.removeComponent(removeBtn);
+                pictureLayout.removeComponent(innerPictureLayout);
+            }
+        });
+    }
+
+    private void addPictureUpload() {
+        picturePanel = new Panel();
+        picturePanel.setWidth("600");
+
         pictureLayout = new VerticalLayout();
+        pictureLayout.setSizeFull();
         setUpLoadField();
         pictureLayout.setSpacing(true);
         pictureLayout.setMargin(true);
         mfu.setRootDirectory(TEMP_FILE_DIR);
-        mfu.setCaption("Képek feltöltése");
+        pictureLayout.addComponent(new Label("Képek feltöltése"));
+        pictureLayout.addComponent(new Label("<hr />", ContentMode.HTML));
         pictureLayout.addComponent(mfu);
-        addComponent(pictureLayout);
-        setComponentAlignment(pictureLayout, Alignment.TOP_LEFT);
+        pictureLayout.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+        picturePanel.setContent(pictureLayout);
+
+        addComponent(picturePanel);
+        setComponentAlignment(picturePanel, Alignment.TOP_CENTER);
+    }
+
+    private void checkSessionAttribute() {
+        try {
+            Advertisement advertisement = (Advertisement) VaadinSession.getCurrent().getAttribute("AdvertToModify");
+            if (advertisement != null) {
+                prepareForModification(advertisement);
+            } else {
+                prepareForRegistration();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void prepareForModification(Advertisement ad) {
+        btnText = "Módosít";
+        btnRegister.setCaption(btnText);
+        linkDataToFields(ad);
+        addModListener();
+    }
+
+    private void prepareForRegistration() {
+        btnText = "Regisztrál";
+        btnRegister.setCaption(btnText);
+        addRegListener();
+    }
+
+    private void addModListener() {
+        btnRegister.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                modifyAdvert(handleAdvert());
+                getUI().getNavigator().navigateTo(USERPAGE.toString());
+            }
+        });
+    }
+
+    private void addRegListener() {
+        btnRegister.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                registerAdvert(handleAdvert());
+            }
+        });
+    }
+
+    private void linkDataToFields(Advertisement ad) {
+        txtFieldTitle.setValue(ad.getTitle());
+        txtAreaDescription.setValue(ad.getDescription());
+        txtFldPrice.setValue(String.valueOf(ad.getPrice()));
+        cmbbxCategory.select(ad.getMainCategoryId().getName());
+        fillCmbBxSubCategory(ad.getMainCategoryId().getName());
+        for (Subcategory s : ad.getMainCategoryId().getSubcategoryCollection()) {
+            if (s.getId().equals(ad.getSubCategoryId())) {
+                cmbbxSubCategory.select(s.getName());
+            }
+        }
+        cmbbxSubCategory.select(ad.getSubCategoryId());
+        cmbbxAdvertType.select(ad.getAdvertTypeId().getName());
+        cmbbxAdvertState.select(ad.getAdvertStateId().getName());
+        cmbbxCountry.select(ad.getLocalityId().getCountry());
+        cmbbxCity.select(ad.getLocalityId().getStationname());
+
+        for (Picture p : ad.getPictureCollection()) {
+            File file = new File(p.getAccessPath());
+            files.add(file);
+            showImage(file);
+        }
+    }
+
+    private void registerAdvert(Advertisement a) {
+        advertisementFacade.create(a);
+    }
+
+    private void modifyAdvert(Advertisement a) {
+        Advertisement ad = (Advertisement) VaadinSession.getCurrent().getAttribute("AdvertToModify");
+        advertisementFacade.edit(a);
+        advertisementFacade.remove(ad);
     }
 }

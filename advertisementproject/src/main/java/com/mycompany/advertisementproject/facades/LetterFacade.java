@@ -5,8 +5,9 @@
  */
 package com.mycompany.advertisementproject.facades;
 
-import com.mycompany.advertisementproject.entities.Advertisement;
-import com.mycompany.advertisementproject.entities.Picture;
+import com.mycompany.advertisementproject.entities.Advertiser;
+import com.mycompany.advertisementproject.entities.Letter;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,7 +17,7 @@ import javax.persistence.PersistenceContext;
  * @author balin
  */
 @Stateless
-public class PictureFacade extends AbstractFacade<Picture> {
+public class LetterFacade extends AbstractFacade<Letter> {
     @PersistenceContext(unitName = "com.mycompany_advertisementproject_war_1.0-SNAPSHOTPU")
     private EntityManager em;
 
@@ -25,7 +26,14 @@ public class PictureFacade extends AbstractFacade<Picture> {
         return em;
     }
 
-    public PictureFacade() {
-        super(Picture.class);
+    public LetterFacade() {
+        super(Letter.class);
     }
+
+    public List<Letter> getMyLetters(Advertiser current_advertiser) {
+        return em.createQuery("SELECT l FROM Letter l WHERE l.postBoxId = :postbox")
+                .setParameter("postbox", current_advertiser.getPostbox())
+                .getResultList();
+    }
+    
 }

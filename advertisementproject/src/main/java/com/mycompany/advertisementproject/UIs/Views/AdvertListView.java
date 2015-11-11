@@ -1,24 +1,15 @@
 package com.mycompany.advertisementproject.UIs.Views;
 
 import static com.mycompany.advertisementproject.Enums.StyleNames.PICLABEL;
-import com.mycompany.advertisementproject.entities.Advertisement;
-import com.mycompany.advertisementproject.entities.Advertstate;
-import com.mycompany.advertisementproject.entities.Adverttype;
-import com.mycompany.advertisementproject.entities.Locality;
-import com.mycompany.advertisementproject.entities.Maincategory;
-import com.mycompany.advertisementproject.entities.Subcategory;
-import com.mycompany.advertisementproject.facades.AdvertisementFacade;
-import com.mycompany.advertisementproject.facades.AdvertstateFacade;
-import com.mycompany.advertisementproject.facades.AdverttypeFacade;
-import com.mycompany.advertisementproject.facades.LocalityFacade;
-import com.mycompany.advertisementproject.facades.MaincategoryFacade;
-import com.mycompany.advertisementproject.facades.PictureFacade;
-import com.mycompany.advertisementproject.facades.SubcategoryFacade;
+import static com.mycompany.advertisementproject.Enums.Views.SELECTED;
+import com.mycompany.advertisementproject.entities.*;
+import com.mycompany.advertisementproject.facades.*;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.data.Property;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -30,6 +21,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -46,9 +38,40 @@ import org.vaadin.pagingcomponent.listener.impl.LazyPagingComponentListener;
 public class AdvertListView extends VerticalLayout implements View {
 
     private List<Advertisement> filteredAdverts = new ArrayList<>();
+    private List<HorizontalLayout> adverts = new ArrayList<>();
+
+    private HorizontalLayout contentLayout;
 
     private VerticalLayout advertList;
     private VerticalLayout filterForm;
+    private HorizontalLayout searchBarLayout;
+
+    private Panel filterPanel;
+    private Panel advertPanel;
+    private Panel searchBarPanel;
+
+    private Label lblTitle;
+    private Label lblPrice;
+    private Label lblCategory;
+    private Label lblSubCategory;
+    private Label lblCity;
+    private Label lblDate;
+    private Label lblpicture;
+    private Label lblFilter;
+
+    private ComboBox cmbBxCategory;
+    private ComboBox cmbBxSubCategory;
+    private ComboBox cmbBxCountry;
+    private ComboBox cmbBxCity;
+    private ComboBox cmbBxType;
+    private ComboBox cmbBxState;
+
+    private TextField txtFldMinPrice;
+    private TextField txtFldMaxPrice;
+
+    private Button btnFilter;
+
+    private boolean filled = false;
 
     @Inject
     MaincategoryFacade maincategoryFacade;
@@ -65,80 +88,57 @@ public class AdvertListView extends VerticalLayout implements View {
     @Inject
     AdvertstateFacade advertstateFacade;
 
-    private boolean filled = false;
-
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        Notification.show("Under Developement.");
         getUI().focus();
     }
 
     @PostConstruct
     public void initComponent() {
-        this.setSizeFull();
-        this.addComponent(buildView());
+        buildView();
         fillComboBoxes();
         addListeners();
     }
 
-    private VerticalLayout vl;
-    private HorizontalLayout contentLayout;
-    private HorizontalLayout searchBarLayout;
+    public void buildView() {
 
-    private List<HorizontalLayout> adverts = new ArrayList<>();
-
-//    private List<String> categorys = new ArrayList<>();
-//    private List<String> subCategorys = new ArrayList<>();
-//    private List<String> subSubCategorys = new ArrayList<>();
-//
-//    private String title = "Eladó Autó";
-//    private String price = "230000";
-//    private String category = "Jármű";
-//    private String subcategory = "Személygépkocsi";
-//    private String city = "Budapest";
-//    private String date = "2015.02.12";
-    private Label lblTitle;
-    private Label lblPrice;
-    private Label lblCategory;
-    private Label lblSubCategory;
-    private Label lblCity;
-    private Label lblDate;
-
-    private Label lblpicture = new Label();
-
-    private ComboBox cmbBxCategory;
-    private ComboBox cmbBxSubCategory;
-    private ComboBox cmbBxCountry;
-    private ComboBox cmbBxCity;
-    private ComboBox cmbBxType;
-    private ComboBox cmbBxState;
-    private TextField txtFldMinPrice;
-    private TextField txtFldMaxPrice;
-    private Button btnFilter;
-
-    public VerticalLayout buildView() {
-        vl = new VerticalLayout();
         contentLayout = new HorizontalLayout();
         contentLayout.setSpacing(true);
 
+        setSizeFull();
+        setMargin(true);
+        setSpacing(true);
         loadAdverts();
 
+        addSearchBar();
+        searchBarPanel = new Panel();
+        searchBarPanel.setWidth("700");
+        searchBarPanel.setContent(searchBarLayout);
+        addComponent(searchBarPanel);
+        setComponentAlignment(searchBarPanel, Alignment.TOP_CENTER);
+
+        addComponent(contentLayout);
+        setComponentAlignment(contentLayout, Alignment.TOP_CENTER);
+
         addFilters();
+        filterPanel = new Panel();
+        filterPanel.setWidth("300");
+        filterPanel.setContent(filterForm);
+        contentLayout.addComponent(filterPanel);
+
         pageAdverts();
+        advertPanel = new Panel();
+        advertPanel.setWidthUndefined();
+        advertPanel.setHeightUndefined();
+        advertPanel.setContent(advertList);
+        contentLayout.addComponent(advertPanel);
 
-        contentLayout.addComponent(filterForm);
-        contentLayout.addComponent(advertList);
-        vl.addComponent(addSearchBar());
-        vl.addComponent(contentLayout);
-
-        vl.setComponentAlignment(searchBarLayout, Alignment.TOP_CENTER);
-        vl.setComponentAlignment(contentLayout, Alignment.TOP_CENTER);
-        return vl;
+        contentLayout.setComponentAlignment(filterPanel, Alignment.TOP_LEFT);
+        contentLayout.setComponentAlignment(advertPanel, Alignment.TOP_LEFT);
     }
 
-    private HorizontalLayout addSearchBar() {
+    private void addSearchBar() {
         searchBarLayout = new HorizontalLayout();
-
         searchBarLayout.setSpacing(true);
         searchBarLayout.setMargin(true);
         TextField txtFldSearch = new TextField();
@@ -146,14 +146,11 @@ public class AdvertListView extends VerticalLayout implements View {
         Button btnSearch = new Button("Keresés");
         searchBarLayout.addComponent(txtFldSearch);
         searchBarLayout.addComponent(btnSearch);
-
-        return searchBarLayout;
     }
 
     private HorizontalLayout buildAdvert(final Advertisement adv) {
 
         HorizontalLayout advertHorizontal = new HorizontalLayout();
-
         advertHorizontal.setSpacing(true);
 
         VerticalLayout advertLeftVertical = new VerticalLayout();
@@ -192,7 +189,8 @@ public class AdvertListView extends VerticalLayout implements View {
                 advertRightVertical.addComponent(lblCity);
             }
         }
-        lblDate = new Label(adv.getRegistrationDate() + "");
+        String formattedDate = new SimpleDateFormat("yyyy MMMM dd").format(adv.getRegistrationDate());
+        lblDate = new Label(formattedDate);
         advertRightVertical.addComponent(lblDate);
 
         advertHorizontal.addComponent(advertLeftVertical);
@@ -211,9 +209,17 @@ public class AdvertListView extends VerticalLayout implements View {
 
     private void addFilters() {
         filterForm = new VerticalLayout();
+        filterForm.setWidthUndefined();
         filterForm.setSpacing(true);
+        filterForm.setMargin(true);
 
-        cmbBxCategory = new ComboBox("Kategória");
+        lblFilter = new Label("Részletes keresés");
+        lblFilter.setSizeUndefined();
+        filterForm.addComponent(lblFilter);
+        filterForm.addComponent(new Label("<hr />", ContentMode.HTML));
+
+        cmbBxCategory = new ComboBox();
+        cmbBxCategory.setInputPrompt("Kategória");
         cmbBxCategory.addValueChangeListener(new Property.ValueChangeListener() {
 
             @Override
@@ -225,9 +231,11 @@ public class AdvertListView extends VerticalLayout implements View {
                 }
             }
         });
-        cmbBxSubCategory = new ComboBox("AlKategória");
+        cmbBxSubCategory = new ComboBox();
+        cmbBxSubCategory.setInputPrompt("Alkategória");
         cmbBxSubCategory.setEnabled(false);
-        cmbBxCountry = new ComboBox("Megye");
+        cmbBxCountry = new ComboBox();
+        cmbBxCountry.setInputPrompt("Megye");
         cmbBxCountry.addValueChangeListener(new Property.ValueChangeListener() {
 
             @Override
@@ -239,12 +247,17 @@ public class AdvertListView extends VerticalLayout implements View {
                 }
             }
         });
-        cmbBxCity = new ComboBox("Város");
+        cmbBxCity = new ComboBox();
+        cmbBxCity.setInputPrompt("Város");
         cmbBxCity.setEnabled(false);
-        cmbBxType = new ComboBox("Típus");
-        cmbBxState = new ComboBox("Állapot");
-        txtFldMinPrice = new TextField("Minimum Ár");
-        txtFldMaxPrice = new TextField("Maximum Ár");
+        cmbBxType = new ComboBox();
+        cmbBxType.setInputPrompt("Típus");
+        cmbBxState = new ComboBox();
+        cmbBxState.setInputPrompt("Állapot");
+        txtFldMinPrice = new TextField();
+        txtFldMinPrice.setInputPrompt("Minimum Ár");
+        txtFldMaxPrice = new TextField();
+        txtFldMaxPrice.setInputPrompt("Maximum Ár");
         btnFilter = new Button("Szűrés");
 
         filterForm.addComponent(cmbBxCountry);
@@ -256,11 +269,16 @@ public class AdvertListView extends VerticalLayout implements View {
         filterForm.addComponent(txtFldMinPrice);
         filterForm.addComponent(txtFldMaxPrice);
         filterForm.addComponent(btnFilter);
+
+        filterForm.setDefaultComponentAlignment(Alignment.TOP_CENTER);
     }
 
     private void pageAdverts() {
 
         advertList = new VerticalLayout();
+        advertList.setSpacing(true);
+        advertList.setMargin(true);
+
         final VerticalLayout itemsArea = new VerticalLayout();
 
         GlobalCustomizer adaptator = new GlobalCustomizer() {
@@ -353,6 +371,7 @@ public class AdvertListView extends VerticalLayout implements View {
         advertList.addComponent(itemsArea);
         advertList.setComponentAlignment(itemsArea, Alignment.TOP_CENTER);
         advertList.addComponent(pagingComponent);
+        advertList.setComponentAlignment(pagingComponent, Alignment.TOP_CENTER);
     }
 
     private void fillComboBoxes() {
@@ -378,7 +397,7 @@ public class AdvertListView extends VerticalLayout implements View {
         cmbBxSubCategory.setEnabled(true);
         for (Maincategory mcat : maincategoryFacade.findAll()) {
             if (mcat.getName().equals(value)) {
-                for (Subcategory s : subcategoryFacade.findByMainCategoryId(mcat)) {
+                for (Subcategory s : mcat.getSubcategoryCollection()) {
                     cmbBxSubCategory.addItem(s.getName());
                 }
             }
@@ -475,13 +494,11 @@ public class AdvertListView extends VerticalLayout implements View {
         );
 
         adverts.clear();
-        contentLayout.removeComponent(advertList);
         for (Advertisement a : filteredAdverts) {
             adverts.add(buildAdvert(a));
         }
         pageAdverts();
-        contentLayout.addComponent(advertList);
-        vl.setComponentAlignment(contentLayout, Alignment.TOP_CENTER);
+        advertPanel.setContent(advertList);
     }
 
     public void loadAdverts() {
@@ -493,6 +510,6 @@ public class AdvertListView extends VerticalLayout implements View {
 
     public void selectedAdvert(Advertisement a) {
         SelectedAdvert.setAdvertisement(a);
-        getUI().getNavigator().navigateTo("SELECTED");
+        getUI().getNavigator().navigateTo(SELECTED.toString());
     }
 }

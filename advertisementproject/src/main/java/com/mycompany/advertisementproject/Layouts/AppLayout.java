@@ -118,6 +118,12 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
+                try {
+                    VaadinSession.getCurrent().getLockInstance().lock();
+                    VaadinSession.getCurrent().setAttribute("AdvertToModify", null);
+                } finally {
+                    VaadinSession.getCurrent().getLockInstance().unlock();
+                }
                 nodePath = ADVERTREG.toString();
                 onMenuClick(nodePath);
             }

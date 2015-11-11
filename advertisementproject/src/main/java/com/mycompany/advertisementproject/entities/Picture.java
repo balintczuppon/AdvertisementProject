@@ -43,7 +43,7 @@ public class Picture implements Serializable {
     @Column(name = "accessPath")
     private String accessPath;
     @JoinColumn(name = "advertisementId", referencedColumnName = "id")
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne()
     private Advertisement advertisementId;
 
     public Picture() {

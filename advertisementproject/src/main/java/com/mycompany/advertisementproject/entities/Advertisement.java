@@ -52,7 +52,6 @@ public class Advertisement implements Serializable {
     @Size(max = 50)
     @Column(name = "title")
     private String title;
-    @Size(max = 300)
     @Column(name = "description")
     private String description;
     @Column(name = "registrationDate")
@@ -80,7 +79,7 @@ public class Advertisement implements Serializable {
     @JoinColumn(name = "mapId", referencedColumnName = "id")
     @ManyToOne
     private Map mapId;
-    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "advertisementId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "advertisementId", orphanRemoval = true)
     private Collection<Picture> pictureCollection;
 
     public Advertisement() {
@@ -193,6 +192,16 @@ public class Advertisement implements Serializable {
 
     public void setPictureCollection(Collection<Picture> pictureCollection) {
         this.pictureCollection = pictureCollection;
+    }
+    
+    public void addPicture(Picture p){
+        pictureCollection.add(p);
+        p.setAdvertisementId(this);
+    }
+    
+    public void removePicture(Picture p){
+        p.setAdvertisementId(null);
+        this.pictureCollection.remove(p);
     }
 
     @Override

@@ -9,5 +9,7 @@
     
     
 
-    <inherits name="com.ejt.vaadin.loginform.WidgetSet" />
+    
+
+    <inherits name="com.vaadin.tapio.googlemaps.Widgetset" />
 </module>

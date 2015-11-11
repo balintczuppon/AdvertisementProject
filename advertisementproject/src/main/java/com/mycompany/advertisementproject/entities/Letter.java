@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -30,29 +31,36 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Letter.findAll", query = "SELECT l FROM Letter l"),
     @NamedQuery(name = "Letter.findById", query = "SELECT l FROM Letter l WHERE l.id = :id"),
-    @NamedQuery(name = "Letter.findByTitle", query = "SELECT l FROM Letter l WHERE l.title = :title"),
-    @NamedQuery(name = "Letter.findByText", query = "SELECT l FROM Letter l WHERE l.text = :text"),
-    @NamedQuery(name = "Letter.findBySender", query = "SELECT l FROM Letter l WHERE l.sender = :sender"),
-    @NamedQuery(name = "Letter.findByReceiver", query = "SELECT l FROM Letter l WHERE l.receiver = :receiver")})
+    @NamedQuery(name = "Letter.findByQuestionername", query = "SELECT l FROM Letter l WHERE l.questionername = :questionername"),
+    @NamedQuery(name = "Letter.findByQuestionerphone", query = "SELECT l FROM Letter l WHERE l.questionerphone = :questionerphone"),
+    @NamedQuery(name = "Letter.findByQuestionermail", query = "SELECT l FROM Letter l WHERE l.questionermail = :questionermail"),
+    @NamedQuery(name = "Letter.findByMailtitle", query = "SELECT l FROM Letter l WHERE l.mailtitle = :mailtitle"),
+    @NamedQuery(name = "Letter.findBySender", query = "SELECT l FROM Letter l WHERE l.sender = :sender")})
 public class Letter implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
     @Size(max = 30)
-    @Column(name = "title")
-    private String title;
-    @Size(max = 300)
-    @Column(name = "text")
-    private String text;
+    @Column(name = "questionername")
+    private String questionername;
+    @Size(max = 12)
+    @Column(name = "questionerphone")
+    private String questionerphone;
     @Size(max = 30)
+    @Column(name = "questionermail")
+    private String questionermail;
+    @Size(max = 30)
+    @Column(name = "mailtitle")
+    private String mailtitle;
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "mailtext")
+    private String mailtext;
     @Column(name = "sender")
-    private String sender;
-    @Size(max = 30)
-    @Column(name = "receiver")
-    private String receiver;
+    private Boolean sender;
     @JoinColumn(name = "postBoxId", referencedColumnName = "id")
     @ManyToOne
     private Postbox postBoxId;
@@ -72,36 +80,52 @@ public class Letter implements Serializable {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getQuestionername() {
+        return questionername;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setQuestionername(String questionername) {
+        this.questionername = questionername;
     }
 
-    public String getText() {
-        return text;
+    public String getQuestionerphone() {
+        return questionerphone;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setQuestionerphone(String questionerphone) {
+        this.questionerphone = questionerphone;
     }
 
-    public String getSender() {
+    public String getQuestionermail() {
+        return questionermail;
+    }
+
+    public void setQuestionermail(String questionermail) {
+        this.questionermail = questionermail;
+    }
+
+    public String getMailtitle() {
+        return mailtitle;
+    }
+
+    public void setMailtitle(String mailtitle) {
+        this.mailtitle = mailtitle;
+    }
+
+    public String getMailtext() {
+        return mailtext;
+    }
+
+    public void setMailtext(String mailtext) {
+        this.mailtext = mailtext;
+    }
+
+    public Boolean getSender() {
         return sender;
     }
 
-    public void setSender(String sender) {
+    public void setSender(Boolean sender) {
         this.sender = sender;
-    }
-
-    public String getReceiver() {
-        return receiver;
-    }
-
-    public void setReceiver(String receiver) {
-        this.receiver = receiver;
     }
 
     public Postbox getPostBoxId() {

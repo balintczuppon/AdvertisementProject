@@ -119,12 +119,12 @@
             <version>2.5.2</version>
             <scope>provided</scope>
         </dependency>
-	 <dependency>
-	  <groupId>org.vaadin.addons</groupId>
-	  <artifactId>appfoundation</artifactId>
-	  <version>2.0.0</version>
-	 </dependency>
-	 <dependency>
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>appfoundation</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
             <version>7.0</version>
@@ -135,9 +135,14 @@
             <version>7.4.2</version>
         </dependency>
         <dependency>
-            <groupId>org.vaadin.addons</groupId>
-            <artifactId>loginform</artifactId>
-            <version>0.5.2</version>
+            <groupId>com.vaadin.tapio</groupId>
+            <artifactId>googlemaps</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codemonkey.simplejavamail</groupId>
+            <artifactId>simple-java-mail</artifactId>
+            <version>2.4</version>
         </dependency>
     </dependencies>
 
