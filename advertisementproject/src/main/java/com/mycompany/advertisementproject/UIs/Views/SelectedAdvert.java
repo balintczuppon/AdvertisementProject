@@ -1,6 +1,5 @@
 package com.mycompany.advertisementproject.UIs.Views;
 
-import com.google.gwt.maps.client.overlays.Marker;
 import static com.mycompany.advertisementproject.Enums.StyleNames.ADVERTTITLE;
 import com.mycompany.advertisementproject.Tools.MailSender;
 import com.mycompany.advertisementproject.entities.Advertisement;
@@ -16,7 +15,6 @@ import com.vaadin.server.FileResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
-import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Embedded;
@@ -237,25 +235,12 @@ public class SelectedAdvert extends HorizontalLayout implements View {
         SelectedAdvert.advertisement = Advertisement;
     }
 
-//    public String enquirerLetter() {
-//        String htmlLink = "<a href=http://localhost:8080/advertisementproject/#!ADVERTS>Click here</a></br>";
-//        String text
-//                = "<p>"
-//                + "Dear Enquirer,<br><br>"
-//                + "You got a new message from " + advertisement.getAdvertiserId().getName() + "<br><br>"
-//                + "You can read it below this link:<br>"
-//                + htmlLink + "<br><br>"
-//                + "Greetings,<br>"
-//                + "VaadinThesis Team"
-//                + "</p>";
-//        return text;
-//    }
-    private String advertiserLetter() {
+    private String letterText() {
         String htmlLink = "<a href=http://localhost:8080/advertisementproject/#!LOGIN>I'll check it.</a></br>";
         String text
                 = "<p>"
                 + "Dear Advertiser,<br><br>"
-                + txtFldName.getValue() + " has some questions about you advertisenment: " + advertisement.getTitle() + "<br><br>"
+                + txtFldName.getValue() + " has some questions about your advertisenment: " + advertisement.getTitle() + "<br><br>"
                 + "Answer them!<br>"
                 + htmlLink + "<br><br>"
                 + "Greetings,<br>"
@@ -264,11 +249,11 @@ public class SelectedAdvert extends HorizontalLayout implements View {
         return text;
     }
 
-    private void sendMail(Advertisement advertisement) {
+    private void sendMail(Advertisement adv) {
         try {
             //Sending the mail.
             MailSender ms = new MailSender();
-            ms.setReceiver(advertisement.getAdvertiserId().getEmail());
+            ms.setReceiver(adv.getAdvertiserId().getEmail());
             ms.setSender(txtFldEmail.getValue());
 
             //Saját email ellenőrzés miatt.
@@ -276,21 +261,22 @@ public class SelectedAdvert extends HorizontalLayout implements View {
             ms.setSender("balintczuppon@gmail.com");
 
             ms.setSubject("Enquiry");
-            ms.setText(advertiserLetter());
+            ms.setText(letterText());
             ms.send();
 
             //Storing the mail in DB.
             Letter letter = new Letter();
             letter.setMailtext(txtAreaMessage.getValue());
-            letter.setMailtitle(advertisement.getTitle());
-            letter.setQuestionermail(txtFldEmail.getValue());
-            letter.setQuestionername(txtFldName.getValue());
-            letter.setQuestionerphone(txtFldCustomerPhoneNumber.getValue());
+            letter.setMailtitle(adv.getTitle());
+            letter.setSendermail(txtFldEmail.getValue());
+            letter.setSendername(txtFldName.getValue());
+            letter.setSenderphone(txtFldCustomerPhoneNumber.getValue());
             letter.setSender(Boolean.FALSE);
-            letter.setPostBoxId(advertisement.getAdvertiserId().getPostbox());
+            letter.setPostBoxId(adv.getAdvertiserId().getPostbox());
+            letter.setAdvertisementId(adv.getId());
 
             //Store in the advertiser's postbox
-            advertisement.getAdvertiserId().getPostbox().addLetter(letter);
+            adv.getAdvertiserId().getPostbox().addLetter(letter);
 
             letterFacade.create(letter);
 

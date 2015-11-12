@@ -5,7 +5,11 @@
  */
 package com.mycompany.advertisementproject.UIs.Views;
 
+import com.mycompany.advertisementproject.Enums.Views;
+import com.mycompany.advertisementproject.Tools.MailSender;
+import com.mycompany.advertisementproject.entities.Advertiser;
 import com.mycompany.advertisementproject.entities.Letter;
+import com.mycompany.advertisementproject.facades.LetterFacade;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -15,11 +19,14 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import org.codemonkey.simplejavamail.MailException;
 
 /**
  *
@@ -44,6 +51,9 @@ public class LetterView extends VerticalLayout implements View {
     private Button btnAnswerMail;
     private Button btnDeleteMail;
     private Button btnBack;
+
+    @Inject
+    private LetterFacade LetterFacade;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -75,11 +85,11 @@ public class LetterView extends VerticalLayout implements View {
         panel.setContent(vlLetter);
     }
 
-    private void showLetter(Letter letter) {
+    private void showLetter(final Letter letter) {
         vlLetter.setSpacing(true);
 
         lblEnquirer = new Label("Feladó:");
-        lblEnquirerName = new Label(letter.getQuestionername());
+        lblEnquirerName = new Label(letter.getSendername());
 
         lblTitle = new Label("Tárgy:");
         lblMailTitle = new Label(letter.getMailtitle());
@@ -100,15 +110,10 @@ public class LetterView extends VerticalLayout implements View {
         hl.setSpacing(true);
 
         btnAnswerMail = new Button("Válaszolok");
-        btnAnswerMail.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-//                response();
-            }
-        });
         btnDeleteMail = new Button("Törlöm");
         btnBack = new Button("Vissza");
+        addClickListeners(letter);
+
         hl.addComponent(btnAnswerMail);
         hl.addComponent(btnDeleteMail);
         hl.addComponent(btnBack);
@@ -128,6 +133,91 @@ public class LetterView extends VerticalLayout implements View {
         addComponent(panel);
         setComponentAlignment(panel, Alignment.TOP_CENTER);
         setMargin(true);
+    }
+
+    private void addClickListeners(final Letter letter) {
+        btnAnswerMail.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                response(letter);
+            }
+        });
+        btnDeleteMail.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                deleteLetter(letter);
+            }
+        });
+        btnBack.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                jumpBack();
+            }
+        });
+    }
+
+    private void response(Letter letter) {
+        Advertiser current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute("current_user");
+        try {
+            //Sending the mail.
+            MailSender ms = new MailSender();
+            ms.setReceiver(letter.getSendermail());
+            ms.setSender(current_advertiser.getEmail());
+
+            //Saját email ellenőrzés miatt.
+            ms.setReceiver("balintczuppon@gmail.com");
+            ms.setSender("balintczuppon@gmail.com");
+
+            ms.setSubject("RE:" + letter.getMailtitle());
+            ms.setText(letterText());
+            ms.send();
+
+            //Storing the mail in DB.
+            Letter responseLetter = new Letter();
+            responseLetter.setMailtext(taLetterToWrite.getValue());
+            responseLetter.setMailtitle("RE:" + letter.getMailtitle());
+            responseLetter.setSendermail(current_advertiser.getEmail());
+            responseLetter.setSendername(current_advertiser.getName());
+            responseLetter.setSenderphone(current_advertiser.getPhonenumber());
+            responseLetter.setSender(Boolean.TRUE);
+            responseLetter.setPostBoxId(current_advertiser.getPostbox());
+            responseLetter.setAdvertisementId(letter.getAdvertisementId());
+
+            //Store in the advertiser's postbox
+            current_advertiser.getPostbox().addLetter(responseLetter);
+
+            LetterFacade.create(responseLetter);
+
+        } catch (MailException me) {
+            me.printStackTrace();
+        }
+    }
+
+    private String letterText() {
+        Advertiser current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute("current_user");
+        String htmlLink = "<a href=http://localhost:8080/advertisementproject/#!LETTERVIEW#2>I'll check it.</a></br>";
+        String text
+                = "<p>"
+                + "Dear Enquirer,<br><br>"
+                + current_advertiser.getName() + " has answered to your question. <br><br>"
+                + "Check it!<br>"
+                + htmlLink + "<br><br>"
+                + "Greetings,<br>"
+                + "VaadinThesis Team"
+                + "</p>";
+        return text;
+    }
+
+    private void deleteLetter(Letter letter) {
+        LetterFacade.remove(letter);  
+        getUI().getNavigator().navigateTo(Views.USERPAGE.toString());
+    }
+
+    private void jumpBack() {
+        getUI().getNavigator().navigateTo(Views.USERPAGE.toString());
     }
 
     private void addTextArea() {

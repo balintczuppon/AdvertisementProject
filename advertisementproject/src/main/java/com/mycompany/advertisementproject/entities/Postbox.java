@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Postbox.findAll", query = "SELECT p FROM Postbox p"),
     @NamedQuery(name = "Postbox.findById", query = "SELECT p FROM Postbox p WHERE p.id = :id")})
 public class Postbox implements Serializable {
+    
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)

@@ -31,27 +31,30 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Letter.findAll", query = "SELECT l FROM Letter l"),
     @NamedQuery(name = "Letter.findById", query = "SELECT l FROM Letter l WHERE l.id = :id"),
-    @NamedQuery(name = "Letter.findByQuestionername", query = "SELECT l FROM Letter l WHERE l.questionername = :questionername"),
-    @NamedQuery(name = "Letter.findByQuestionerphone", query = "SELECT l FROM Letter l WHERE l.questionerphone = :questionerphone"),
-    @NamedQuery(name = "Letter.findByQuestionermail", query = "SELECT l FROM Letter l WHERE l.questionermail = :questionermail"),
+    @NamedQuery(name = "Letter.findBySendername", query = "SELECT l FROM Letter l WHERE l.sendername = :sendername"),
+    @NamedQuery(name = "Letter.findBySenderphone", query = "SELECT l FROM Letter l WHERE l.senderphone = :senderphone"),
+    @NamedQuery(name = "Letter.findBySendermail", query = "SELECT l FROM Letter l WHERE l.sendermail = :sendermail"),
     @NamedQuery(name = "Letter.findByMailtitle", query = "SELECT l FROM Letter l WHERE l.mailtitle = :mailtitle"),
     @NamedQuery(name = "Letter.findBySender", query = "SELECT l FROM Letter l WHERE l.sender = :sender")})
 public class Letter implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Column(name = "advertisementId")
+    private Integer advertisementId;
     @Size(max = 30)
-    @Column(name = "questionername")
-    private String questionername;
+    @Column(name = "sendername")
+    private String sendername;
     @Size(max = 12)
-    @Column(name = "questionerphone")
-    private String questionerphone;
+    @Column(name = "senderphone")
+    private String senderphone;
     @Size(max = 30)
-    @Column(name = "questionermail")
-    private String questionermail;
+    @Column(name = "sendermail")
+    private String sendermail;
     @Size(max = 30)
     @Column(name = "mailtitle")
     private String mailtitle;
@@ -80,28 +83,36 @@ public class Letter implements Serializable {
         this.id = id;
     }
 
-    public String getQuestionername() {
-        return questionername;
+    public String getSendername() {
+        return sendername;
     }
 
-    public void setQuestionername(String questionername) {
-        this.questionername = questionername;
+    public void setSendername(String sendername) {
+        this.sendername = sendername;
     }
 
-    public String getQuestionerphone() {
-        return questionerphone;
+    public Integer getAdvertisementId() {
+        return advertisementId;
     }
 
-    public void setQuestionerphone(String questionerphone) {
-        this.questionerphone = questionerphone;
+    public void setAdvertisementId(Integer advertisementId) {
+        this.advertisementId = advertisementId;
     }
 
-    public String getQuestionermail() {
-        return questionermail;
+    public String getSenderphone() {
+        return senderphone;
     }
 
-    public void setQuestionermail(String questionermail) {
-        this.questionermail = questionermail;
+    public void setSenderphone(String senderphone) {
+        this.senderphone = senderphone;
+    }
+
+    public String getSendermail() {
+        return sendermail;
+    }
+
+    public void setSendermail(String sendermail) {
+        this.sendermail = sendermail;
     }
 
     public String getMailtitle() {
@@ -160,5 +171,5 @@ public class Letter implements Serializable {
     public String toString() {
         return "com.mycompany.advertisementproject.entities.Letter[ id=" + id + " ]";
     }
-    
+
 }

@@ -261,7 +261,7 @@ public class AccountView extends VerticalLayout implements View {
             Label lblMailText = new Label(text);
             lblMailText.setWidth("200");
 
-            Label lblCandidate = new Label(letter.getQuestionername());
+            Label lblCandidate = new Label(letter.getSendername());
             lblCandidate.setWidth("200");
 
             Label lblDate = new Label("2015-01-01");
