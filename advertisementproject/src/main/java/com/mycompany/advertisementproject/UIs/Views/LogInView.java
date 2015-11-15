@@ -1,8 +1,7 @@
 package com.mycompany.advertisementproject.UIs.Views;
 
-import static com.mycompany.advertisementproject.Enums.Views.USERPAGE;
-import com.mycompany.advertisementproject.Layouts.AppLayout;
-import com.mycompany.advertisementproject.entities.Advertiser;
+import com.mycompany.advertisementproject.Enums.StyleNames;
+import com.mycompany.advertisementproject.Enums.control.LoginController;
 import com.mycompany.advertisementproject.facades.AdvertiserFacade;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
@@ -15,8 +14,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -25,25 +22,24 @@ import javax.inject.Inject;
 @CDIView("LOGIN")
 public class LogInView extends VerticalLayout implements View {
 
-    private List<Advertiser> users = new ArrayList<>();
-
     @Inject
     AdvertiserFacade advertiserFacade;
 
-    private String eMailText = "E-mail cím";
-    private String passWordText1 = "Jelszó";
-    private String regButtonText = "Bejelentkezés";
+    private LoginController controller;
 
-    private Label lblTitle;
-    private PasswordField pfPassWord1;
+    private final String eMailText = "E-mail cím";
+    private final String passWordText = "Jelszó";
+    private final String regButtonText = "Bejelentkezés";
+
+    private PasswordField pfPassWord;
     private TextField tfEmail;
-    private Button btnRegistration;
+    private Button btnLogin;
+    private Label lblTitle;
 
     private FormLayout fl;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        Notification.show("Under Developement.");
         getUI().focus();
     }
 
@@ -52,14 +48,14 @@ public class LogInView extends VerticalLayout implements View {
         addTitle();
         addForm();
         addButton();
-        addListeners();
+        addEvents();
         markFields();
     }
 
     private void addTitle() {
         setMargin(true);
         lblTitle = new Label("Bejelentkezés");
-        lblTitle.setStyleName("title");
+        lblTitle.setStyleName(StyleNames.TITLE.toString());
         lblTitle.setSizeUndefined();
         addComponent(lblTitle);
         setComponentAlignment(lblTitle, Alignment.TOP_CENTER);
@@ -69,62 +65,42 @@ public class LogInView extends VerticalLayout implements View {
         fl = new FormLayout();
         tfEmail = new TextField(eMailText);
         fl.addComponent(tfEmail);
-        pfPassWord1 = new PasswordField(passWordText1);
-        fl.addComponent(pfPassWord1);
+        pfPassWord = new PasswordField(passWordText);
+        fl.addComponent(pfPassWord);
         addComponent(fl);
         fl.setWidthUndefined();
         setComponentAlignment(fl, Alignment.MIDDLE_CENTER);
     }
 
     private void addButton() {
-        btnRegistration = new Button(regButtonText);
-        addComponent(btnRegistration);
-        setComponentAlignment(btnRegistration, Alignment.MIDDLE_CENTER);
+        btnLogin = new Button(regButtonText);
+        addComponent(btnLogin);
+        setComponentAlignment(btnLogin, Alignment.MIDDLE_CENTER);
     }
 
     private void markFields() {
-        pfPassWord1.setRequired(true);
+        pfPassWord.setRequired(true);
         tfEmail.setRequired(true);
     }
 
-    private void addListeners() {
-        btnRegistration.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                try {
-                    authentication();
-                } catch (Exception ex) {
-                    Logger.getLogger(LogInView.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+    private void addEvents() {
+        try {
+            controller = new LoginController(this);
+            controller.addButtonEvent(btnLogin);
+        } catch (Exception ex) {
+            Logger.getLogger(LogInView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
-            private void authentication() throws Exception {
-                users = advertiserFacade.findAll();
-                try {
-                    for (Advertiser a : users) {
-                        if (a.getEmail().equals(tfEmail.getValue())
-                                && a.getPassword().equals(pfPassWord1.getValue())) {
-                            revealSecuredContex(a);
-                            return;
-                        }
-                    }
-                    Notification.show("You have failed this login.");
-                } catch (Exception e) {
-                    throw new Exception(e);
-                } finally {
-                    clearFields();
-                }
-            }
+    public PasswordField getPfPassWord() {
+        return pfPassWord;
+    }
 
-            private void clearFields() {
-                tfEmail.clear();
-                pfPassWord1.clear();
-            }
+    public TextField getTfEmail() {
+        return tfEmail;
+    }
 
-            private void revealSecuredContex(Advertiser a) {
-                AppLayout.login(a);
-                getUI().getNavigator().navigateTo(USERPAGE.toString());
-            }
-        });
+    public AdvertiserFacade getAdvertiserFacade() {
+        return advertiserFacade;
     }
 }
