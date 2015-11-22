@@ -26,6 +26,10 @@ public class AdvertiserFacade extends AbstractFacade<Advertiser> {
         return em;
     }
 
+    public Object getAdvertiserByMail(String user){
+        return em.createNamedQuery("Advertiser.findByEmail").setParameter("email",user).getSingleResult();
+    }
+    
     public AdvertiserFacade() {
         super(Advertiser.class);
     }

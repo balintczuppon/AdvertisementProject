@@ -35,5 +35,9 @@ public class LetterFacade extends AbstractFacade<Letter> {
                 .setParameter("postbox", current_advertiser.getPostbox())
                 .getResultList();
     }
+
+    public Letter findById(int letterID) {
+        return (Letter) em.createNamedQuery("Letter.findById").setParameter("id",letterID).getSingleResult();
+    }
     
 }

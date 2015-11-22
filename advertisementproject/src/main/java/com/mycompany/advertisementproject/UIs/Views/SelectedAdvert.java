@@ -11,6 +11,7 @@ import com.vaadin.cdi.CDIView;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
@@ -20,6 +21,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -236,14 +238,14 @@ public class SelectedAdvert extends HorizontalLayout implements View {
     }
 
     private String letterText() {
-        String htmlLink = "<a href=http://localhost:8080/advertisementproject/#!LOGIN>I'll check it.</a></br>";
+        String htmlLink = "<a href=http://localhost:8080/advertisementproject/#!LOGIN>I check it.</a></br>";
         String text
                 = "<p>"
                 + "Dear Advertiser,<br><br>"
                 + txtFldName.getValue() + " has some questions about your advertisenment: " + advertisement.getTitle() + "<br><br>"
                 + "Answer them!<br>"
                 + htmlLink + "<br><br>"
-                + "Greetings,<br>"
+                + "Best regards,<br>"
                 + "VaadinThesis Team"
                 + "</p>";
         return text;
@@ -251,20 +253,7 @@ public class SelectedAdvert extends HorizontalLayout implements View {
 
     private void sendMail(Advertisement adv) {
         try {
-            //Sending the mail.
-            MailSender ms = new MailSender();
-            ms.setReceiver(adv.getAdvertiserId().getEmail());
-            ms.setSender(txtFldEmail.getValue());
 
-            //Saját email ellenőrzés miatt.
-            ms.setReceiver("balintczuppon@gmail.com");
-            ms.setSender("balintczuppon@gmail.com");
-
-            ms.setSubject("Enquiry");
-            ms.setText(letterText());
-            ms.send();
-
-            //Storing the mail in DB.
             Letter letter = new Letter();
             letter.setMailtext(txtAreaMessage.getValue());
             letter.setMailtitle(adv.getTitle());
@@ -275,13 +264,20 @@ public class SelectedAdvert extends HorizontalLayout implements View {
             letter.setPostBoxId(adv.getAdvertiserId().getPostbox());
             letter.setAdvertisementId(adv.getId());
 
-            //Store in the advertiser's postbox
             adv.getAdvertiserId().getPostbox().addLetter(letter);
-
             letterFacade.create(letter);
 
-        } catch (MailException me) {
-            me.printStackTrace();
+            MailSender ms = new MailSender();
+            ms.setReceiver(adv.getAdvertiserId().getEmail());
+            ms.setSender(txtFldEmail.getValue());
+            ms.setReceiver("balintczuppon@gmail.com");
+            ms.setSender("balintczuppon@gmail.com");
+            ms.setSubject("Enquiry");
+            ms.setText(letterText());
+            ms.send();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

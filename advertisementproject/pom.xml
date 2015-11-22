@@ -182,7 +182,7 @@
                 <artifactId>vaadin-maven-plugin</artifactId>
                 <version>${vaadin.plugin.version}</version>
                 <configuration>
-                    <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+                    <extraJvmArgs>-Xmx2g -Xss1024k</extraJvmArgs>
                     <webappDirectory>${basedir}/target/classes/VAADIN/widgetsets</webappDirectory>
                     <draftCompile>false</draftCompile>
                     <compileReport>false</compileReport>
@@ -190,6 +190,7 @@
                     <strict>true</strict>
                     <runTarget>http://localhost:8080/advertisementproject</runTarget>
                     <force>true</force>
+                    <localWorkers>2</localWorkers>
                 </configuration>
                 <executions>
                     <execution>

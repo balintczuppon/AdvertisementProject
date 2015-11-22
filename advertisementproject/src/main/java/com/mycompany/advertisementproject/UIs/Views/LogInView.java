@@ -2,10 +2,12 @@ package com.mycompany.advertisementproject.UIs.Views;
 
 import com.mycompany.advertisementproject.Enums.StyleNames;
 import com.mycompany.advertisementproject.Enums.control.LoginController;
+import com.mycompany.advertisementproject.Tools.XmlFileReader;
 import com.mycompany.advertisementproject.facades.AdvertiserFacade;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.UserError;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
@@ -14,22 +16,17 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 @CDIView("LOGIN")
 public class LogInView extends VerticalLayout implements View {
 
+    private LoginController logincontroller;
+    private XmlFileReader xmlReader;
+
     @Inject
-    AdvertiserFacade advertiserFacade;
-
-    private LoginController controller;
-
-    private final String eMailText = "E-mail cím";
-    private final String passWordText = "Jelszó";
-    private final String regButtonText = "Bejelentkezés";
+    private AdvertiserFacade advertiserFacade;
 
     private PasswordField pfPassWord;
     private TextField tfEmail;
@@ -45,51 +42,63 @@ public class LogInView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initContent() {
+        setMargin(true);
         addTitle();
         addForm();
         addButton();
-        addEvents();
-        markFields();
+        addLabelText();
     }
 
     private void addTitle() {
-        setMargin(true);
-        lblTitle = new Label("Bejelentkezés");
-        lblTitle.setStyleName(StyleNames.TITLE.toString());
+        lblTitle = new Label();
         lblTitle.setSizeUndefined();
         addComponent(lblTitle);
         setComponentAlignment(lblTitle, Alignment.TOP_CENTER);
+        lblTitle.setStyleName(StyleNames.TITLE.toString());
     }
 
     private void addForm() {
         fl = new FormLayout();
-        tfEmail = new TextField(eMailText);
+        tfEmail = new TextField();
+        pfPassWord = new PasswordField();
         fl.addComponent(tfEmail);
-        pfPassWord = new PasswordField(passWordText);
         fl.addComponent(pfPassWord);
-        addComponent(fl);
         fl.setWidthUndefined();
+        addComponent(fl);
         setComponentAlignment(fl, Alignment.MIDDLE_CENTER);
     }
 
     private void addButton() {
-        btnLogin = new Button(regButtonText);
+        logincontroller = new LoginController(this);
+        btnLogin = new Button();
+        btnLogin.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                String user = tfEmail.getValue();
+                String password = pfPassWord.getValue();
+
+                try {
+                    logincontroller.authentication(user, password);
+                } catch (Exception e) {
+                    Notification.show(e.getMessage());
+                    tfEmail.setComponentError(new UserError("Hibás felhasználónév vagy jelszó!"));
+                    pfPassWord.setComponentError(new UserError("Hibás felhasználónév vagy jelszó!"));
+                } finally {
+                    tfEmail.clear();
+                    pfPassWord.clear();
+                }
+            }
+        });
         addComponent(btnLogin);
         setComponentAlignment(btnLogin, Alignment.MIDDLE_CENTER);
     }
 
-    private void markFields() {
-        pfPassWord.setRequired(true);
-        tfEmail.setRequired(true);
-    }
-
-    private void addEvents() {
-        try {
-            controller = new LoginController(this);
-            controller.addButtonEvent(btnLogin);
-        } catch (Exception ex) {
-            Logger.getLogger(LogInView.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    private void addLabelText() {
+        xmlReader = new XmlFileReader();
+        xmlReader.setLoginView(this);
+        xmlReader.setTagName(this.getClass().getSimpleName());
+        xmlReader.readXml();
     }
 
     public PasswordField getPfPassWord() {
@@ -98,6 +107,14 @@ public class LogInView extends VerticalLayout implements View {
 
     public TextField getTfEmail() {
         return tfEmail;
+    }
+
+    public Button getBtnLogin() {
+        return btnLogin;
+    }
+
+    public Label getLblTitle() {
+        return lblTitle;
     }
 
     public AdvertiserFacade getAdvertiserFacade() {

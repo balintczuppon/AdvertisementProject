@@ -22,8 +22,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import org.codemonkey.simplejavamail.MailException;
@@ -34,6 +35,8 @@ import org.codemonkey.simplejavamail.MailException;
  */
 @CDIView("LETTERVIEW")
 public class LetterView extends VerticalLayout implements View {
+
+    private int letterID = 0;
 
     private VerticalLayout vlLetter = new VerticalLayout();
 
@@ -57,18 +60,41 @@ public class LetterView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
+        getParameter(event);
         getUI().focus();
-        checkSessionAttribute();
+        try {
+            checkSessionAttribute();
+        } catch (Exception ex) {
+            Logger.getLogger(LetterView.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    private void checkSessionAttribute() {
-        try {
-            Letter letter = (Letter) VaadinSession.getCurrent().getAttribute("letterToShow");
-            if (letter != null) {
-                showLetter(letter);
+    private void checkSessionAttribute() throws Exception {
+        if (letterID == 0) {
+            try {
+                Letter letter = (Letter) VaadinSession.getCurrent().getAttribute("letterToShow");
+                if (letter != null) {
+                    showLetter(letter);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } else {
+            try {
+                Letter letter = LetterFacade.findById(letterID);
+                if (letter != null) {
+                    showLetter(letter);
+                }
+            } catch (Exception e) {
+                throw new Exception();
+            }
+        }
+    }
+
+    private void getParameter(ViewChangeListener.ViewChangeEvent event) {
+        String parameter = event.getParameters().split("/")[0];
+        if (!parameter.isEmpty()) {
+            letterID = Integer.valueOf(parameter);
         }
     }
 
@@ -159,9 +185,29 @@ public class LetterView extends VerticalLayout implements View {
         });
     }
 
+    private int responseLetterID;
+
     private void response(Letter letter) {
         Advertiser current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute("current_user");
         try {
+            //Storing the mail in DB.
+            Letter responseLetter = new Letter();
+            responseLetter.setMailtext(taLetterToWrite.getValue());
+            responseLetter.setMailtitle("RE:" + letter.getMailtitle());
+            responseLetter.setSendermail(current_advertiser.getEmail());
+            responseLetter.setSendername(current_advertiser.getName());
+            responseLetter.setSenderphone(current_advertiser.getPhonenumber());
+            responseLetter.setSender(Boolean.TRUE);
+            responseLetter.setPostBoxId(current_advertiser.getPostbox());
+            
+            responseLetter.setAdvertisementId(letter.getAdvertisementId());
+            //Store in the advertiser's postbox
+            current_advertiser.getPostbox().addLetter(responseLetter);
+
+            LetterFacade.create(responseLetter);
+            
+            responseLetterID = responseLetter.getId();
+
             //Sending the mail.
             MailSender ms = new MailSender();
             ms.setReceiver(letter.getSendermail());
@@ -175,22 +221,6 @@ public class LetterView extends VerticalLayout implements View {
             ms.setText(letterText());
             ms.send();
 
-            //Storing the mail in DB.
-            Letter responseLetter = new Letter();
-            responseLetter.setMailtext(taLetterToWrite.getValue());
-            responseLetter.setMailtitle("RE:" + letter.getMailtitle());
-            responseLetter.setSendermail(current_advertiser.getEmail());
-            responseLetter.setSendername(current_advertiser.getName());
-            responseLetter.setSenderphone(current_advertiser.getPhonenumber());
-            responseLetter.setSender(Boolean.TRUE);
-            responseLetter.setPostBoxId(current_advertiser.getPostbox());
-            responseLetter.setAdvertisementId(letter.getAdvertisementId());
-
-            //Store in the advertiser's postbox
-            current_advertiser.getPostbox().addLetter(responseLetter);
-
-            LetterFacade.create(responseLetter);
-
         } catch (MailException me) {
             me.printStackTrace();
         }
@@ -198,21 +228,21 @@ public class LetterView extends VerticalLayout implements View {
 
     private String letterText() {
         Advertiser current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute("current_user");
-        String htmlLink = "<a href=http://localhost:8080/advertisementproject/#!LETTERVIEW#2>I'll check it.</a></br>";
+        String htmlLink = "<a href=http://localhost:8080/advertisementproject/#!LETTERVIEW/" + responseLetterID + ">I check it.</a></br>";
         String text
                 = "<p>"
                 + "Dear Enquirer,<br><br>"
                 + current_advertiser.getName() + " has answered to your question. <br><br>"
                 + "Check it!<br>"
                 + htmlLink + "<br><br>"
-                + "Greetings,<br>"
+                + "Best regards,<br>"
                 + "VaadinThesis Team"
                 + "</p>";
         return text;
     }
 
     private void deleteLetter(Letter letter) {
-        LetterFacade.remove(letter);  
+        LetterFacade.remove(letter);
         getUI().getNavigator().navigateTo(Views.USERPAGE.toString());
     }
 

@@ -45,7 +45,7 @@ public class Advertiser implements Serializable {
     private Integer id;
     @Column(name = "authority")
     private Integer authority;
-    @Size(max = 20)
+    @Size(max = 256)
     @Column(name = "password")
     private String password;
     @Size(max = 30)

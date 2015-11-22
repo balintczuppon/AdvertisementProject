@@ -1,8 +1,6 @@
 package com.mycompany.advertisementproject.UIs.Views;
 
-import static com.mycompany.advertisementproject.Enums.Views.USERPAGE;
-import com.mycompany.advertisementproject.entities.Advertiser;
-import com.mycompany.advertisementproject.entities.Postbox;
+import com.mycompany.advertisementproject.Enums.control.RegistrationController;
 import com.mycompany.advertisementproject.facades.AdvertiserFacade;
 import com.mycompany.advertisementproject.facades.PostboxFacade;
 import com.vaadin.cdi.CDIView;
@@ -23,12 +21,12 @@ import javax.inject.Inject;
 @CDIView("REGISTRATION")
 public class RegistrationView extends VerticalLayout implements View {
 
-    private static final int DEFAULT_AUTHORITY = 2;
+    private RegistrationController controller;
 
     @Inject
-    AdvertiserFacade advertiserFacade;
+    private AdvertiserFacade advertiserFacade;
     @Inject
-    PostboxFacade postboxFacade;
+    private PostboxFacade postboxFacade;
 
     private String eMailText = "E-mail cím";
     private String passWordText1 = "Jelszó";
@@ -36,15 +34,21 @@ public class RegistrationView extends VerticalLayout implements View {
     private String regButtonText = "Regisztrálok";
 
     private Label lblTitle;
-
     private PasswordField pfPassWord1;
     private PasswordField pfPassWord2;
     private TextField tfEmail;
+    private TextField tfName;
+    private TextField tfPhoneNumber;
     private CheckBox chkBxTerms;
-
+    private CheckBox chkBxNewsLetter;
     private Button btnRegistration;
 
     private FormLayout fl;
+
+    @Override
+    public void enter(ViewChangeListener.ViewChangeEvent event) {
+        getUI().focus();
+    }
 
     @PostConstruct
     public void initComponent() {
@@ -52,34 +56,43 @@ public class RegistrationView extends VerticalLayout implements View {
     }
 
     public void buildView() {
+        setMargin(true);
         addTitle();
         addForm();
         addButton();
-        addListeners();
-        markFields();
     }
 
     private void addTitle() {
-        setMargin(true);
         lblTitle = new Label("Fiók létrehozása");
+        
         lblTitle.setStyleName("title");
         lblTitle.setSizeUndefined();
+        
         addComponent(lblTitle);
         setComponentAlignment(lblTitle, Alignment.TOP_CENTER);
     }
 
     private void addForm() {
         fl = new FormLayout();
-        tfEmail = new TextField(eMailText);
-        fl.addComponent(tfEmail);
-        pfPassWord1 = new PasswordField(passWordText1);
-        fl.addComponent(pfPassWord1);
-        pfPassWord2 = new PasswordField(passWordText2);
-        fl.addComponent(pfPassWord2);
-        chkBxTerms = new CheckBox("Szerződési feltételek elfogadása.");
-        fl.addComponent(chkBxTerms);
-        addComponent(fl);
         fl.setWidthUndefined();
+        
+        tfEmail = new TextField(eMailText);
+        tfName = new TextField("Név");
+        tfPhoneNumber = new TextField("Telefonszám");
+        pfPassWord1 = new PasswordField(passWordText1);
+        pfPassWord2 = new PasswordField(passWordText2);
+        chkBxNewsLetter = new CheckBox("Kérek hírlevelet");
+        chkBxTerms = new CheckBox("Szerződési feltételek elfogadása.");
+        
+        fl.addComponent(tfEmail);
+        fl.addComponent(pfPassWord1);
+        fl.addComponent(pfPassWord2);
+        fl.addComponent(tfName);
+        fl.addComponent(tfPhoneNumber);
+        fl.addComponent(chkBxNewsLetter);
+        fl.addComponent(chkBxTerms);
+        
+        addComponent(fl);
         setComponentAlignment(fl, Alignment.MIDDLE_CENTER);
     }
 
@@ -87,81 +100,54 @@ public class RegistrationView extends VerticalLayout implements View {
         btnRegistration = new Button(regButtonText);
         addComponent(btnRegistration);
         setComponentAlignment(btnRegistration, Alignment.MIDDLE_CENTER);
-    }
 
-    private void addListeners() {
+        controller = new RegistrationController(this);
         btnRegistration.addClickListener(new Button.ClickListener() {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                registration();
+                try {
+                    controller.registration();
+                } catch (Exception ex) {
+                    Notification.show(ex.getMessage());
+                }
             }
         });
     }
-
-    private void registration() {
-        if (!tfEmail.isEmpty() && !pfPassWord1.isEmpty() && !pfPassWord2.isEmpty()) {
-            if (pfPassWord1.getValue().equals(pfPassWord2.getValue())) {
-                if (chkBxTerms.getValue()) {
-                    registerNewUser();
-                } else {
-                    Notification.show(new Exception("A feltételek elfogadása nélkül nem regisztrálhat.").getMessage());
-                }
-            } else {
-                Notification.show(new Exception("A jelszavak nem egyeznek").getMessage());
-            }
-        } else {
-            Notification.show(new Exception("Minden mező kitöltése kötelező").getMessage());
-        }
+    
+    public PasswordField getPfPassWord1() {
+        return pfPassWord1;
     }
 
-    private void registerNewUser() {
-        Postbox postbox = new Postbox();
-
-        Advertiser advertiser = new Advertiser();
-        advertiser.setEmail(tfEmail.getValue().trim());
-        advertiser.setPassword(pfPassWord2.getValue().trim());
-        advertiser.setAuthority(DEFAULT_AUTHORITY);
-        
-        advertiser.setName("JóskaPista");
-        advertiser.setPhonenumber("+36303030300");
-        advertiser.setNewsletter(true);
-        
-        advertiserFacade.create(advertiser);      
-        
-        /**
-         * Az utolsóként beszúrt hirdető Id-jét lekérjük, majd ez lesz a postaláda Id-ja is.
-         * Meglehetősen ronda megoldás de máshogy nem jött össze a beszúrás :(
-         **/
-        
-        int id = advertiserFacade.findAll().get(advertiserFacade.findAll().size()-1).getId();
-        postbox.setId(id);
-        postboxFacade.create(postbox);
-        
-        Notification.show("Sikeres regisztráció");
-        clearFields();
+    public PasswordField getPfPassWord2() {
+        return pfPassWord2;
     }
 
-    private void markFields() {
-        pfPassWord1.setRequired(true);
-        pfPassWord2.setRequired(true);
-        tfEmail.setRequired(true);
+    public TextField getTfEmail() {
+        return tfEmail;
     }
 
-    private void clearFields() {
-        pfPassWord1.clear();
-        pfPassWord2.clear();
-        tfEmail.clear();
+    public CheckBox getChkBxTerms() {
+        return chkBxTerms;
     }
 
-    @Override
-    public void enter(ViewChangeListener.ViewChangeEvent event) {
-        Notification.show("Under Developement.");
-        getUI().focus();
+    public AdvertiserFacade getAdvertiserFacade() {
+        return advertiserFacade;
     }
 
-    private void jumpToAdverts() {
-        getUI().getNavigator().navigateTo(USERPAGE.toString());
+    public PostboxFacade getPostboxFacade() {
+        return postboxFacade;
     }
 
+    public TextField getTfName() {
+        return tfName;
+    }
+
+    public TextField getTfPhoneNumber() {
+        return tfPhoneNumber;
+    }
+
+    public CheckBox getChkBxNewsLetter() {
+        return chkBxNewsLetter;
+    }
 }
