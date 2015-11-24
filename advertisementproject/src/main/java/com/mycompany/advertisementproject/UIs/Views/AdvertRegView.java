@@ -14,7 +14,6 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import java.io.File;
 import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -43,11 +42,13 @@ public class AdvertRegView extends VerticalLayout implements View {
     @Inject
     AdverttypeFacade adverttypeFacade;
     @Inject
-    LocalityFacade localityFacade;
-    @Inject
     AdvertisementFacade advertisementFacade;
     @Inject
     AdvertstateFacade advertstateFacade;
+    @Inject
+    CountryFacade countryFacade;
+    @Inject
+    CityFacade cityFacade;
 
     private Picture picture;
 
@@ -184,7 +185,8 @@ public class AdvertRegView extends VerticalLayout implements View {
         advertisement.setAdvertStateId(selectedState());
         advertisement.setAdvertTypeId(selectedType());
         advertisement.setDescription(txtAreaDescription.getValue());
-        advertisement.setLocalityId(selectedLocality());
+        advertisement.setCityId(selectedCity());
+        advertisement.setCountryId(selectedCountry());
         advertisement.setMainCategoryId(selectedMainCategory());
         advertisement.setSubCategoryId(selectedSubCategory());
         advertisement.setPrice(Integer.valueOf(txtFldPrice.getValue()));
@@ -221,13 +223,21 @@ public class AdvertRegView extends VerticalLayout implements View {
         return null;
     }
 
-    private Locality selectedLocality() {
-        List<Locality> localites = localityFacade.findAll();
-        for (Locality locality : localites) {
-            if (locality.getCountry().equals(cmbbxCountry.getValue())) {
-                if (locality.getStationname().equals(cmbbxCity.getValue())) {
-                    return locality;
-                }
+    private Country selectedCountry() {
+        List<Country> countries = countryFacade.findAll();
+        for (Country country : countries) {
+            if (country.getCountryName().equals(cmbbxCountry.getValue())) {
+                return country;
+            }
+        }
+        return null;
+    }
+
+    private City selectedCity() {
+        List<City> cities = cityFacade.findAll();
+        for (City city : cities) {
+            if (city.getCityName().equals(cmbbxCity.getValue())) {
+                return city;
             }
         }
         return null;
@@ -243,14 +253,14 @@ public class AdvertRegView extends VerticalLayout implements View {
         return null;
     }
 
-    private int selectedSubCategory() {
+    private Subcategory selectedSubCategory() {
         List<Subcategory> categoires = subcategoryFacade.findAll();
         for (Subcategory category : categoires) {
             if (category.getName().equals(cmbbxSubCategory.getValue())) {
-                return category.getId();
+                return category;
             }
         }
-        return 0;
+        return null;
     }
 
     private Date currentDate() {
@@ -270,8 +280,8 @@ public class AdvertRegView extends VerticalLayout implements View {
             for (Adverttype a : adverttypeFacade.findAll()) {
                 cmbbxAdvertType.addItem(a.getName());
             }
-            for (Locality l : localityFacade.findAll()) {
-                cmbbxCountry.addItem(l.getCountry());
+            for (Country c : countryFacade.findAll()) {
+                cmbbxCountry.addItem(c.getCountryName());
             }
             filled = true;
         }
@@ -292,9 +302,9 @@ public class AdvertRegView extends VerticalLayout implements View {
     private void fillCmbBxCity(Object value) {
         cmbbxCity.removeAllItems();
         cmbbxCity.setEnabled(true);
-        for (Locality loc : localityFacade.findAll()) {
-            if (loc.getCountry().equals(value)) {
-                cmbbxCity.addItem(loc.getStationname());
+        for (City c : cityFacade.findAll()) {
+            if (c.getCountryId().equals(value)) {
+                cmbbxCity.addItem(c.getCityName());
             }
         }
     }
@@ -422,6 +432,7 @@ public class AdvertRegView extends VerticalLayout implements View {
         txtAreaDescription.setValue(ad.getDescription());
         txtFldPrice.setValue(String.valueOf(ad.getPrice()));
         cmbbxCategory.select(ad.getMainCategoryId().getName());
+
         fillCmbBxSubCategory(ad.getMainCategoryId().getName());
         for (Subcategory s : ad.getMainCategoryId().getSubcategoryCollection()) {
             if (s.getId().equals(ad.getSubCategoryId())) {
@@ -431,9 +442,15 @@ public class AdvertRegView extends VerticalLayout implements View {
         cmbbxSubCategory.select(ad.getSubCategoryId());
         cmbbxAdvertType.select(ad.getAdvertTypeId().getName());
         cmbbxAdvertState.select(ad.getAdvertStateId().getName());
-        cmbbxCountry.select(ad.getLocalityId().getCountry());
-        cmbbxCity.select(ad.getLocalityId().getStationname());
+        cmbbxCountry.select(ad.getCountryId().getCountryName());
 
+        cmbbxCity.select(ad.getCityId().getCityName());
+        fillCmbBxCity(ad.getCountryId().getCountryName());
+        for (City c : ad.getCountryId().getCityCollection()) {
+            if (c.getId().equals(ad.getCityId())) {
+                cmbbxSubCategory.select(c.getCityName());
+            }
+        }
         for (Picture p : ad.getPictureCollection()) {
             File file = new File(p.getAccessPath());
             files.add(file);

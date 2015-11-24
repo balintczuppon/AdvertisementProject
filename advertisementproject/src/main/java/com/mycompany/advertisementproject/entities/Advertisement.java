@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.mycompany.advertisementproject.entities;
 
 import java.io.Serializable;
@@ -27,10 +23,6 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-/**
- *
- * @author balin
- */
 @Entity
 @Table(name = "advertisement")
 @XmlRootElement
@@ -59,8 +51,9 @@ public class Advertisement implements Serializable {
     private Date registrationDate;
     @Column(name = "price")
     private Integer price;
-    @Column(name = "subCategoryId")
-    private Integer subCategoryId;
+    @JoinColumn(name = "subCategoryId", referencedColumnName = "id")
+    @ManyToOne
+    private Subcategory subCategoryId;
     @JoinColumn(name = "advertiserId", referencedColumnName = "id")
     @ManyToOne
     private Advertiser advertiserId;
@@ -70,12 +63,15 @@ public class Advertisement implements Serializable {
     @JoinColumn(name = "advertStateId", referencedColumnName = "id")
     @ManyToOne
     private Advertstate advertStateId;
-    @JoinColumn(name = "localityId", referencedColumnName = "id")
-    @ManyToOne
-    private Locality localityId;
     @JoinColumn(name = "advertTypeId", referencedColumnName = "id")
     @ManyToOne
     private Adverttype advertTypeId;
+    @JoinColumn(name = "countryId", referencedColumnName = "id")
+    @ManyToOne
+    private Country countryId;
+    @JoinColumn(name = "cityId", referencedColumnName = "id")
+    @ManyToOne
+    private City cityId;
     @JoinColumn(name = "mapId", referencedColumnName = "id")
     @ManyToOne
     private Map mapId;
@@ -153,14 +149,6 @@ public class Advertisement implements Serializable {
         this.advertStateId = advertStateId;
     }
 
-    public Locality getLocalityId() {
-        return localityId;
-    }
-
-    public void setLocalityId(Locality localityId) {
-        this.localityId = localityId;
-    }
-
     public Adverttype getAdvertTypeId() {
         return advertTypeId;
     }
@@ -177,14 +165,30 @@ public class Advertisement implements Serializable {
         this.mapId = mapId;
     }
 
-    public Integer getSubCategoryId() {
+    public Subcategory getSubCategoryId() {
         return subCategoryId;
     }
 
-    public void setSubCategoryId(Integer subCategoryId) {
+    public void setSubCategoryId(Subcategory subCategoryId) {
         this.subCategoryId = subCategoryId;
     }
 
+    public Country getCountryId() {
+        return countryId;
+    }
+
+    public void setCountryId(Country countryId) {
+        this.countryId = countryId;
+    }
+
+    public City getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(City cityId) {
+        this.cityId = cityId;
+    }
+    
     @XmlTransient
     public Collection<Picture> getPictureCollection() {
         return pictureCollection;
@@ -193,13 +197,13 @@ public class Advertisement implements Serializable {
     public void setPictureCollection(Collection<Picture> pictureCollection) {
         this.pictureCollection = pictureCollection;
     }
-    
-    public void addPicture(Picture p){
+
+    public void addPicture(Picture p) {
         pictureCollection.add(p);
         p.setAdvertisementId(this);
     }
-    
-    public void removePicture(Picture p){
+
+    public void removePicture(Picture p) {
         p.setAdvertisementId(null);
         this.pictureCollection.remove(p);
     }
@@ -226,6 +230,6 @@ public class Advertisement implements Serializable {
 
     @Override
     public String toString() {
-        return "com.mycompany.advertisementproject.Enums.Advertisement[ id=" + id + " ]";
+        return title;
     }
 }

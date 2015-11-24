@@ -1,18 +1,14 @@
 package com.mycompany.advertisementproject.UIs.Views;
 
 import static com.mycompany.advertisementproject.Enums.StyleNames.ADVERTTITLE;
-import com.mycompany.advertisementproject.Tools.MailSender;
+import com.mycompany.advertisementproject.Enums.control.SelectedAdvertController;
 import com.mycompany.advertisementproject.entities.Advertisement;
-import com.mycompany.advertisementproject.entities.Letter;
-import com.mycompany.advertisementproject.entities.Picture;
 import com.mycompany.advertisementproject.facades.AdvertisementFacade;
 import com.mycompany.advertisementproject.facades.LetterFacade;
 import com.vaadin.cdi.CDIView;
-import com.vaadin.event.MouseEvents;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FileResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
@@ -21,33 +17,35 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import java.io.File;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import org.codemonkey.simplejavamail.MailException;
 
 @CDIView("SELECTED")
 public class SelectedAdvert extends HorizontalLayout implements View {
 
-    private static Advertisement advertisement;
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy MMMM dd");
 
-    private VerticalLayout vl;
+    private Advertisement advertisement;
+
+    private SelectedAdvertController controller;
+
+    private VerticalLayout vlContent;
+    private HorizontalLayout hlMeta;
+    private HorizontalLayout hlPictures;
+    private HorizontalLayout hlFields;
+
+    private GoogleMap googleMap;
 
     private Panel advertPanel;
 
-    private List<Picture> pictures = new ArrayList<>();
-
     private Embedded mainImage;
 
-    private File file;
     private Label lblTitle;
     private Label lblAdvertiser;
     private Label lblRegDate;
@@ -55,10 +53,12 @@ public class SelectedAdvert extends HorizontalLayout implements View {
     private Label lblDescription;
     private Label lblConnection;
     private Label lblAdvertiserPhoneNumber;
+
     private TextField txtFldName;
     private TextField txtFldEmail;
     private TextField txtFldCustomerPhoneNumber;
     private TextArea txtAreaMessage;
+
     private Button btnSendMessage;
 
     @Inject
@@ -73,111 +73,106 @@ public class SelectedAdvert extends HorizontalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-
+        getUI().focus();
     }
 
     private void buildView() {
+        advertisement = (Advertisement) VaadinSession.getCurrent().getAttribute("selected_advert");
+        controller = new SelectedAdvertController(this);
+
+        addTitle();
+        addMeta();
+        addMainPicture();
+        addOtherPictures();
+        addPrice();
+        addDescription();
+        addMap();
+        addOtherDetails();
+        addPanel();
+    }
+
+    private void addPanel() {
+
         advertPanel = new Panel();
         advertPanel.setWidth("1000");
         advertPanel.setHeightUndefined();
 
+        this.addComponent(advertPanel);
+        this.setComponentAlignment(advertPanel, Alignment.TOP_CENTER);
+        this.setSpacing(true);
+        this.setMargin(true);
         this.setSizeFull();
-        vl = new VerticalLayout();
-        vl.setSizeFull();
-        vl.setSpacing(true);
-        vl.setMargin(true);
 
+        setContent();
+        addComponentsToContent();
+    }
+
+    private void addTitle() {
         lblTitle = new Label(advertisement.getTitle());
         lblTitle.setStyleName(ADVERTTITLE.toString());
         lblTitle.setWidthUndefined();
         lblTitle.setStyleName("title");
-        vl.addComponent(lblTitle);
-        vl.setComponentAlignment(lblTitle, Alignment.TOP_CENTER);
+    }
 
-        vl.addComponent(new Label("<hr />", ContentMode.HTML));
+    private void addMeta() {
+        hlMeta = new HorizontalLayout();
+        hlMeta.setSpacing(true);
 
-        HorizontalLayout metaVl = new HorizontalLayout();
-        metaVl.setSpacing(true);
         lblAdvertiser = new Label("Hirdető: " + advertisement.getAdvertiserId().getName());
-        metaVl.addComponent(lblAdvertiser);
         lblAdvertiserPhoneNumber = new Label("Elérhetősége: " + advertisement.getAdvertiserId().getPhonenumber());
-        metaVl.addComponent(lblAdvertiserPhoneNumber);
-        String formattedDate = new SimpleDateFormat("yyyy MMMM dd").format(advertisement.getRegistrationDate());
-        lblRegDate = new Label("Feladás ideje: " + formattedDate);
-        metaVl.addComponent(lblRegDate);
-        vl.addComponent(metaVl);
-        vl.setComponentAlignment(metaVl, Alignment.TOP_CENTER);
+        lblRegDate = new Label("Feladás ideje: " + dateFormat.format(advertisement.getRegistrationDate()));
 
-        vl.addComponent(new Label("<hr />", ContentMode.HTML));
+        hlMeta.addComponent(lblAdvertiser);
+        hlMeta.addComponent(lblAdvertiserPhoneNumber);
+        hlMeta.addComponent(lblRegDate);
+    }
 
-        pictures = (List<Picture>) advertisement.getPictureCollection();
+    private void addMainPicture() {
+        controller.addMainPicture();
+    }
 
-        if (!pictures.isEmpty()) {
-            file = new File(pictures.get(0).getAccessPath());
-            FileResource source = new FileResource(file);
-            final Embedded img = new Embedded();
-            img.setSource(source);
-            loadMainImage(img);
-            vl.addComponent(mainImage);
-            vl.setComponentAlignment(mainImage, Alignment.TOP_CENTER);
-        }
-
-        HorizontalLayout hlPictures = new HorizontalLayout();
+    private void addOtherPictures() {
+        hlPictures = new HorizontalLayout();
         hlPictures.setSpacing(true);
-        if (!pictures.isEmpty()) {
-            for (int i = 0; i < pictures.size(); i++) {
-                file = new File(pictures.get(i).getAccessPath());
-                final Embedded image = new Embedded();
-                image.setWidth("128");
-                image.setHeight("96");
-                image.setSource(new FileResource(file));
-                hlPictures.addComponent(image);
-                image.addClickListener(new MouseEvents.ClickListener() {
-                    @Override
-                    public void click(MouseEvents.ClickEvent event) {
-                        setAsMainImage(image);
-                    }
-                });
-            }
-        }
-        vl.addComponent(hlPictures);
-        vl.setComponentAlignment(hlPictures, Alignment.TOP_CENTER);
+        controller.addOtherPictures(hlPictures);
+    }
 
-        vl.addComponent(new Label("<hr />", ContentMode.HTML));
-
+    private void addPrice() {
         lblPrice = new Label("Ár: " + advertisement.getPrice().toString() + " Ft");
         lblPrice.setWidthUndefined();
         lblPrice.setStyleName("title");
-        vl.addComponent(lblPrice);
-        vl.setComponentAlignment(lblPrice, Alignment.TOP_CENTER);
+    }
 
-        vl.addComponent(new Label("<hr />", ContentMode.HTML));
-
+    private void addDescription() {
         lblDescription = new Label(advertisement.getDescription());
         lblDescription.setWidth("640");
         lblDescription.setHeightUndefined();
-        vl.addComponent(lblDescription);
-        vl.setComponentAlignment(lblDescription, Alignment.TOP_CENTER);
+    }
 
-        vl.addComponent(new Label("<hr />", ContentMode.HTML));
-
-        GoogleMap googleMap = new GoogleMap("apiKey", null, "Hungarian");
+    private void addMap() {
+        googleMap = new GoogleMap("apiKey", null, "Hungarian");
         googleMap.setSizeFull();
         googleMap.setCenter(new LatLon(46.080472, 18.211872));
         googleMap.setZoom(18);
         googleMap.addMarker("", new LatLon(46.080472, 18.211872), true, null);
+    }
 
-        vl.addComponent(googleMap);
+    private void addOtherDetails() {
+        addContactLabel();
+        addFields();
+        addMessageArea();
+        addSendButton();
+    }
 
-        vl.addComponent(new Label("<hr />", ContentMode.HTML));
-
+    private void addContactLabel() {
         lblConnection = new Label("További információk");
         lblConnection.setWidthUndefined();
-        vl.addComponent(lblConnection);
-        vl.setComponentAlignment(lblConnection, Alignment.TOP_CENTER);
+    }
 
-        HorizontalLayout hor = new HorizontalLayout();
-        hor.setWidth("640");
+    private void addFields() {
+        hlFields = new HorizontalLayout();
+        hlFields.setWidth("640");
+        hlFields.setSpacing(true);
 
         txtFldName = new TextField();
         txtFldName.setInputPrompt("Név");
@@ -186,98 +181,86 @@ public class SelectedAdvert extends HorizontalLayout implements View {
         txtFldCustomerPhoneNumber = new TextField();
         txtFldCustomerPhoneNumber.setInputPrompt("Telefonszám");
 
-        hor.addComponent(txtFldName);
-        hor.addComponent(txtFldEmail);
-        hor.addComponent(txtFldCustomerPhoneNumber);
+        hlFields.addComponent(txtFldName);
+        hlFields.addComponent(txtFldEmail);
+        hlFields.addComponent(txtFldCustomerPhoneNumber);
+    }
 
-        hor.setSpacing(true);
-
-        vl.addComponent(hor);
-        vl.setComponentAlignment(hor, Alignment.TOP_CENTER);
-
+    private void addMessageArea() {
         txtAreaMessage = new TextArea();
         txtAreaMessage.setWidth("640");
         txtAreaMessage.setHeightUndefined();
         txtAreaMessage.setInputPrompt("Ide írja az üzenetét...");
-        vl.addComponent(txtAreaMessage);
-        vl.setComponentAlignment(txtAreaMessage, Alignment.TOP_CENTER);
+    }
 
+    private void addSendButton() {
         btnSendMessage = new Button("Elküldöm az üzenetet");
         btnSendMessage.addClickListener(new Button.ClickListener() {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                sendMail(advertisement);
+                controller.sendMail(advertisement);
             }
         });
-        vl.addComponent(btnSendMessage);
-        vl.setComponentAlignment(btnSendMessage, Alignment.TOP_CENTER);
-
-        advertPanel.setContent(vl);
-        this.addComponent(advertPanel);
-        this.setComponentAlignment(advertPanel, Alignment.TOP_CENTER);
-        this.setSpacing(true);
-        this.setMargin(true);
     }
 
-    private void setAsMainImage(Embedded image) {
-        mainImage.setSource(image.getSource());
-        loadMainImage(mainImage);
+    private void setContent() {
+        vlContent = new VerticalLayout();
+        vlContent.setSizeFull();
+        vlContent.setSpacing(true);
+        vlContent.setMargin(true);
+        vlContent.setDefaultComponentAlignment(Alignment.TOP_CENTER);
     }
 
-    private void loadMainImage(Embedded image) {
-        if (!pictures.isEmpty()) {
-            mainImage = image;
-            mainImage.setWidth("640");
-            mainImage.setHeight("480");
-        }
+    private void addComponentsToContent() {
+        vlContent.addComponent(lblTitle);
+        separeate();
+        vlContent.addComponent(hlMeta);
+        separeate();
+        vlContent.addComponent(mainImage);
+        vlContent.addComponent(hlPictures);
+        vlContent.addComponent(lblPrice);
+        separeate();
+        vlContent.addComponent(lblDescription);
+        separeate();
+        vlContent.addComponent(googleMap);
+        vlContent.addComponent(lblConnection);
+        vlContent.addComponent(hlFields);
+        vlContent.addComponent(txtAreaMessage);
+        vlContent.addComponent(btnSendMessage);
+
+        advertPanel.setContent(vlContent);
     }
 
-    public static void setAdvertisement(Advertisement Advertisement) {
-        SelectedAdvert.advertisement = Advertisement;
+    private void separeate() {
+        vlContent.addComponent(new Label("<hr />", ContentMode.HTML));
     }
 
-    private String letterText() {
-        String htmlLink = "<a href=http://localhost:8080/advertisementproject/#!LOGIN>I check it.</a></br>";
-        String text
-                = "<p>"
-                + "Dear Advertiser,<br><br>"
-                + txtFldName.getValue() + " has some questions about your advertisenment: " + advertisement.getTitle() + "<br><br>"
-                + "Answer them!<br>"
-                + htmlLink + "<br><br>"
-                + "Best regards,<br>"
-                + "VaadinThesis Team"
-                + "</p>";
-        return text;
+    public TextField getTxtFldName() {
+        return txtFldName;
     }
 
-    private void sendMail(Advertisement adv) {
-        try {
+    public TextField getTxtFldEmail() {
+        return txtFldEmail;
+    }
 
-            Letter letter = new Letter();
-            letter.setMailtext(txtAreaMessage.getValue());
-            letter.setMailtitle(adv.getTitle());
-            letter.setSendermail(txtFldEmail.getValue());
-            letter.setSendername(txtFldName.getValue());
-            letter.setSenderphone(txtFldCustomerPhoneNumber.getValue());
-            letter.setSender(Boolean.FALSE);
-            letter.setPostBoxId(adv.getAdvertiserId().getPostbox());
-            letter.setAdvertisementId(adv.getId());
+    public TextField getTxtFldCustomerPhoneNumber() {
+        return txtFldCustomerPhoneNumber;
+    }
 
-            adv.getAdvertiserId().getPostbox().addLetter(letter);
-            letterFacade.create(letter);
+    public TextArea getTxtAreaMessage() {
+        return txtAreaMessage;
+    }
 
-            MailSender ms = new MailSender();
-            ms.setReceiver(adv.getAdvertiserId().getEmail());
-            ms.setSender(txtFldEmail.getValue());
-            ms.setReceiver("balintczuppon@gmail.com");
-            ms.setSender("balintczuppon@gmail.com");
-            ms.setSubject("Enquiry");
-            ms.setText(letterText());
-            ms.send();
+    public LetterFacade getLetterFacade() {
+        return letterFacade;
+    }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public Advertisement getAdvertisement() {
+        return advertisement;
+    }
+
+    public Embedded getMainImage() {
+        return mainImage;
     }
 }

@@ -26,15 +26,14 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author balin
  */
 @Entity
-@Table(name = "locality")
+@Table(name = "country")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Locality.findAll", query = "SELECT l FROM Locality l"),
-    @NamedQuery(name = "Locality.findById", query = "SELECT l FROM Locality l WHERE l.id = :id"),
-    @NamedQuery(name = "Locality.findByPostalCode", query = "SELECT l FROM Locality l WHERE l.postalCode = :postalCode"),
-    @NamedQuery(name = "Locality.findByStationname", query = "SELECT l FROM Locality l WHERE l.stationname = :stationname"),
-    @NamedQuery(name = "Locality.findByCountry", query = "SELECT l FROM Locality l WHERE l.country = :country")})
-public class Locality implements Serializable {
+    @NamedQuery(name = "Country.findAll", query = "SELECT c FROM Country c"),
+    @NamedQuery(name = "Country.findById", query = "SELECT c FROM Country c WHERE c.id = :id"),
+    @NamedQuery(name = "Country.findByCountryName", query = "SELECT c FROM Country c WHERE c.countryName = :countryName")})
+public class Country implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,21 +41,17 @@ public class Locality implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Size(max = 30)
-    @Column(name = "postalCode")
-    private String postalCode;
-    @Size(max = 30)
-    @Column(name = "stationname")
-    private String stationname;
-    @Size(max = 30)
-    @Column(name = "country")
-    private String country;
-    @OneToMany(mappedBy = "localityId")
+    @Column(name = "countryName")
+    private String countryName;
+    @OneToMany(mappedBy = "countryId")
+    private Collection<City> cityCollection;
+    @OneToMany(mappedBy = "countryId")
     private Collection<Advertisement> advertisementCollection;
 
-    public Locality() {
+    public Country() {
     }
 
-    public Locality(Integer id) {
+    public Country(Integer id) {
         this.id = id;
     }
 
@@ -68,31 +63,23 @@ public class Locality implements Serializable {
         this.id = id;
     }
 
-    public String getPostalCode() {
-        return postalCode;
+    public String getCountryName() {
+        return countryName;
     }
 
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
-
-    public String getStationname() {
-        return stationname;
-    }
-
-    public void setStationname(String stationname) {
-        this.stationname = stationname;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
     }
 
     @XmlTransient
+    public Collection<City> getCityCollection() {
+        return cityCollection;
+    }
+
+    public void setCityCollection(Collection<City> cityCollection) {
+        this.cityCollection = cityCollection;
+    }
+
     public Collection<Advertisement> getAdvertisementCollection() {
         return advertisementCollection;
     }
@@ -100,6 +87,8 @@ public class Locality implements Serializable {
     public void setAdvertisementCollection(Collection<Advertisement> advertisementCollection) {
         this.advertisementCollection = advertisementCollection;
     }
+    
+    
 
     @Override
     public int hashCode() {
@@ -111,10 +100,10 @@ public class Locality implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Locality)) {
+        if (!(object instanceof Country)) {
             return false;
         }
-        Locality other = (Locality) object;
+        Country other = (Country) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -123,7 +112,7 @@ public class Locality implements Serializable {
 
     @Override
     public String toString() {
-        return "com.mycompany.advertisementproject.Enums.Locality[ id=" + id + " ]";
+        return "com.mycompany.advertisementproject.entities.Country[ id=" + id + " ]";
     }
-    
+
 }

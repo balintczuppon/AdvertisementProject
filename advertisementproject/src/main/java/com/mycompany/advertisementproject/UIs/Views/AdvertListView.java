@@ -1,6 +1,5 @@
 package com.mycompany.advertisementproject.UIs.Views;
 
-import static com.mycompany.advertisementproject.Enums.StyleNames.PICLABEL;
 import com.mycompany.advertisementproject.Enums.control.AdvertListController;
 import com.mycompany.advertisementproject.entities.*;
 import com.mycompany.advertisementproject.facades.*;
@@ -26,9 +25,9 @@ import javax.inject.Inject;
 @CDIView("ADVERTS")
 public class AdvertListView extends VerticalLayout implements View {
 
-    private AdvertListController controller;
-
     private final SimpleDateFormat formattedDate = new SimpleDateFormat("yyyy MMMM dd");
+
+    private AdvertListController controller;
 
     private HorizontalLayout contentLayout;
     private HorizontalLayout searchBarLayout;
@@ -47,11 +46,11 @@ public class AdvertListView extends VerticalLayout implements View {
     private Label lblSubCategory;
     private Label lblCity;
     private Label lblDate;
-    private Embedded image;
     private Label lblFilter;
 
-    private ComboBox cmbBxSortType;
+    private Embedded image;
 
+    private ComboBox cmbBxSortType;
     private ComboBox cmbBxCategory;
     private ComboBox cmbBxSubCategory;
     private ComboBox cmbBxCountry;
@@ -73,7 +72,9 @@ public class AdvertListView extends VerticalLayout implements View {
     @Inject
     AdverttypeFacade adverttypeFacade;
     @Inject
-    LocalityFacade localityFacade;
+    CountryFacade countryFacade;
+    @Inject
+    CityFacade cityFacade;
     @Inject
     AdvertisementFacade advertisementFacade;
     @Inject
@@ -141,31 +142,23 @@ public class AdvertListView extends VerticalLayout implements View {
         advertLeftVertical.setSizeFull();
 
         image = new Embedded();
-        controller.addPictureToAdvert(image,adv);
+        controller.addPictureToAdvert(image, adv);
         advertLeftVertical.addComponent(image);
-        advertLeftVertical.setComponentAlignment(image,Alignment.MIDDLE_CENTER);
+        advertLeftVertical.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
 
         lblTitle = new Label(adv.getTitle());
         lblTitle.setWidth("300");
-        advertMiddleVertical.addComponent(lblTitle);
-
         lblPrice = new Label(String.valueOf(adv.getPrice()));
-        advertMiddleVertical.addComponent(lblPrice);
-
         lblCategory = new Label(adv.getMainCategoryId().getName());
-        advertRightVertical.addComponent(lblCategory);
-
-        for (Subcategory s : subcategoryFacade.findAll()) {
-            if (s.getId().equals(adv.getSubCategoryId())) {
-                lblSubCategory = new Label(s.getName());
-                advertRightVertical.addComponent(lblSubCategory);
-            }
-        }
-
-        lblCity = new Label(adv.getLocalityId().getStationname());
-        advertRightVertical.addComponent(lblCity);
-
+        lblSubCategory = new Label(adv.getSubCategoryId().getName());
+//        lblCity = new Label(adv.getCityId().getCityName());
         lblDate = new Label(formattedDate.format(adv.getRegistrationDate()));
+
+        advertMiddleVertical.addComponent(lblTitle);
+        advertMiddleVertical.addComponent(lblPrice);
+        advertRightVertical.addComponent(lblCategory);
+        advertRightVertical.addComponent(lblSubCategory);
+//        advertRightVertical.addComponent(lblCity);
         advertRightVertical.addComponent(lblDate);
 
         advertHorizontal.addComponent(advertLeftVertical);
@@ -236,21 +229,23 @@ public class AdvertListView extends VerticalLayout implements View {
     }
 
     public void buildAdverts() {
+
         advertList = new VerticalLayout();
+        
         advertList.setSpacing(true);
         advertList.setMargin(true);
 
         final VerticalLayout itemsArea = new VerticalLayout();
         controller.pageAdverts(advertList, itemsArea);
 
-        advertPanel = new Panel();
-        advertPanel.setWidthUndefined();
-        advertPanel.setHeightUndefined();
-
-        advertPanel.setContent(advertList);
-        contentLayout.addComponent(advertPanel);
-
-        addComponent(contentLayout);
+        if (advertPanel == null) {
+            advertPanel = new Panel();
+            advertPanel.setWidth("700");
+            advertPanel.setHeightUndefined();
+            advertPanel.setContent(advertList);
+            contentLayout.addComponent(advertPanel);
+            addComponent(contentLayout);
+        }
     }
 
     private void addListeners() {
@@ -306,8 +301,12 @@ public class AdvertListView extends VerticalLayout implements View {
         return adverttypeFacade;
     }
 
-    public LocalityFacade getLocalityFacade() {
-        return localityFacade;
+    public CountryFacade getCountryFacade() {
+        return countryFacade;
+    }
+
+    public CityFacade getCityFacade() {
+        return cityFacade;
     }
 
     public AdvertisementFacade getAdvertisementFacade() {

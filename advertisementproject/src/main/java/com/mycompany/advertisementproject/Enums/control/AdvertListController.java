@@ -1,17 +1,18 @@
 package com.mycompany.advertisementproject.Enums.control;
 
-import static com.mycompany.advertisementproject.Enums.StyleNames.PICLABEL;
 import static com.mycompany.advertisementproject.Enums.Views.SELECTED;
 import com.mycompany.advertisementproject.UIs.Views.AdvertListView;
 import com.mycompany.advertisementproject.UIs.Views.SelectedAdvert;
 import com.mycompany.advertisementproject.entities.Advertisement;
 import com.mycompany.advertisementproject.entities.Advertstate;
 import com.mycompany.advertisementproject.entities.Adverttype;
-import com.mycompany.advertisementproject.entities.Locality;
+import com.mycompany.advertisementproject.entities.City;
+import com.mycompany.advertisementproject.entities.Country;
 import com.mycompany.advertisementproject.entities.Maincategory;
 import com.mycompany.advertisementproject.entities.Picture;
 import com.mycompany.advertisementproject.entities.Subcategory;
 import com.vaadin.server.FileResource;
+import com.vaadin.server.VaadinSession;
 import org.vaadin.pagingcomponent.ComponentsManager;
 import org.vaadin.pagingcomponent.PagingComponent;
 import org.vaadin.pagingcomponent.builder.ElementsBuilder;
@@ -50,9 +51,7 @@ public class AdvertListController {
         advertListView.getCmbBxSubCategory().setEnabled(true);
         for (Maincategory mcat : advertListView.getMaincategoryFacade().findAll()) {
             if (mcat.getName().equals(value)) {
-                for (Subcategory s : mcat.getSubcategoryCollection()) {
-                    advertListView.getCmbBxSubCategory().addItem(s.getName());
-                }
+                advertListView.getCmbBxSubCategory().addItems(mcat.getSubcategoryCollection());
             }
         }
     }
@@ -60,9 +59,9 @@ public class AdvertListController {
     public void fillCmbBxCity(Object value) {
         advertListView.getCmbBxCity().removeAllItems();
         advertListView.getCmbBxCity().setEnabled(true);
-        for (Locality loc : advertListView.getLocalityFacade().findAll()) {
-            if (loc.getCountry().equals(value)) {
-                advertListView.getCmbBxCity().addItem(loc.getStationname());
+        for (Country c : advertListView.getCountryFacade().findAll()) {
+            if (c.getCountryName().equals(value)) {
+                advertListView.getCmbBxCity().addItems(c.getCityCollection());
             }
         }
     }
@@ -171,8 +170,8 @@ public class AdvertListController {
             for (Adverttype a : advertListView.getAdverttypeFacade().findAll()) {
                 advertListView.getCmbBxType().addItem(a.getName());
             }
-            for (Locality l : advertListView.getLocalityFacade().findAll()) {
-                advertListView.getCmbBxCountry().addItem(l.getCountry());
+            for (Country c : advertListView.getCountryFacade().findAll()) {
+                advertListView.getCmbBxCountry().addItem(c.getCountryName());
             }
             filled = true;
         }
@@ -180,12 +179,14 @@ public class AdvertListController {
 
     public void filterAdverts() {
         Maincategory mcategory = null;
-        int subCategoryId = 0;
-        int minPrice = 0;
-        int maxPrice = 0;
-        Locality locality = null;
+        Subcategory subCategory = null;
+        Country country = null;
+        City city = null;
         Advertstate state = null;
         Adverttype type = null;
+
+        int minPrice = 0;
+        int maxPrice = 0;
 
         for (Maincategory m : advertListView.getMaincategoryFacade().findAll()) {
             if (!advertListView.getCmbBxCategory().isEmpty()) {
@@ -197,24 +198,26 @@ public class AdvertListController {
         for (Subcategory s : advertListView.getSubcategoryFacade().findAll()) {
             if (!advertListView.getCmbBxSubCategory().isEmpty()) {
                 if (advertListView.getCmbBxSubCategory().getValue().equals(s.getName())) {
-                    subCategoryId = s.getId();
+                    subCategory = s;
                 }
             }
         }
-        for (Locality l : advertListView.getLocalityFacade().findAll()) {
-            if (!advertListView.getCmbBxCountry().isEmpty()) {
-                if (advertListView.getCmbBxCountry().getValue().equals(l.getCountry())) {
-                    locality = l;
-                }
-            }
-        }
-        for (Locality l : advertListView.getLocalityFacade().findAll()) {
+        for (City c : advertListView.getCityFacade().findAll()) {
             if (!advertListView.getCmbBxCity().isEmpty()) {
-                if (advertListView.getCmbBxCity().getValue().equals(l.getStationname())) {
-                    locality = l;
+                if (advertListView.getCmbBxCity().getValue().equals(c.getCityName())) {
+                    city = c;
                 }
             }
         }
+
+        for (Country c : advertListView.getCountryFacade().findAll()) {
+            if (!advertListView.getCmbBxCountry().isEmpty()) {
+                if (advertListView.getCmbBxCountry().getValue().equals(c.getCountryName())) {
+                    country = c;
+                }
+            }
+        }
+
         for (Advertstate a : advertListView.getAdvertstateFacade().findAll()) {
             if (!advertListView.getCmbBxState().isEmpty()) {
                 if (advertListView.getCmbBxState().getValue().equals(a.getName())) {
@@ -240,8 +243,9 @@ public class AdvertListController {
 
         filteredAdverts = advertListView.getAdvertisementFacade().findAdvertsByFilters(
                 mcategory,
-                subCategoryId,
-                locality,
+                subCategory,
+                country,
+                city,
                 state,
                 type,
                 minPrice,
@@ -252,8 +256,18 @@ public class AdvertListController {
         for (Advertisement a : filteredAdverts) {
             adverts.add(advertListView.buildSingleAdvert(a));
         }
-        advertListView.buildAdverts();
-        advertListView.getAdvertPanel().setContent(advertListView.getAdvertList());
+        if (filteredAdverts.isEmpty()) {
+            addLabelNoResult();
+        } else {
+            advertListView.buildAdverts();
+            advertListView.getAdvertPanel().setContent(advertListView.getAdvertList());
+        }
+        advertListView.getUI().focus();
+    }
+
+    private void addLabelNoResult() {
+        Label lblNoResult = new Label("A megadott szűrési feltételekre nincs találat.");
+        advertListView.getAdvertPanel().setContent(lblNoResult);
     }
 
     public void loadAdverts() {
@@ -264,7 +278,12 @@ public class AdvertListController {
     }
 
     public void selectedAdvert(Advertisement adv) {
-        SelectedAdvert.setAdvertisement(adv);
+        try {
+            VaadinSession.getCurrent().getLockInstance().lock();
+            VaadinSession.getCurrent().setAttribute("selected_advert", adv);
+        } finally {
+            VaadinSession.getCurrent().getLockInstance().unlock();
+        }
         advertListView.getUI().getNavigator().navigateTo(SELECTED.toString());
     }
 
@@ -277,7 +296,7 @@ public class AdvertListController {
             image.setWidth("128");
             image.setHeight("96");
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }
     }
 }

@@ -21,20 +21,20 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author balin
  */
 @Entity
-@Table(name = "subcategory")
+@Table(name = "city")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Subcategory.findAll", query = "SELECT s FROM Subcategory s"),
-    @NamedQuery(name = "Subcategory.findById", query = "SELECT s FROM Subcategory s WHERE s.id = :id"),
-    @NamedQuery(name = "Subcategory.findByName", query = "SELECT s FROM Subcategory s WHERE s.name = :name")})
-public class Subcategory implements Serializable {
+    @NamedQuery(name = "City.findAll", query = "SELECT c FROM City c"),
+    @NamedQuery(name = "City.findById", query = "SELECT c FROM City c WHERE c.id = :id"),
+    @NamedQuery(name = "City.findByPostalCode", query = "SELECT c FROM City c WHERE c.postalCode = :postalCode"),
+    @NamedQuery(name = "City.findByCityName", query = "SELECT c FROM City c WHERE c.cityName = :cityName")})
+public class City implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -42,21 +42,22 @@ public class Subcategory implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Size(max = 40)
-    @Column(name = "name")
-    private String name;
-    @OneToMany(mappedBy = "subCategoryId")
-    private Collection<Advertisement> advertisementCollection;
-    @OneToMany(mappedBy = "subCategoryId")
-    private Collection<Subsubcategory> subsubcategoryCollection;
-    @JoinColumn(name = "mainCategoryId", referencedColumnName = "id")
+    @Size(max = 30)
+    @Column(name = "postalCode")
+    private String postalCode;
+    @Size(max = 30)
+    @Column(name = "cityName")
+    private String cityName;
+    @JoinColumn(name = "countryId", referencedColumnName = "id")
     @ManyToOne
-    private Maincategory mainCategoryId;
+    private Country countryId;
+    @OneToMany(mappedBy = "cityId")
+    private Collection<Advertisement> advertisementCollection;
 
-    public Subcategory() {
+    public City() {
     }
 
-    public Subcategory(Integer id) {
+    public City(Integer id) {
         this.id = id;
     }
 
@@ -68,29 +69,28 @@ public class Subcategory implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getPostalCode() {
+        return postalCode;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
     }
 
-    @XmlTransient
-    public Collection<Subsubcategory> getSubsubcategoryCollection() {
-        return subsubcategoryCollection;
+    public String getCityName() {
+        return cityName;
     }
 
-    public void setSubsubcategoryCollection(Collection<Subsubcategory> subsubcategoryCollection) {
-        this.subsubcategoryCollection = subsubcategoryCollection;
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
     }
 
-    public Maincategory getMainCategoryId() {
-        return mainCategoryId;
+    public Country getCountryId() {
+        return countryId;
     }
 
-    public void setMainCategoryId(Maincategory mainCategoryId) {
-        this.mainCategoryId = mainCategoryId;
+    public void setCountryId(Country countryId) {
+        this.countryId = countryId;
     }
 
     public Collection<Advertisement> getAdvertisementCollection() {
@@ -100,8 +100,9 @@ public class Subcategory implements Serializable {
     public void setAdvertisementCollection(Collection<Advertisement> advertisementCollection) {
         this.advertisementCollection = advertisementCollection;
     }
-
     
+    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -112,10 +113,10 @@ public class Subcategory implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Subcategory)) {
+        if (!(object instanceof City)) {
             return false;
         }
-        Subcategory other = (Subcategory) object;
+        City other = (City) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -124,7 +125,7 @@ public class Subcategory implements Serializable {
 
     @Override
     public String toString() {
-        return name;
+        return cityName;
     }
 
 }

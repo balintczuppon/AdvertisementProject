@@ -10,7 +10,6 @@ import com.mycompany.advertisementproject.facades.AdvertisementFacade;
 import com.mycompany.advertisementproject.facades.AdvertstateFacade;
 import com.mycompany.advertisementproject.facades.AdverttypeFacade;
 import com.mycompany.advertisementproject.facades.LetterFacade;
-import com.mycompany.advertisementproject.facades.LocalityFacade;
 import com.mycompany.advertisementproject.facades.MaincategoryFacade;
 import com.mycompany.advertisementproject.facades.PictureFacade;
 import com.mycompany.advertisementproject.facades.SubcategoryFacade;
@@ -76,8 +75,6 @@ public class AccountView extends VerticalLayout implements View {
     PictureFacade pictureFacade;
     @Inject
     AdverttypeFacade adverttypeFacade;
-    @Inject
-    LocalityFacade localityFacade;
     @Inject
     AdvertisementFacade advertisementFacade;
     @Inject
