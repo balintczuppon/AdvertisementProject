@@ -1,6 +1,9 @@
 package com.mycompany.advertisementproject.UIs.Views;
 
+import static com.mycompany.advertisementproject.Enums.StyleNames.TITLE;
+import static com.mycompany.advertisementproject.Enums.Views.LOGIN;
 import com.mycompany.advertisementproject.Enums.control.RegistrationController;
+import com.mycompany.advertisementproject.Tools.XmlFileReader;
 import com.mycompany.advertisementproject.facades.AdvertiserFacade;
 import com.mycompany.advertisementproject.facades.PostboxFacade;
 import com.vaadin.cdi.CDIView;
@@ -15,23 +18,21 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 @CDIView("REGISTRATION")
 public class RegistrationView extends VerticalLayout implements View {
 
+    private XmlFileReader xmlReader;
     private RegistrationController controller;
 
     @Inject
     private AdvertiserFacade advertiserFacade;
     @Inject
     private PostboxFacade postboxFacade;
-
-    private String eMailText = "E-mail cím";
-    private String passWordText1 = "Jelszó";
-    private String passWordText2 = "Jelszó újra";
-    private String regButtonText = "Regisztrálok";
 
     private Label lblTitle;
     private PasswordField pfPassWord1;
@@ -43,6 +44,13 @@ public class RegistrationView extends VerticalLayout implements View {
     private CheckBox chkBxNewsLetter;
     private Button btnRegistration;
 
+    private String emailUsedError;
+    private String emailFormatError;
+    private String emptyFieldError;
+    private String passwordError;
+    private String conditionError;
+    private String txtSuccess;
+    
     private FormLayout fl;
 
     @Override
@@ -52,22 +60,18 @@ public class RegistrationView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initComponent() {
-        buildView();
-    }
-
-    public void buildView() {
         setMargin(true);
         addTitle();
         addForm();
         addButton();
+        addLabelText();
     }
 
     private void addTitle() {
-        lblTitle = new Label("Fiók létrehozása");
-        
-        lblTitle.setStyleName("title");
+        lblTitle = new Label();
+        lblTitle.setStyleName(TITLE.toString());
         lblTitle.setSizeUndefined();
-        
+
         addComponent(lblTitle);
         setComponentAlignment(lblTitle, Alignment.TOP_CENTER);
     }
@@ -75,15 +79,15 @@ public class RegistrationView extends VerticalLayout implements View {
     private void addForm() {
         fl = new FormLayout();
         fl.setWidthUndefined();
-        
-        tfEmail = new TextField(eMailText);
-        tfName = new TextField("Név");
-        tfPhoneNumber = new TextField("Telefonszám");
-        pfPassWord1 = new PasswordField(passWordText1);
-        pfPassWord2 = new PasswordField(passWordText2);
-        chkBxNewsLetter = new CheckBox("Kérek hírlevelet");
-        chkBxTerms = new CheckBox("Szerződési feltételek elfogadása.");
-        
+
+        tfEmail = new TextField();
+        tfName = new TextField();
+        tfPhoneNumber = new TextField();
+        pfPassWord1 = new PasswordField();
+        pfPassWord2 = new PasswordField();
+        chkBxNewsLetter = new CheckBox();
+        chkBxTerms = new CheckBox();
+
         fl.addComponent(tfEmail);
         fl.addComponent(pfPassWord1);
         fl.addComponent(pfPassWord2);
@@ -91,13 +95,13 @@ public class RegistrationView extends VerticalLayout implements View {
         fl.addComponent(tfPhoneNumber);
         fl.addComponent(chkBxNewsLetter);
         fl.addComponent(chkBxTerms);
-        
+
         addComponent(fl);
         setComponentAlignment(fl, Alignment.MIDDLE_CENTER);
     }
 
     private void addButton() {
-        btnRegistration = new Button(regButtonText);
+        btnRegistration = new Button();
         addComponent(btnRegistration);
         setComponentAlignment(btnRegistration, Alignment.MIDDLE_CENTER);
 
@@ -114,7 +118,23 @@ public class RegistrationView extends VerticalLayout implements View {
             }
         });
     }
-    
+
+    public void goForward() {
+        Notification.show(txtSuccess);
+        getUI().getNavigator().navigateTo(LOGIN.toString());
+    }
+
+    private void addLabelText() {
+        try {
+            xmlReader = new XmlFileReader();
+            xmlReader.setRegView(this);
+            xmlReader.setTagName(this.getClass().getSimpleName());
+            xmlReader.readXml();
+        } catch (Exception ex) {
+            Logger.getLogger(RegistrationView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public PasswordField getPfPassWord1() {
         return pfPassWord1;
     }
@@ -150,4 +170,58 @@ public class RegistrationView extends VerticalLayout implements View {
     public CheckBox getChkBxNewsLetter() {
         return chkBxNewsLetter;
     }
+
+    public Label getLblTitle() {
+        return lblTitle;
+    }
+
+    public Button getBtnRegistration() {
+        return btnRegistration;
+    }
+
+    public void setTxtSuccess(String txtSuccess) {
+        this.txtSuccess = txtSuccess;
+    }
+
+    public String getEmailUsedError() {
+        return emailUsedError;
+    }
+
+    public void setEmailUsedError(String emailUsedError) {
+        this.emailUsedError = emailUsedError;
+    }
+
+    public String getEmailFormatError() {
+        return emailFormatError;
+    }
+
+    public void setEmailFormatError(String emailFormatError) {
+        this.emailFormatError = emailFormatError;
+    }
+
+    public String getEmptyFieldError() {
+        return emptyFieldError;
+    }
+
+    public void setEmptyFieldError(String emptyFieldError) {
+        this.emptyFieldError = emptyFieldError;
+    }
+
+    public String getPasswordError() {
+        return passwordError;
+    }
+
+    public void setPasswordError(String passwordError) {
+        this.passwordError = passwordError;
+    }
+
+    public String getConditionError() {
+        return conditionError;
+    }
+
+    public void setConditionError(String conditionError) {
+        this.conditionError = conditionError;
+    }
+    
+    
 }

@@ -1,58 +1,40 @@
 package com.mycompany.advertisementproject.Enums.control;
 
-import static com.mycompany.advertisementproject.Enums.Views.LOGIN;
 import com.mycompany.advertisementproject.Tools.Encryptor;
 import com.mycompany.advertisementproject.UIs.Views.RegistrationView;
 import com.mycompany.advertisementproject.entities.Advertiser;
 import com.mycompany.advertisementproject.entities.Postbox;
-import com.vaadin.ui.Notification;
-import javax.ejb.EJBException;
 
 public class RegistrationController {
 
     private final int DEFAULT_AUTHORITY;
 
-    private RegistrationView regView;
-
-    private String name;
-    private String email;
-    private String password1;
-    private String password2;
-    private String phoneNumber;
-    private boolean newsLetter;
-    private boolean isAccepted;
+    private RegistrationView view;
 
     public RegistrationController(RegistrationView registrationView) {
-        this.regView = registrationView;
+        this.view = registrationView;
         DEFAULT_AUTHORITY = 1;
     }
 
     public void registration() throws Exception {
         
-        initialize();
-        
-        Advertiser advertiser = null;
-        try {
-            advertiser = (Advertiser) regView.getAdvertiserFacade().getAdvertiserByMail(email);
-        } catch (EJBException ejbex) {
-            ejbex.printStackTrace();
-        }
+        Advertiser advertiser = (Advertiser) view.getAdvertiserFacade().getAdvertiserByMail(view.getTfEmail().getValue());
 
         if (advertiser != null) {
-            throw new Exception("Az email cím már használatban van.");
+            throw new Exception(view.getEmailUsedError());
         }
-        if(!emailIsValid()){
-            throw new Exception("Nem megfelelő email cím formátum");
+        if (!emailIsValid()) {
+            throw new Exception(view.getEmailFormatError());
         }
-        if (email.isEmpty() || password1.isEmpty() || password2.isEmpty() ||
-                name.isEmpty() || phoneNumber.isEmpty()) {
-            throw new Exception("Minden mező kitöltése kötelező");
+        if (view.getTfEmail().getValue().isEmpty() || view.getPfPassWord1().getValue().isEmpty() || view.getPfPassWord2().getValue().isEmpty()
+                || view.getTfName().getValue().isEmpty() || view.getTfPhoneNumber().getValue().isEmpty()) {
+            throw new Exception(view.getEmptyFieldError());
         }
-        if (!password1.equals(password2)) {
-            throw new Exception("A megadott jelszavak nem egyeznek");
+        if (!view.getPfPassWord1().getValue().equals(view.getPfPassWord2().getValue())) {
+            throw new Exception(view.getPasswordError());
         }
-        if (!isAccepted) {
-            throw new Exception("A feltételek elfogadása nélkül nem regisztrálhat.");
+        if (!view.getChkBxTerms().getValue()) {
+            throw new Exception(view.getConditionError());
         }
         registerNewUser();
     }
@@ -63,40 +45,23 @@ public class RegistrationController {
         try {
             Postbox postbox = new Postbox();
             Advertiser advertiser = new Advertiser();
-
-            advertiser.setEmail(email.trim());
-            advertiser.setPassword(encryptor.hashPassword(password1.trim()));
-            advertiser.setName(name.trim());
-            advertiser.setPhonenumber(phoneNumber.trim());
-            advertiser.setNewsletter(newsLetter);
+            advertiser.setEmail(view.getTfEmail().getValue().trim());
+            advertiser.setPassword(encryptor.hashPassword(view.getPfPassWord1().getValue().trim()));
+            advertiser.setName(view.getTfName().getValue().trim());
+            advertiser.setPhonenumber(view.getTfPhoneNumber().getValue().trim());
+            advertiser.setNewsletter(view.getChkBxNewsLetter().getValue());
             advertiser.setAuthority(DEFAULT_AUTHORITY);
 
-            regView.getAdvertiserFacade().create(advertiser);
-
+            view.getAdvertiserFacade().create(advertiser);
+            
             int id = advertiser.getId();
             postbox.setId(id);
 
-            regView.getPostboxFacade().create(postbox);
-
-            goForward();
+            view.getPostboxFacade().create(postbox);
+            view.goForward();
         } catch (Exception e) {
             throw new Exception();
         }
-    }
-
-    private void goForward() {
-        Notification.show("Sikeres regisztráció");
-        regView.getUI().getNavigator().navigateTo(LOGIN.toString());
-    }
-
-    private void initialize() {
-        email = regView.getTfEmail().getValue();
-        password1 = regView.getPfPassWord1().getValue();
-        password2 = regView.getPfPassWord2().getValue();
-        name = regView.getTfName().getValue();
-        phoneNumber = regView.getTfPhoneNumber().getValue();
-        newsLetter = regView.getChkBxNewsLetter().getValue();
-        isAccepted = regView.getChkBxTerms().getValue();
     }
 
     private boolean emailIsValid() {

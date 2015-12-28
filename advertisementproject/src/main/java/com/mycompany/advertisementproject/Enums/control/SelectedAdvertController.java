@@ -2,7 +2,7 @@
 package com.mycompany.advertisementproject.Enums.control;
 
 import com.mycompany.advertisementproject.Tools.MailSender;
-import com.mycompany.advertisementproject.UIs.Views.SelectedAdvert;
+import com.mycompany.advertisementproject.UIs.Views.SelectedAdvertView;
 import com.mycompany.advertisementproject.entities.Advertisement;
 import com.mycompany.advertisementproject.entities.Letter;
 import com.mycompany.advertisementproject.entities.Picture;
@@ -19,9 +19,9 @@ public class SelectedAdvertController {
     private List<Picture> pictures = new ArrayList<>();
     private File file;
 
-    private SelectedAdvert selected;
+    private SelectedAdvertView selected;
 
-    public SelectedAdvertController(SelectedAdvert selectedAdvert) {
+    public SelectedAdvertController(SelectedAdvertView selectedAdvert) {
         selected = selectedAdvert;
     }
 

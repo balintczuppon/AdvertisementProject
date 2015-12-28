@@ -16,6 +16,8 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -32,6 +34,8 @@ public class LogInView extends VerticalLayout implements View {
     private TextField tfEmail;
     private Button btnLogin;
     private Label lblTitle;
+
+    private String errorText;
 
     private FormLayout fl;
 
@@ -82,8 +86,8 @@ public class LogInView extends VerticalLayout implements View {
                     logincontroller.authentication(user, password);
                 } catch (Exception e) {
                     Notification.show(e.getMessage());
-                    tfEmail.setComponentError(new UserError("Hibás felhasználónév vagy jelszó!"));
-                    pfPassWord.setComponentError(new UserError("Hibás felhasználónév vagy jelszó!"));
+                    tfEmail.setComponentError(new UserError(errorText));
+                    pfPassWord.setComponentError(new UserError(errorText));
                 } finally {
                     tfEmail.clear();
                     pfPassWord.clear();
@@ -95,10 +99,14 @@ public class LogInView extends VerticalLayout implements View {
     }
 
     private void addLabelText() {
-        xmlReader = new XmlFileReader();
-        xmlReader.setLoginView(this);
-        xmlReader.setTagName(this.getClass().getSimpleName());
-        xmlReader.readXml();
+        try {
+            xmlReader = new XmlFileReader();
+            xmlReader.setLoginView(this);
+            xmlReader.setTagName(this.getClass().getSimpleName());
+            xmlReader.readXml();
+        } catch (Exception ex) {
+            Logger.getLogger(LogInView.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public PasswordField getPfPassWord() {
@@ -115,6 +123,14 @@ public class LogInView extends VerticalLayout implements View {
 
     public Label getLblTitle() {
         return lblTitle;
+    }
+
+    public void setErrorText(String errorText) {
+        this.errorText = errorText;
+    }
+
+    public String getErrorText() {
+        return errorText;
     }
 
     public AdvertiserFacade getAdvertiserFacade() {

@@ -169,7 +169,7 @@ public class Letter implements Serializable {
 
     @Override
     public String toString() {
-        return "com.mycompany.advertisementproject.entities.Letter[ id=" + id + " ]";
+        return id.toString();
     }
 
 }

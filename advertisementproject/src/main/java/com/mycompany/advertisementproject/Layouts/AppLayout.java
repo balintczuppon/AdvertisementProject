@@ -17,12 +17,12 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
 
     private String nodePath;
 
-    private Button btnNav1;
-    private Button btnNav2;
-    private Button btnNav3;
-    private Button btnNav4;
-    private Button btnNav5;
-    private Button btnNav6;
+    private static Button btnNav1;
+    private static Button btnNav2;
+    private static Button btnNav3;
+    private static Button btnNav4;
+    private static Button btnNav5;
+    private static Button btnNav6;
 
     public AppLayout() {
         buildHeader();
@@ -168,36 +168,11 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         }
     }
 
-    public void login() {
+    public static void login() {
         btnNav2.setVisible(false);
         btnNav3.setVisible(false);
         btnNav4.setVisible(true);
         btnNav5.setVisible(true);
         btnNav6.setVisible(true);
-    }
-
-    public Button getBtnNav1() {
-        return btnNav1;
-    }
-
-    public Button getBtnNav2() {
-        return btnNav2;
-    }
-
-    public Button getBtnNav3() {
-        return btnNav3;
-    }
-
-    public Button getBtnNav4() {
-        return btnNav4;
-    }
-
-    public Button getBtnNav5() {
-        return btnNav5;
-    }
-
-    public Button getBtnNav6() {
-        return btnNav6;
-    }
-
+   }
 }

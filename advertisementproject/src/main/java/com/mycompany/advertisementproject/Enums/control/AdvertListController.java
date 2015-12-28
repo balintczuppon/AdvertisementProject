@@ -2,7 +2,6 @@ package com.mycompany.advertisementproject.Enums.control;
 
 import static com.mycompany.advertisementproject.Enums.Views.SELECTED;
 import com.mycompany.advertisementproject.UIs.Views.AdvertListView;
-import com.mycompany.advertisementproject.UIs.Views.SelectedAdvert;
 import com.mycompany.advertisementproject.entities.Advertisement;
 import com.mycompany.advertisementproject.entities.Advertstate;
 import com.mycompany.advertisementproject.entities.Adverttype;
@@ -36,32 +35,32 @@ import java.util.List;
 public class AdvertListController {
 
     private List<Advertisement> filteredAdverts = new ArrayList<>();
-    private List<HorizontalLayout> adverts = new ArrayList<>();
+    private final List<HorizontalLayout> adverts = new ArrayList<>();
 
     private boolean filled = false;
 
-    AdvertListView advertListView;
+    private final AdvertListView view;
 
     public AdvertListController(AdvertListView view) {
-        this.advertListView = view;
+        this.view = view;
     }
 
     public void fillCmbBxSubCategory(Object value) {
-        advertListView.getCmbBxSubCategory().removeAllItems();
-        advertListView.getCmbBxSubCategory().setEnabled(true);
-        for (Maincategory mcat : advertListView.getMaincategoryFacade().findAll()) {
+        view.getCmbBxSubCategory().removeAllItems();
+        view.getCmbBxSubCategory().setEnabled(true);
+        for (Maincategory mcat : view.getMaincategoryFacade().findAll()) {
             if (mcat.getName().equals(value)) {
-                advertListView.getCmbBxSubCategory().addItems(mcat.getSubcategoryCollection());
+                view.getCmbBxSubCategory().addItems(mcat.getSubcategoryCollection());
             }
         }
     }
 
     public void fillCmbBxCity(Object value) {
-        advertListView.getCmbBxCity().removeAllItems();
-        advertListView.getCmbBxCity().setEnabled(true);
-        for (Country c : advertListView.getCountryFacade().findAll()) {
+        view.getCmbBxCity().removeAllItems();
+        view.getCmbBxCity().setEnabled(true);
+        for (Country c : view.getCountryFacade().findAll()) {
             if (c.getCountryName().equals(value)) {
-                advertListView.getCmbBxCity().addItems(c.getCityCollection());
+                view.getCmbBxCity().addItems(c.getCityCollection());
             }
         }
     }
@@ -161,17 +160,17 @@ public class AdvertListController {
 
     public void fillComboBoxes() {
         if (!filled) {
-            for (Maincategory m : advertListView.getMaincategoryFacade().findAll()) {
-                advertListView.getCmbBxCategory().addItem(m.getName());
+            for (Maincategory m : view.getMaincategoryFacade().findAll()) {
+                view.getCmbBxCategory().addItem(m.getName());
             }
-            for (Advertstate a : advertListView.getAdvertstateFacade().findAll()) {
-                advertListView.getCmbBxState().addItem(a.getName());
+            for (Advertstate a : view.getAdvertstateFacade().findAll()) {
+                view.getCmbBxState().addItem(a.getName());
             }
-            for (Adverttype a : advertListView.getAdverttypeFacade().findAll()) {
-                advertListView.getCmbBxType().addItem(a.getName());
+            for (Adverttype a : view.getAdverttypeFacade().findAll()) {
+                view.getCmbBxType().addItem(a.getName());
             }
-            for (Country c : advertListView.getCountryFacade().findAll()) {
-                advertListView.getCmbBxCountry().addItem(c.getCountryName());
+            for (Country c : view.getCountryFacade().findAll()) {
+                view.getCmbBxCountry().addItem(c.getCountryName());
             }
             filled = true;
         }
@@ -184,96 +183,88 @@ public class AdvertListController {
         City city = null;
         Advertstate state = null;
         Adverttype type = null;
-
         int minPrice = 0;
         int maxPrice = 0;
 
-        for (Maincategory m : advertListView.getMaincategoryFacade().findAll()) {
-            if (!advertListView.getCmbBxCategory().isEmpty()) {
-                if (advertListView.getCmbBxCategory().getValue().equals(m.getName())) {
+        for (Maincategory m : view.getMaincategoryFacade().findAll()) {
+            if (!view.getCmbBxCategory().isEmpty()) {
+                if (view.getCmbBxCategory().getValue().equals(m.getName())) {
                     mcategory = m;
                 }
             }
         }
-        for (Subcategory s : advertListView.getSubcategoryFacade().findAll()) {
-            if (!advertListView.getCmbBxSubCategory().isEmpty()) {
-                if (advertListView.getCmbBxSubCategory().getValue().equals(s.getName())) {
+        for (Subcategory s : view.getSubcategoryFacade().findAll()) {
+            if (!view.getCmbBxSubCategory().isEmpty()) {
+                if (view.getCmbBxSubCategory().getValue().equals(s.getName())) {
                     subCategory = s;
                 }
             }
         }
-        for (City c : advertListView.getCityFacade().findAll()) {
-            if (!advertListView.getCmbBxCity().isEmpty()) {
-                if (advertListView.getCmbBxCity().getValue().equals(c.getCityName())) {
+        for (City c : view.getCityFacade().findAll()) {
+            if (!view.getCmbBxCity().isEmpty()) {
+                if (view.getCmbBxCity().getValue().equals(c.getCityName())) {
                     city = c;
                 }
             }
         }
 
-        for (Country c : advertListView.getCountryFacade().findAll()) {
-            if (!advertListView.getCmbBxCountry().isEmpty()) {
-                if (advertListView.getCmbBxCountry().getValue().equals(c.getCountryName())) {
+        for (Country c : view.getCountryFacade().findAll()) {
+            if (!view.getCmbBxCountry().isEmpty()) {
+                if (view.getCmbBxCountry().getValue().equals(c.getCountryName())) {
                     country = c;
                 }
             }
         }
 
-        for (Advertstate a : advertListView.getAdvertstateFacade().findAll()) {
-            if (!advertListView.getCmbBxState().isEmpty()) {
-                if (advertListView.getCmbBxState().getValue().equals(a.getName())) {
+        for (Advertstate a : view.getAdvertstateFacade().findAll()) {
+            if (!view.getCmbBxState().isEmpty()) {
+                if (view.getCmbBxState().getValue().equals(a.getName())) {
                     state = a;
                 }
             }
         }
-        for (Adverttype a : advertListView.getAdverttypeFacade().findAll()) {
-            if (!advertListView.getCmbBxType().isEmpty()) {
-                if (advertListView.getCmbBxType().getValue().equals(a.getName())) {
+        for (Adverttype a : view.getAdverttypeFacade().findAll()) {
+            if (!view.getCmbBxType().isEmpty()) {
+                if (view.getCmbBxType().getValue().equals(a.getName())) {
                     type = a;
                 }
             }
         }
 
-        if (!advertListView.getTxtFldMinPrice().isEmpty()) {
-            minPrice = Integer.valueOf(advertListView.getTxtFldMinPrice().getValue());
+        if (!view.getTxtFldMinPrice().isEmpty()) {
+            minPrice = Integer.valueOf(view.getTxtFldMinPrice().getValue());
         }
 
-        if (!advertListView.getTxtFldMaxPrice().isEmpty()) {
-            maxPrice = Integer.valueOf(advertListView.getTxtFldMaxPrice().getValue());
+        if (!view.getTxtFldMaxPrice().isEmpty()) {
+            maxPrice = Integer.valueOf(view.getTxtFldMaxPrice().getValue());
         }
 
-        filteredAdverts = advertListView.getAdvertisementFacade().findAdvertsByFilters(
-                mcategory,
-                subCategory,
-                country,
-                city,
-                state,
-                type,
-                minPrice,
-                maxPrice
+        filteredAdverts = view.getAdvertisementFacade().findAdvertsByFilters(
+                mcategory,subCategory,country,city,state,type,minPrice,maxPrice
         );
 
         adverts.clear();
         for (Advertisement a : filteredAdverts) {
-            adverts.add(advertListView.buildSingleAdvert(a));
+            adverts.add(view.buildSingleAdvert(a));
         }
         if (filteredAdverts.isEmpty()) {
             addLabelNoResult();
         } else {
-            advertListView.buildAdverts();
-            advertListView.getAdvertPanel().setContent(advertListView.getAdvertList());
+            view.buildAdverts();
+            view.getAdvertPanel().setContent(view.getAdvertList());
         }
-        advertListView.getUI().focus();
+        view.getUI().focus();
     }
 
     private void addLabelNoResult() {
-        Label lblNoResult = new Label("A megadott szűrési feltételekre nincs találat.");
-        advertListView.getAdvertPanel().setContent(lblNoResult);
+        Label lblNoResult = new Label(view.getNoResult());
+        view.getAdvertPanel().setContent(lblNoResult);
     }
 
     public void loadAdverts() {
         adverts.clear();
-        for (Advertisement a : advertListView.getAdvertisementFacade().findAll()) {
-            adverts.add(advertListView.buildSingleAdvert(a));
+        for (Advertisement a : view.getAdvertisementFacade().findAll()) {
+            adverts.add(view.buildSingleAdvert(a));
         }
     }
 
@@ -284,17 +275,19 @@ public class AdvertListController {
         } finally {
             VaadinSession.getCurrent().getLockInstance().unlock();
         }
-        advertListView.getUI().getNavigator().navigateTo(SELECTED.toString());
+        view.getUI().getNavigator().navigateTo(SELECTED.toString());
     }
 
     public void addPictureToAdvert(Embedded image, Advertisement adv) {
         try {
             List<Picture> pictures = (List<Picture>) adv.getPictureCollection();
-            File file = new File(pictures.get(0).getAccessPath());
-            FileResource source = new FileResource(file);
-            image.setSource(source);
-            image.setWidth("128");
-            image.setHeight("96");
+            if (pictures.size() > 0) {
+                File file = new File(pictures.get(0).getAccessPath());
+                FileResource source = new FileResource(file);
+                image.setSource(source);
+                image.setWidth(view.getImageWidth());
+                image.setHeight(view.getImageHeight());
+            }
         } catch (Exception e) {
             throw e;
         }

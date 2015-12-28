@@ -6,7 +6,6 @@
 package com.mycompany.advertisementproject.Tools;
 
 import com.vaadin.server.VaadinSession;
-import java.util.logging.Logger;
 
 /**
  *

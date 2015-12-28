@@ -1,11 +1,10 @@
 package com.mycompany.advertisementproject.UIs.Views;
 
 import static com.mycompany.advertisementproject.Enums.StyleNames.NAVBUTTON;
-import static com.mycompany.advertisementproject.Enums.Views.ADVERTREG;
+import com.mycompany.advertisementproject.Enums.control.AccountController;
+import com.mycompany.advertisementproject.Tools.XmlFileReader;
 import com.mycompany.advertisementproject.entities.Advertisement;
-import com.mycompany.advertisementproject.entities.Advertiser;
 import com.mycompany.advertisementproject.entities.Letter;
-import com.mycompany.advertisementproject.entities.Picture;
 import com.mycompany.advertisementproject.facades.AdvertisementFacade;
 import com.mycompany.advertisementproject.facades.AdvertstateFacade;
 import com.mycompany.advertisementproject.facades.AdverttypeFacade;
@@ -14,58 +13,68 @@ import com.mycompany.advertisementproject.facades.MaincategoryFacade;
 import com.mycompany.advertisementproject.facades.PictureFacade;
 import com.mycompany.advertisementproject.facades.SubcategoryFacade;
 import com.vaadin.cdi.CDIView;
-import com.vaadin.event.LayoutEvents;
+import com.vaadin.data.Item;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 @CDIView("USERPAGE")
 public class AccountView extends VerticalLayout implements View {
 
-    private List<Advertisement> myadverts = new ArrayList<>();
-    private List<Letter> myletters = new ArrayList<>();
+    private String advertTabText;
+    private String postboxTabText;
+    private String incoming;
+    private String outgoing;
+    private String advertTblTitle;
+    private String advertTblDate;
+    private String advertTblPrice;
+    private String advertTblDelete;
+    private String advertTblModify;
+    private String letterTblSubject;
+    private String letterTblMessage;
+    private String letterTblSender;
+    private String letterTblDate;
+    private String advertPanelWidth;
+    private String postboxPanelWidth;
+    private String letterTabSheetWidth;
+    private String tableLetterWidth;
+    private String tableAdvertWidth;
+    private String delButtonText;
+    private String modButtonText;
+
+    private XmlFileReader xmlReader;
+
+    private AccountController controller;
 
     private TabSheet tabsheet;
+    private TabSheet letterTabSheet;
 
     private VerticalLayout advertLayout;
     private VerticalLayout postBoxLayout;
-
-    private Label lblTitleHeader;
-    private Label lblTextHeader;
-    private Label lblCandidateHeader;
-    private Label lblDateHeader;
+    private VerticalLayout hlInComingLetters;
+    private VerticalLayout hlOutGoingLetters;
 
     private Button btnDeleteAdvert;
     private Button btnModifyAdvert;
-    private Label lblAdvertTitle;
-    private Label lblAdvertRegDate;
-    private Label lblPrice;
 
-//    private Label lblMailTitle;
-//    private Label lblMailText;
-//    private Label lblCandidate;
-//    private Label lblDate;
     private Panel advertPanel;
     private VerticalLayout innerAdvert;
     private Panel postBoxPanel;
     private VerticalLayout innerPostBox;
 
-    private Advertiser current_advertiser;
+    private Table tblAdverts;
+    private Table tbloutgLetters;
+    private Table tblIncLetters;
 
     @Inject
     MaincategoryFacade maincategoryFacade;
@@ -89,8 +98,14 @@ public class AccountView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initComponent() {
-        buildTabs();
-        buildView();
+        try {
+            controller = new AccountController(this);
+            readLabelText();
+            buildTabs();
+            buildView();
+        } catch (Exception ex) {
+            Logger.getLogger(AccountView.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void buildView() {
@@ -99,24 +114,28 @@ public class AccountView extends VerticalLayout implements View {
         this.setComponentAlignment(tabsheet, Alignment.TOP_CENTER);
     }
 
-    private void buildTabs() {
+    private void buildTabs() throws Exception {
         tabsheet = new TabSheet();
-
         tabsheet.setWidthUndefined();
-        advertLayout = new VerticalLayout();
-        tabsheet.addTab(advertLayout).setCaption("Hirdetéseim");
-        buildadvertTab();
-
-        postBoxLayout = new VerticalLayout();
-        tabsheet.addTab(postBoxLayout).setCaption("Postaláda");
-        buildpostBoxTab();
-
-        tabsheet.setWidthUndefined();
+        addAdvertTab();
+        addPostBoxTab();
     }
 
-    public void buildadvertTab() {
+    private void addAdvertTab() throws Exception {
+        advertLayout = new VerticalLayout();
+        tabsheet.addTab(advertLayout).setCaption(advertTabText);
+        buildadvertTab();
+    }
+
+    private void addPostBoxTab() throws Exception {
+        postBoxLayout = new VerticalLayout();
+        tabsheet.addTab(postBoxLayout).setCaption(postboxTabText);
+        buildpostBoxTab();
+    }
+
+    public void buildadvertTab() throws Exception {
         advertPanel = new Panel();
-        advertPanel.setWidth("1000");
+        advertPanel.setWidth(advertPanelWidth);
         advertPanel.setHeightUndefined();
         innerAdvert = new VerticalLayout();
 
@@ -126,78 +145,9 @@ public class AccountView extends VerticalLayout implements View {
         advertLayout.addComponent(advertPanel);
     }
 
-    private void addAdvertContent() {
-        current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute("current_user");
-        myadverts = advertisementFacade.getMyAdvertisements(current_advertiser);
-
-        for (final Advertisement a : myadverts) {
-            btnDeleteAdvert = new Button("Törlés");
-            btnDeleteAdvert.setStyleName(NAVBUTTON.toString());
-            btnDeleteAdvert.addClickListener(new Button.ClickListener() {
-                @Override
-                public void buttonClick(Button.ClickEvent event) {
-                    try {
-                        for (Picture p : a.getPictureCollection()) {
-                            pictureFacade.remove(p);
-                        }
-                        advertisementFacade.remove(a);
-                        refreshAdvertContent();
-                    } catch (Exception ex) {
-                        Notification.show(ex.getMessage());
-                    }
-                }
-            });
-            btnModifyAdvert = new Button("Módosítás");
-            btnModifyAdvert.addClickListener(new Button.ClickListener() {
-
-                @Override
-                public void buttonClick(Button.ClickEvent event) {
-                    try {
-                        VaadinSession.getCurrent().getLockInstance().lock();
-                        VaadinSession.getCurrent().setAttribute("AdvertToModify", a);
-                    } finally {
-                        VaadinSession.getCurrent().getLockInstance().unlock();
-                    }
-                    getUI().getNavigator().navigateTo(ADVERTREG.toString());
-                }
-            });
-            btnModifyAdvert.setStyleName(NAVBUTTON.toString());
-
-            lblAdvertTitle = new Label(a.getTitle());
-            lblAdvertTitle.setWidth("200");
-
-            String formattedDate = new SimpleDateFormat("yyyy MMMM dd").format(a.getRegistrationDate());
-            lblAdvertRegDate = new Label(formattedDate);
-            lblAdvertRegDate.setWidth("200");
-
-            lblPrice = new Label(a.getPrice() + " Ft");
-            lblPrice.setWidth("200");
-
-            HorizontalLayout myadvertsLayout = new HorizontalLayout();
-
-            myadvertsLayout.addComponent(lblAdvertTitle);
-            myadvertsLayout.addComponent(lblAdvertRegDate);
-            myadvertsLayout.addComponent(lblPrice);
-            myadvertsLayout.addComponent(btnDeleteAdvert);
-            myadvertsLayout.addComponent(new Label("/"));
-            myadvertsLayout.addComponent(btnModifyAdvert);
-
-            myadvertsLayout.setWidthUndefined();
-            myadvertsLayout.setSpacing(true);
-            innerAdvert.setMargin(true);
-            innerAdvert.setDefaultComponentAlignment(Alignment.TOP_CENTER);
-            innerAdvert.addComponent(myadvertsLayout);
-        }
-    }
-
-    private void refreshAdvertContent() {
-        innerAdvert.removeAllComponents();
-        addAdvertContent();
-    }
-
-    private void buildpostBoxTab() {
+    private void buildpostBoxTab() throws Exception {
         postBoxPanel = new Panel();
-        postBoxPanel.setWidth("1000");
+        postBoxPanel.setWidth(postboxPanelWidth);
         postBoxPanel.setHeightUndefined();
         innerPostBox = new VerticalLayout();
 
@@ -207,91 +157,280 @@ public class AccountView extends VerticalLayout implements View {
         postBoxLayout.addComponent(postBoxPanel);
     }
 
-    private void addPostBoxContent() {
-        current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute("current_user");
-        myletters = letterFacade.getMyLetters(current_advertiser);
+    private void addAdvertContent() throws Exception {
+        controller.fillAdverts();
+        createAdvertTable();
+        createAdvertButtons();
+        controller.populateAdverts();
+        innerAdvert.setMargin(true);
+        innerAdvert.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+        innerAdvert.addComponent(tblAdverts);
+    }
 
-        VerticalLayout hlIncomingLetters = new VerticalLayout();
-        hlIncomingLetters.setDefaultComponentAlignment(Alignment.TOP_LEFT);
-        hlIncomingLetters.setMargin(true);
-        VerticalLayout hlOutconingLetters = new VerticalLayout();
-        hlOutconingLetters.setDefaultComponentAlignment(Alignment.TOP_LEFT);
-        hlOutconingLetters.setMargin(true);
+    private void createAdvertTable() {
+        tblAdverts = new Table();
+        tblAdverts.setWidth(tableAdvertWidth);
+        tblAdverts.addContainerProperty(advertTblTitle, String.class, null);
+        tblAdverts.addContainerProperty(advertTblDate, String.class, null);
+        tblAdverts.addContainerProperty(advertTblPrice, String.class, null);
+        tblAdverts.addContainerProperty(advertTblDelete, Button.class, null);
+        tblAdverts.addContainerProperty(advertTblModify, Button.class, null);
+    }
 
-        TabSheet letterTabSheet = new TabSheet();
-        letterTabSheet.setWidth("800");
-        letterTabSheet.addTab(hlIncomingLetters).setCaption("Bejövő");
-        letterTabSheet.addTab(hlOutconingLetters).setCaption("Kimenő");
+    public void createAdvertButtons() {
+        btnDeleteAdvert = new Button(delButtonText);
+        btnDeleteAdvert.setStyleName(NAVBUTTON.toString());
+        btnModifyAdvert = new Button(modButtonText);
+        btnModifyAdvert.setStyleName(NAVBUTTON.toString());
+    }
 
-        lblTitleHeader = new Label("Tárgy");
-        lblTitleHeader.setWidth("200");
-        lblTextHeader = new Label("Üzenet");
-        lblTextHeader.setWidth("200");
-        lblCandidateHeader = new Label("Feladó");
-        lblCandidateHeader.setWidth("200");
-        lblDateHeader = new Label("Dátum");
-        lblDateHeader.setWidth("200");
-
-        HorizontalLayout hlHeader = new HorizontalLayout();
-
-        hlHeader.addComponent(lblTitleHeader);
-        hlHeader.addComponent(lblTextHeader);
-        hlHeader.addComponent(lblCandidateHeader);
-        hlHeader.addComponent(lblDateHeader);
-
-        hlOutconingLetters.addComponent(hlHeader);
-        hlOutconingLetters.addComponent(new Label("<hr />", ContentMode.HTML));
-        hlIncomingLetters.addComponent(hlHeader);
-        hlIncomingLetters.addComponent(new Label("<hr />", ContentMode.HTML));
-
-        for (final Letter letter : myletters) {
-            HorizontalLayout hlLetters = new HorizontalLayout();
-            hlLetters.setSpacing(true);
-
-            Label lblMailTitle = new Label(letter.getMailtitle());
-            lblMailTitle.setWidth("200");
-
-            String text = letter.getMailtext();
-            if(text.length() > 20){
-                text = text.substring(0, 20);
-            }
-            Label lblMailText = new Label(text);
-            lblMailText.setWidth("200");
-
-            Label lblCandidate = new Label(letter.getSendername());
-            lblCandidate.setWidth("200");
-
-            Label lblDate = new Label("2015-01-01");
-            lblDate.setWidth("200");
-
-            hlLetters.addComponent(lblMailTitle);
-            hlLetters.addComponent(lblMailText);
-            hlLetters.addComponent(lblCandidate);
-            hlLetters.addComponent(lblDate);
-            hlLetters.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
-
-                @Override
-                public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-                    try {
-                        VaadinSession.getCurrent().getLockInstance().lock();
-                        VaadinSession.getCurrent().setAttribute("letterToShow", letter);
-                    } finally {
-                        VaadinSession.getCurrent().getLockInstance().unlock();
-                    }
-                    getUI().getNavigator().navigateTo("LETTERVIEW");
+    public void addListenerToBtnDelete(final Advertisement a) {
+        btnDeleteAdvert.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.deletePicture(a);
+                    refreshAdvertContent();
+                } catch (Exception ex) {
+                    Logger.getLogger(AccountView.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            });
-
-            if (letter.getSender() == false) {
-                hlIncomingLetters.addComponent(hlLetters);
-            } else {
-                hlOutconingLetters.addComponent(hlLetters);
             }
-        }
+        });
+    }
 
+    public void addListenerToBtnModify(final Advertisement a) {
+        btnModifyAdvert.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                controller.modifyAdvert(a);
+            }
+        });
+    }
+
+    private void refreshAdvertContent() throws Exception {
+        innerAdvert.removeAllComponents();
+        addAdvertContent();
+    }
+
+    private void addPostBoxContent() throws Exception {
+        controller.fillLetters();
+        createLetterLayouts();
+        createLetterTabSheet();
+        createTableForInComingLetters();
+        createTableForOutGoingLetters();
+        controller.popluateLetters();
+        hlInComingLetters.addComponent(tblIncLetters);
+        hlOutGoingLetters.addComponent(tbloutgLetters);
         innerPostBox.setMargin(true);
         innerPostBox.setDefaultComponentAlignment(Alignment.TOP_CENTER);
         innerPostBox.addComponent(letterTabSheet);
     }
 
+    private void createLetterLayouts() {
+        hlInComingLetters = new VerticalLayout();
+        hlInComingLetters.setDefaultComponentAlignment(Alignment.TOP_LEFT);
+        hlInComingLetters.setMargin(true);
+        hlOutGoingLetters = new VerticalLayout();
+        hlOutGoingLetters.setDefaultComponentAlignment(Alignment.TOP_LEFT);
+        hlOutGoingLetters.setMargin(true);
+    }
+
+    private void createLetterTabSheet() {
+        letterTabSheet = new TabSheet();
+        letterTabSheet.setWidth(letterTabSheetWidth);
+        letterTabSheet.addTab(hlInComingLetters).setCaption(incoming);
+        letterTabSheet.addTab(hlOutGoingLetters).setCaption(outgoing);
+    }
+
+    private void createTableForInComingLetters() {
+        tblIncLetters = new Table();
+        tblIncLetters.setWidth(tableLetterWidth);
+        tblIncLetters.addContainerProperty("", Letter.class, null);
+        tblIncLetters.addContainerProperty(letterTblSubject, String.class, null);
+        tblIncLetters.addContainerProperty(letterTblMessage, String.class, null);
+        tblIncLetters.addContainerProperty(letterTblSender, String.class, null);
+        tblIncLetters.addContainerProperty(letterTblDate, String.class, null);
+        addListenerToTblIncLetters();
+    }
+
+    private void createTableForOutGoingLetters() {
+        tbloutgLetters = new Table();
+        tbloutgLetters.setWidth(tableLetterWidth);
+        tbloutgLetters.addContainerProperty("", Letter.class, null);
+        tbloutgLetters.addContainerProperty(letterTblSubject, String.class, null);
+        tbloutgLetters.addContainerProperty(letterTblMessage, String.class, null);
+        tbloutgLetters.addContainerProperty(letterTblSender, String.class, null);
+        tbloutgLetters.addContainerProperty(letterTblDate, String.class, null);
+        addListenerToTblOutgLetters();
+    }
+
+    public void addListenerToTblIncLetters() {
+        tblIncLetters.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+            @Override
+            public void itemClick(ItemClickEvent event) {
+                controller.selectInComingLetter(event);
+            }
+        });
+    }
+
+    public void addListenerToTblOutgLetters() {
+        tbloutgLetters.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+            @Override
+            public void itemClick(ItemClickEvent event) {
+                controller.selectOutGoingLetter(event);
+            }
+        });
+    }
+
+    private void readLabelText() {
+        try {
+            xmlReader = new XmlFileReader();
+            xmlReader.setAccView(this);
+            xmlReader.setTagName(this.getClass().getSimpleName());
+            xmlReader.readXml();
+        } catch (Exception ex) {
+            Logger.getLogger(AccountView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public AdvertisementFacade getAdvertisementFacade() {
+        return advertisementFacade;
+    }
+
+    public Button getBtnDeleteAdvert() {
+        return btnDeleteAdvert;
+    }
+
+    public Button getBtnModifyAdvert() {
+        return btnModifyAdvert;
+    }
+
+    public Table getTblAdverts() {
+        return tblAdverts;
+    }
+
+    public Table getTblOutgLetters() {
+        return tbloutgLetters;
+    }
+
+    public Table getTblIncLetters() {
+        return tblIncLetters;
+    }
+
+    public MaincategoryFacade getMaincategoryFacade() {
+        return maincategoryFacade;
+    }
+
+    public SubcategoryFacade getSubcategoryFacade() {
+        return subcategoryFacade;
+    }
+
+    public PictureFacade getPictureFacade() {
+        return pictureFacade;
+    }
+
+    public AdverttypeFacade getAdverttypeFacade() {
+        return adverttypeFacade;
+    }
+
+    public AdvertstateFacade getAdvertstateFacade() {
+        return advertstateFacade;
+    }
+
+    public LetterFacade getLetterFacade() {
+        return letterFacade;
+    }
+
+    public Panel getAdvertPanel() {
+        return advertPanel;
+    }
+
+    public Panel getPostBoxPanel() {
+        return postBoxPanel;
+    }
+
+    public TabSheet getLetterTabSheet() {
+        return letterTabSheet;
+    }
+
+    public void setAdvertTabText(String advertTabText) {
+        this.advertTabText = advertTabText;
+    }
+
+    public void setAdvertTblTitle(String advertTblTitle) {
+        this.advertTblTitle = advertTblTitle;
+    }
+
+    public void setAdvertTblDate(String advertTblDate) {
+        this.advertTblDate = advertTblDate;
+    }
+
+    public void setAdvertTblPrice(String advertTblPrice) {
+        this.advertTblPrice = advertTblPrice;
+    }
+
+    public void setAdvertTblDelete(String advertTblDelete) {
+        this.advertTblDelete = advertTblDelete;
+    }
+
+    public void setAdvertTblModify(String advertTblModify) {
+        this.advertTblModify = advertTblModify;
+    }
+
+    public void setLetterTblSubject(String letterTblSubject) {
+        this.letterTblSubject = letterTblSubject;
+    }
+
+    public void setLetterTblMessage(String letterTblMessage) {
+        this.letterTblMessage = letterTblMessage;
+    }
+
+    public void setLetterTblSender(String letterTblSender) {
+        this.letterTblSender = letterTblSender;
+    }
+
+    public void setLetterTblDate(String letterTblDate) {
+        this.letterTblDate = letterTblDate;
+    }
+
+    public void setIncoming(String incoming) {
+        this.incoming = incoming;
+    }
+
+    public void setOutgoing(String outgoing) {
+        this.outgoing = outgoing;
+    }
+
+    public void setAdvertPanelWidth(String advertPanelWidth) {
+        this.advertPanelWidth = advertPanelWidth;
+    }
+
+    public void setPostboxPanelWidth(String letterPanelWidth) {
+        this.postboxPanelWidth = letterPanelWidth;
+    }
+
+    public void setLetterTabSheetWidth(String letterTabSheetWidth) {
+        this.letterTabSheetWidth = letterTabSheetWidth;
+    }
+
+    public void setTableLetterWidth(String tableLetterWidth) {
+        this.tableLetterWidth = tableLetterWidth;
+    }
+
+    public void setTableAdvertWidth(String tableAdvertWidth) {
+        this.tableAdvertWidth = tableAdvertWidth;
+    }
+
+    public void setPostboxTabText(String postboxTabText) {
+        this.postboxTabText = postboxTabText;
+    }
+
+    public void setDelButtonText(String delButtonText) {
+        this.delButtonText = delButtonText;
+    }
+
+    public void setModButtonText(String modButtonText) {
+        this.modButtonText = modButtonText;
+    }
 }

@@ -27,7 +27,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 @CDIView("SELECTED")
-public class SelectedAdvert extends HorizontalLayout implements View {
+public class SelectedAdvertView extends HorizontalLayout implements View {
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy MMMM dd");
 
@@ -217,7 +217,9 @@ public class SelectedAdvert extends HorizontalLayout implements View {
         separeate();
         vlContent.addComponent(hlMeta);
         separeate();
+        if(mainImage != null){
         vlContent.addComponent(mainImage);
+        }
         vlContent.addComponent(hlPictures);
         vlContent.addComponent(lblPrice);
         separeate();
