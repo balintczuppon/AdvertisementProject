@@ -22,6 +22,7 @@
         <emptyfielderror>Minden mező kitöltése kötelező.</emptyfielderror>
         <passworderror>A megadott jelszavak nem egyeznek.</passworderror>
         <conditionerror>A feltételek elfogadása nélkül nem regisztrálhat.</conditionerror>
+        <emailvalidatormessage>Nem megfelelő e-mail cím formátum.</emailvalidatormessage>
     </RegistrationView> 
     <AdvertListView>
         <searchbutton>Keresés</searchbutton>
@@ -43,6 +44,13 @@
         <filterpanelwidth>300</filterpanelwidth>
         <advertpanelwidth>700</advertpanelwidth>
         <searchpanelwidth>700</searchpanelwidth>
+        
+        <sorttypeprompt>Rendezés</sorttypeprompt>
+        <sorttypepriceasc>Legolcsóbb elől</sorttypepriceasc>
+        <sorttypepricedesc>Legdrágább elől</sorttypepricedesc>
+        <sorttypedateasc>Legrégebbi elől</sorttypedateasc>
+        <sorttypedatedesc>Legfrissebb elől</sorttypedatedesc>
+        
     </AdvertListView>   
     <AdvertRegView>
         <title>Hirdetés címe</title>
@@ -91,17 +99,26 @@
         <lettertablemessage>Üzenet</lettertablemessage>
         <lettertabledate>Dátum</lettertabledate>
         <lettertablesender>Feladó</lettertablesender>        
-    </AccountView>
-    
-    
-    
-    
-    
-    
-    <selectedadvert>
-        
-        
-    </selectedadvert>
+    </AccountView> 
+    <SelectedAdvertView>
+        <advertpanelwidth>1000</advertpanelwidth>
+        <advertiserLabel>Hirdető: </advertiserLabel>
+        <advertiserphone>Elérhetősége: </advertiserphone>
+        <registrationdate>Feladás ideje: </registrationdate>
+        <price>Ár: </price>
+        <descriptionwidth>640</descriptionwidth>
+        <googlemaplocal>Hungarian</googlemaplocal>
+        <googlemapzoom>18</googlemapzoom>
+        <connection>További Információk</connection>
+        <hlfieldswidth>640</hlfieldswidth>
+        <nametextfield>Név</nametextfield>
+        <emailtextfield>E-mail cím</emailtextfield>
+        <phonetextfield>Telefonszám</phonetextfield>
+        <messagetextareawidth>640</messagetextareawidth>
+        <messagetextareaprompt>Ide írja az üzenetét...</messagetextareaprompt>
+        <sendbutton>Elküldöm az üzenetet</sendbutton>
+        <commitmessage>Üzenetét továbbítottuk!</commitmessage>
+    </SelectedAdvertView>
     <letter>
         
     </letter>

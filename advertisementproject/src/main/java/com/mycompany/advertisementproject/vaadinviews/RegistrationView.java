@@ -1,8 +1,8 @@
-package com.mycompany.advertisementproject.UIs.Views;
+package com.mycompany.advertisementproject.vaadinviews;
 
 import static com.mycompany.advertisementproject.Enums.StyleNames.TITLE;
 import static com.mycompany.advertisementproject.Enums.Views.LOGIN;
-import com.mycompany.advertisementproject.Enums.control.RegistrationController;
+import com.mycompany.advertisementproject.control.RegistrationController;
 import com.mycompany.advertisementproject.Tools.XmlFileReader;
 import com.mycompany.advertisementproject.facades.AdvertiserFacade;
 import com.mycompany.advertisementproject.facades.PostboxFacade;
@@ -26,32 +26,38 @@ import javax.inject.Inject;
 @CDIView("REGISTRATION")
 public class RegistrationView extends VerticalLayout implements View {
 
-    private XmlFileReader xmlReader;
-    private RegistrationController controller;
-
-    @Inject
-    private AdvertiserFacade advertiserFacade;
-    @Inject
-    private PostboxFacade postboxFacade;
-
-    private Label lblTitle;
-    private PasswordField pfPassWord1;
-    private PasswordField pfPassWord2;
-    private TextField tfEmail;
-    private TextField tfName;
-    private TextField tfPhoneNumber;
-    private CheckBox chkBxTerms;
-    private CheckBox chkBxNewsLetter;
-    private Button btnRegistration;
-
     private String emailUsedError;
     private String emailFormatError;
     private String emptyFieldError;
     private String passwordError;
     private String conditionError;
     private String txtSuccess;
-    
+    private String emailValidatorMessage;
+
+    private TextField tfEmail;
+    private TextField tfName;
+    private TextField tfPhoneNumber;
+
+    private CheckBox chkBxTerms;
+    private CheckBox chkBxNewsLetter;
+
+    private PasswordField pfPassWord1;
+    private PasswordField pfPassWord2;
+
+    private Label lblTitle;
+
+    private Button btnRegistration;
+
+    private XmlFileReader xmlReader;
+
+    private RegistrationController controller;
+
     private FormLayout fl;
+
+    @Inject
+    private AdvertiserFacade advertiserFacade;
+    @Inject
+    private PostboxFacade postboxFacade;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -222,6 +228,14 @@ public class RegistrationView extends VerticalLayout implements View {
     public void setConditionError(String conditionError) {
         this.conditionError = conditionError;
     }
-    
+
+    public String getEmailValidatorMessage() {
+        return emailValidatorMessage;
+    }
+
+    public void setEmailValidatorMessage(String emailValidatorMessage) {
+        this.emailValidatorMessage = emailValidatorMessage;
+    }
+
     
 }

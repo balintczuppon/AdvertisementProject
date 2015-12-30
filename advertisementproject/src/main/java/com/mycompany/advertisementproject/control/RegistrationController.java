@@ -1,9 +1,10 @@
-package com.mycompany.advertisementproject.Enums.control;
+package com.mycompany.advertisementproject.control;
 
 import com.mycompany.advertisementproject.Tools.Encryptor;
-import com.mycompany.advertisementproject.UIs.Views.RegistrationView;
+import com.mycompany.advertisementproject.vaadinviews.RegistrationView;
 import com.mycompany.advertisementproject.entities.Advertiser;
 import com.mycompany.advertisementproject.entities.Postbox;
+import com.vaadin.data.validator.EmailValidator;
 
 public class RegistrationController {
 
@@ -17,15 +18,13 @@ public class RegistrationController {
     }
 
     public void registration() throws Exception {
-        
+
         Advertiser advertiser = (Advertiser) view.getAdvertiserFacade().getAdvertiserByMail(view.getTfEmail().getValue());
 
         if (advertiser != null) {
             throw new Exception(view.getEmailUsedError());
         }
-        if (!emailIsValid()) {
-            throw new Exception(view.getEmailFormatError());
-        }
+        validateEmail(view.getTfEmail().getValue());
         if (view.getTfEmail().getValue().isEmpty() || view.getPfPassWord1().getValue().isEmpty() || view.getPfPassWord2().getValue().isEmpty()
                 || view.getTfName().getValue().isEmpty() || view.getTfPhoneNumber().getValue().isEmpty()) {
             throw new Exception(view.getEmptyFieldError());
@@ -53,7 +52,7 @@ public class RegistrationController {
             advertiser.setAuthority(DEFAULT_AUTHORITY);
 
             view.getAdvertiserFacade().create(advertiser);
-            
+
             int id = advertiser.getId();
             postbox.setId(id);
 
@@ -64,7 +63,8 @@ public class RegistrationController {
         }
     }
 
-    private boolean emailIsValid() {
-        return true;
+    private void validateEmail(String value) {
+        EmailValidator validator = new EmailValidator(view.getEmailValidatorMessage());
+        validator.validate(value);
     }
 }

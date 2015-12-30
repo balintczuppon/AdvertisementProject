@@ -6,6 +6,7 @@
 package com.mycompany.advertisementproject.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,6 +19,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -67,6 +70,9 @@ public class Letter implements Serializable {
     @JoinColumn(name = "postBoxId", referencedColumnName = "id")
     @ManyToOne
     private Postbox postBoxId;
+    @Column(name = "senddate")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date sendDate;
 
     public Letter() {
     }
@@ -146,6 +152,16 @@ public class Letter implements Serializable {
     public void setPostBoxId(Postbox postBoxId) {
         this.postBoxId = postBoxId;
     }
+
+    public Date getSendDate() {
+        return sendDate;
+    }
+
+    public void setSendDate(Date sendDate) {
+        this.sendDate = sendDate;
+    }
+    
+    
 
     @Override
     public int hashCode() {

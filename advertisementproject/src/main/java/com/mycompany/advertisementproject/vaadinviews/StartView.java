@@ -1,4 +1,4 @@
-package com.mycompany.advertisementproject.UIs.Views;
+package com.mycompany.advertisementproject.vaadinviews;
 
 import com.mycompany.advertisementproject.Enums.Views;
 import com.mycompany.advertisementproject.facades.AdvertisementFacade;

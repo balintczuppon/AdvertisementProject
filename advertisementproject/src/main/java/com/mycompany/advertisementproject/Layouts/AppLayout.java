@@ -1,7 +1,11 @@
 package com.mycompany.advertisementproject.Layouts;
 
+import static com.mycompany.advertisementproject.Enums.SessionAttributes.ADVERTTOMODIFY;
+import static com.mycompany.advertisementproject.Enums.SessionAttributes.AUTHORIZATIONLEVEL;
+import static com.mycompany.advertisementproject.Enums.SessionAttributes.CURRENTUSER;
 import static com.mycompany.advertisementproject.Enums.StyleNames.*;
 import static com.mycompany.advertisementproject.Enums.Views.*;
+import com.mycompany.advertisementproject.Tools.XmlFileReader;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.VaadinSession;
@@ -10,12 +14,15 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AppLayout extends VerticalLayout implements ViewDisplay {
 
-    private VerticalLayout header = new VerticalLayout();
-
-    private String nodePath;
+    public static final String fileSource = "/Users/balin/data.xml";
+    public static final SimpleDateFormat formattedDate = new SimpleDateFormat("yyyy MMMM dd");
+    public static final String currency = "Huf";
 
     private static Button btnNav1;
     private static Button btnNav2;
@@ -23,6 +30,11 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
     private static Button btnNav4;
     private static Button btnNav5;
     private static Button btnNav6;
+
+    private VerticalLayout header = new VerticalLayout();
+
+    private String nodePath;
+    private XmlFileReader xmlReader;
 
     public AppLayout() {
         buildHeader();
@@ -114,7 +126,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     VaadinSession.getCurrent().getLockInstance().lock();
-                    VaadinSession.getCurrent().setAttribute("AdvertToModify", null);
+                    VaadinSession.getCurrent().setAttribute(ADVERTTOMODIFY.toString(), null);
                 } finally {
                     VaadinSession.getCurrent().getLockInstance().unlock();
                 }
@@ -156,13 +168,13 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         btnNav6.setVisible(false);
         try {
             VaadinSession.getCurrent().getLockInstance().lock();
-            VaadinSession.getCurrent().setAttribute("current_user", null);
+            VaadinSession.getCurrent().setAttribute(CURRENTUSER.toString(), null);
         } finally {
             VaadinSession.getCurrent().getLockInstance().unlock();
         }
         try {
             VaadinSession.getCurrent().getLockInstance().lock();
-            VaadinSession.getCurrent().setAttribute("authorization_level", null);
+            VaadinSession.getCurrent().setAttribute(AUTHORIZATIONLEVEL.toString(), null);
         } finally {
             VaadinSession.getCurrent().getLockInstance().unlock();
         }
@@ -174,5 +186,23 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         btnNav4.setVisible(true);
         btnNav5.setVisible(true);
         btnNav6.setVisible(true);
-   }
+    }
+
+    public static java.sql.Date currentDate() {
+        java.util.Date utilDate = new java.util.Date();
+        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+        return sqlDate;
+    }
+
+    private void addLabelText() {
+        try {
+            xmlReader = new XmlFileReader();
+            xmlReader.setAppLayout(this);
+            xmlReader.setTagName(this.getClass().getSimpleName());
+            xmlReader.readXml();
+        } catch (Exception ex) {
+            Logger.getLogger(AppLayout.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
 }

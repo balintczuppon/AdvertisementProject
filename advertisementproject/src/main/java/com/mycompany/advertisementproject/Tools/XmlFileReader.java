@@ -1,12 +1,13 @@
 package com.mycompany.advertisementproject.Tools;
 
-import com.mycompany.advertisementproject.UIs.Views.AccountView;
-import com.mycompany.advertisementproject.UIs.Views.AdvertListView;
-import com.mycompany.advertisementproject.UIs.Views.AdvertRegView;
-import com.mycompany.advertisementproject.UIs.Views.LetterView;
-import com.mycompany.advertisementproject.UIs.Views.LogInView;
-import com.mycompany.advertisementproject.UIs.Views.RegistrationView;
-import com.mycompany.advertisementproject.UIs.Views.SelectedAdvertView;
+import com.mycompany.advertisementproject.Layouts.AppLayout;
+import com.mycompany.advertisementproject.vaadinviews.AccountView;
+import com.mycompany.advertisementproject.vaadinviews.AdvertListView;
+import com.mycompany.advertisementproject.vaadinviews.AdvertRegView;
+import com.mycompany.advertisementproject.vaadinviews.LetterView;
+import com.mycompany.advertisementproject.vaadinviews.LogInView;
+import com.mycompany.advertisementproject.vaadinviews.RegistrationView;
+import com.mycompany.advertisementproject.vaadinviews.SelectedAdvertView;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
@@ -22,9 +23,7 @@ import org.w3c.dom.DOMException;
 import org.xml.sax.SAXException;
 
 public class XmlFileReader {
-
-    public static final String fileSource = "/Users/balin/data.xml";
-
+    
     private LogInView loginView;
     private RegistrationView regView;
     private AdvertListView listView;
@@ -32,19 +31,21 @@ public class XmlFileReader {
     private LetterView letterView;
     private SelectedAdvertView selectedView;
     private AccountView accView;
-
+    
+    private AppLayout appLayout;
+    
     private String tagName;
-
+    
     public void readXml() throws Exception {
         try {
-            File fXmlFile = new File(fileSource);
+            File fXmlFile = new File(AppLayout.fileSource);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(fXmlFile);
             doc.getDocumentElement().normalize();
-
+            
             NodeList nList = doc.getElementsByTagName(tagName);
-
+            
             for (int temp = 0; temp < nList.getLength(); temp++) {
                 Node nNode = nList.item(temp);
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -56,7 +57,7 @@ public class XmlFileReader {
             Logger.getLogger(XmlFileReader.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
     private void selectTagName(Element eElement) throws Exception {
         switch (tagName) {
             case "RegistrationView": {
@@ -90,9 +91,13 @@ public class XmlFileReader {
             case "StartView": {
                 break;
             }
+            case "AppLayout": {
+                readAppLayoutData(eElement);
+                break;
+            }
         }
     }
-
+    
     private void readRegViewData(Element eElement) {
         regView.getLblTitle().setValue(eElement.getElementsByTagName("title").item(0).getTextContent());
         regView.getTfEmail().setCaption(eElement.getElementsByTagName("email").item(0).getTextContent());
@@ -104,13 +109,14 @@ public class XmlFileReader {
         regView.getTfName().setCaption(eElement.getElementsByTagName("name").item(0).getTextContent());
         regView.getBtnRegistration().setCaption(eElement.getElementsByTagName("regbutton").item(0).getTextContent());
         regView.setTxtSuccess(eElement.getElementsByTagName("succestext").item(0).getTextContent());
+        regView.setEmailValidatorMessage(eElement.getElementsByTagName("emailvalidatormessage").item(0).getTextContent());
 //        regView.setEmailUsedError(eElement.getElementsByTagName("emailusederror").item(0).getTextContent());
 //        regView.setEmailFormatError(eElement.getElementsByTagName("emailformaterror").item(0).getTextContent());
 //        regView.setEmptyFieldError(eElement.getElementsByTagName("emptyfielderror").item(0).getTextContent());
 //        regView.setPasswordError(eElement.getElementsByTagName("passworderror").item(0).getTextContent());
 //        regView.setConditionError(eElement.getElementsByTagName("conditionerror").item(0).getTextContent());
     }
-
+    
     private void readLoginViewData(Element eElement) {
         loginView.getLblTitle().setValue(eElement.getElementsByTagName("title").item(0).getTextContent());
         loginView.getTfEmail().setCaption(eElement.getElementsByTagName("email").item(0).getTextContent());
@@ -118,29 +124,34 @@ public class XmlFileReader {
         loginView.getBtnLogin().setCaption(eElement.getElementsByTagName("loginbutton").item(0).getTextContent());
         loginView.setErrorText(eElement.getElementsByTagName("errortext").item(0).getTextContent());
     }
-
+    
     private void readAdvertListViewData(Element eElement) {
-        listView.getTxtFldSearch().setWidth(eElement.getElementsByTagName("searchfieldwidth").item(0).getTextContent());
-        listView.getBtnSearch().setCaption(eElement.getElementsByTagName("searchbutton").item(0).getTextContent());
-        listView.getSearchBarPanel().setWidth(eElement.getElementsByTagName("searchpanelwidth").item(0).getTextContent());
-        listView.getLblTitle().setWidth(eElement.getElementsByTagName("adverttitlewidth").item(0).getTextContent());
-        listView.getLblFilter().setValue(eElement.getElementsByTagName("filterlabel").item(0).getTextContent());
-        listView.getFilterPanel().setWidth(eElement.getElementsByTagName("filterpanelwidth").item(0).getTextContent());
-        listView.getAdvertPanel().setWidth(eElement.getElementsByTagName("advertpanelwidth").item(0).getTextContent());
-        listView.getCmbBxCategory().setInputPrompt(eElement.getElementsByTagName("category").item(0).getTextContent());
-        listView.getCmbBxSubCategory().setInputPrompt(eElement.getElementsByTagName("subcategory").item(0).getTextContent());
-        listView.getCmbBxType().setInputPrompt(eElement.getElementsByTagName("type").item(0).getTextContent());
-        listView.getCmbBxState().setInputPrompt(eElement.getElementsByTagName("state").item(0).getTextContent());
-        listView.getCmbBxCity().setInputPrompt(eElement.getElementsByTagName("city").item(0).getTextContent());
-        listView.getCmbBxCountry().setInputPrompt(eElement.getElementsByTagName("county").item(0).getTextContent());
-        listView.getTxtFldMinPrice().setInputPrompt(eElement.getElementsByTagName("minprice").item(0).getTextContent());
-        listView.getTxtFldMaxPrice().setInputPrompt(eElement.getElementsByTagName("maxprice").item(0).getTextContent());
-        listView.getBtnFilter().setCaption(eElement.getElementsByTagName("filterbutton").item(0).getTextContent());
+        listView.setSearchTextFieldWidth(eElement.getElementsByTagName("searchfieldwidth").item(0).getTextContent());
+        listView.setSearchButtonValue(eElement.getElementsByTagName("searchbutton").item(0).getTextContent());
+        listView.setSearchbarPanelWidth(eElement.getElementsByTagName("searchpanelwidth").item(0).getTextContent());
+        listView.setTitleLabelWidth(eElement.getElementsByTagName("adverttitlewidth").item(0).getTextContent());
+        listView.setFilterLabelValue(eElement.getElementsByTagName("filterlabel").item(0).getTextContent());
+        listView.setFilterPanelWidth(eElement.getElementsByTagName("filterpanelwidth").item(0).getTextContent());
+        listView.setAdvertPanelWidth(eElement.getElementsByTagName("advertpanelwidth").item(0).getTextContent());
+        listView.setCategoryCmbbxPrompt(eElement.getElementsByTagName("category").item(0).getTextContent());
+        listView.setSubCategoryCmbbxPrompt(eElement.getElementsByTagName("subcategory").item(0).getTextContent());
+        listView.setTypeCmbbxPromprt(eElement.getElementsByTagName("type").item(0).getTextContent());
+        listView.setStateCmbbxPrompt(eElement.getElementsByTagName("state").item(0).getTextContent());
+        listView.setCityCmbbxPrompt(eElement.getElementsByTagName("city").item(0).getTextContent());
+        listView.setCountryCmbbxPrompt(eElement.getElementsByTagName("county").item(0).getTextContent());
+        listView.setMinPriceTxtFldPrompt(eElement.getElementsByTagName("minprice").item(0).getTextContent());
+        listView.setMaxPriceTxtFldPrompt(eElement.getElementsByTagName("maxprice").item(0).getTextContent());
+        listView.setFilterButtonCaption(eElement.getElementsByTagName("filterbutton").item(0).getTextContent());
         listView.setImageWidth(eElement.getElementsByTagName("imagewidth").item(0).getTextContent());
         listView.setImageHeight(eElement.getElementsByTagName("imageheight").item(0).getTextContent());
         listView.setNoResult(eElement.getElementsByTagName("noresult").item(0).getTextContent());
+        listView.setSortCmbbxPrompt(eElement.getElementsByTagName("sorttypeprompt").item(0).getTextContent());
+        listView.setSortTypeDateAsc(eElement.getElementsByTagName("sorttypedateasc").item(0).getTextContent());
+        listView.setSortTypeDateDesc(eElement.getElementsByTagName("sorttypedatedesc").item(0).getTextContent());
+        listView.setSortTypePriceAsc(eElement.getElementsByTagName("sorttypepriceasc").item(0).getTextContent());
+        listView.setSortTypePriceDesc(eElement.getElementsByTagName("sorttypepricedesc").item(0).getTextContent());
     }
-
+    
     private void readAdvertRegViewData(Element eElement) {
         advertRegView.getTxtFieldTitle().setInputPrompt(eElement.getElementsByTagName("title").item(0).getTextContent());
         advertRegView.getTxtFieldTitle().setWidth(eElement.getElementsByTagName("titlewidth").item(0).getTextContent());
@@ -167,11 +178,27 @@ public class XmlFileReader {
         advertRegView.setRegister(eElement.getElementsByTagName("register").item(0).getTextContent());
         advertRegView.setSuccessUpload(eElement.getElementsByTagName("uploadsuccess").item(0).getTextContent());
     }
-
+    
     private void readSelectedAdvertData(Element eElement) {
-
+        selectedView.setAdvertPanelWidth(eElement.getElementsByTagName("advertpanelwidth").item(0).getTextContent());
+        selectedView.setLblAdvertiserCaption(eElement.getElementsByTagName("advertiserLabel").item(0).getTextContent());
+        selectedView.setLblAdvertiserPhoneCaption(eElement.getElementsByTagName("advertiserphone").item(0).getTextContent());
+        selectedView.setLblRegDateCaption(eElement.getElementsByTagName("registrationdate").item(0).getTextContent());
+        selectedView.setLblPriceCaption(eElement.getElementsByTagName("price").item(0).getTextContent());
+        selectedView.setLblDescriptionWidth(eElement.getElementsByTagName("descriptionwidth").item(0).getTextContent());
+        selectedView.setLblConnectionCaption(eElement.getElementsByTagName("connection").item(0).getTextContent());
+        selectedView.setHlFieldsWidth(eElement.getElementsByTagName("hlfieldswidth").item(0).getTextContent());
+        selectedView.setTxtFldNameCaption(eElement.getElementsByTagName("nametextfield").item(0).getTextContent());
+        selectedView.setTxtFldEmailCaption(eElement.getElementsByTagName("emailtextfield").item(0).getTextContent());
+        selectedView.setTxtFldPhoneCaption(eElement.getElementsByTagName("phonetextfield").item(0).getTextContent());
+        selectedView.setTxtAreaMessageWidth(eElement.getElementsByTagName("messagetextareawidth").item(0).getTextContent());
+        selectedView.setTxtAreaMessagePrompt(eElement.getElementsByTagName("messagetextareaprompt").item(0).getTextContent());
+        selectedView.setBtnSendMessageCaption(eElement.getElementsByTagName("sendbutton").item(0).getTextContent());
+        selectedView.setGooglemaplocal(eElement.getElementsByTagName("googlemaplocal").item(0).getTextContent());
+        selectedView.setGooglemapzoom(eElement.getElementsByTagName("googlemapzoom").item(0).getTextContent());
+        selectedView.setCommitMessage(eElement.getElementsByTagName("commitmessage").item(0).getTextContent());
     }
-
+    
     private void readAccountViewData(Element eElement) {
         accView.setAdvertTabText(eElement.getElementsByTagName("adverttab").item(0).getTextContent());
         accView.setPostboxTabText(eElement.getElementsByTagName("postboxtab").item(0).getTextContent());
@@ -195,40 +222,48 @@ public class XmlFileReader {
         accView.setLetterTblSender(eElement.getElementsByTagName("lettertablesender").item(0).getTextContent());
         accView.setLetterTblSubject(eElement.getElementsByTagName("lettertablesubject").item(0).getTextContent());
     }
-
+    
     private void readLetterViewData(Element eElement) {
-
+        
     }
-
+    
+    private void readAppLayoutData(Element eElement) {
+        
+    }
+    
     public void setTagName(String tagName) {
         this.tagName = tagName;
     }
-
+    
     public void setLoginView(LogInView loginView) {
         this.loginView = loginView;
     }
-
+    
     public void setRegView(RegistrationView regView) {
         this.regView = regView;
     }
-
+    
     public void setListView(AdvertListView listView) {
         this.listView = listView;
     }
-
+    
     public void setAdvertRegView(AdvertRegView advertRegView) {
         this.advertRegView = advertRegView;
     }
-
+    
     public void setLetterView(LetterView letterView) {
         this.letterView = letterView;
     }
-
+    
     public void setSelectedView(SelectedAdvertView selectedView) {
         this.selectedView = selectedView;
     }
-
+    
     public void setAccView(AccountView accView) {
         this.accView = accView;
+    }
+    
+    public void setAppLayout(AppLayout appLayout) {
+        this.appLayout = appLayout;
     }
 }

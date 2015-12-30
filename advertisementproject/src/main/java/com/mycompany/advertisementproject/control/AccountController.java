@@ -1,7 +1,12 @@
-package com.mycompany.advertisementproject.Enums.control;
+package com.mycompany.advertisementproject.control;
 
+import static com.mycompany.advertisementproject.Enums.SessionAttributes.ADVERTTOMODIFY;
+import static com.mycompany.advertisementproject.Enums.SessionAttributes.CURRENTUSER;
+import static com.mycompany.advertisementproject.Enums.SessionAttributes.LETTERTOSHOW;
 import static com.mycompany.advertisementproject.Enums.Views.ADVERTREG;
-import com.mycompany.advertisementproject.UIs.Views.AccountView;
+import static com.mycompany.advertisementproject.Enums.Views.LETTER;
+import com.mycompany.advertisementproject.Layouts.AppLayout;
+import com.mycompany.advertisementproject.vaadinviews.AccountView;
 import com.mycompany.advertisementproject.entities.Advertisement;
 import com.mycompany.advertisementproject.entities.Advertiser;
 import com.mycompany.advertisementproject.entities.Letter;
@@ -11,6 +16,7 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class AccountController {
@@ -21,8 +27,6 @@ public class AccountController {
     private List<Letter> letters = new ArrayList<>();
     private Advertiser current_advertiser;
 
-    private final SimpleDateFormat formattedDate = new SimpleDateFormat("yyyy MMMM dd");
-
     private int k;
     private int j;
 
@@ -31,7 +35,7 @@ public class AccountController {
     }
 
     public void fillAdverts() throws Exception {
-        current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute("current_user");
+        current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
         adverts = view.getAdvertisementFacade().getMyAdvertisements(current_advertiser);
     }
 
@@ -42,10 +46,10 @@ public class AccountController {
             view.addListenerToBtnDelete(a);
             view.addListenerToBtnModify(a);
 
-            String date = formattedDate.format(a.getRegistrationDate());
+            String date = AppLayout.formattedDate.format(a.getRegistrationDate());
             view.getTblAdverts().addItem(new Object[]{a.getTitle(),
                 date,
-                a.getPrice() + " HUF",
+                a.getPrice() + AppLayout.currency,
                 view.getBtnDeleteAdvert(),
                 view.getBtnModifyAdvert()
             }, i);
@@ -67,7 +71,7 @@ public class AccountController {
     public void modifyAdvert(Advertisement a) {
         try {
             VaadinSession.getCurrent().getLockInstance().lock();
-            VaadinSession.getCurrent().setAttribute("AdvertToModify", a);
+            VaadinSession.getCurrent().setAttribute(ADVERTTOMODIFY.toString(), a);
         } finally {
             VaadinSession.getCurrent().getLockInstance().unlock();
         }
@@ -75,20 +79,31 @@ public class AccountController {
     }
 
     public void fillLetters() throws Exception {
-        current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute("current_user");
+        current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
         letters = view.getLetterFacade().getMyLetters(current_advertiser);
     }
 
     public void popluateLetters() {
         k = 1;
         j = 1;
+
+        String date;
+
         for (final Letter letter : letters) {
+
+            if (letter.getSendDate() != null) {
+                date = AppLayout.formattedDate.format(letter.getSendDate());
+            } else {
+                date = null;
+            }
+
             Object object[] = new Object[]{
                 letter,
                 letter.getMailtitle(),
                 formLetterText(letter.getMailtext()),
                 letter.getSendername(),
-                "2015-01-01"
+                date
+
             };
             splitLetters(letter, object);
         }
@@ -115,21 +130,21 @@ public class AccountController {
         Object object = event.getItem().getItemProperty("").getValue();
         try {
             VaadinSession.getCurrent().getLockInstance().lock();
-            VaadinSession.getCurrent().setAttribute("letterToShow", (Letter) object);
+            VaadinSession.getCurrent().setAttribute(LETTERTOSHOW.toString(), (Letter) object);
         } finally {
             VaadinSession.getCurrent().getLockInstance().unlock();
         }
-        view.getUI().getNavigator().navigateTo("LETTERVIEW");
+        view.getUI().getNavigator().navigateTo(LETTER.toString());
     }
 
     public void selectOutGoingLetter(ItemClickEvent event) {
         Object object = event.getItem().getItemProperty("").getValue();
         try {
             VaadinSession.getCurrent().getLockInstance().lock();
-            VaadinSession.getCurrent().setAttribute("letterToShow", (Letter) object);
+            VaadinSession.getCurrent().setAttribute(LETTERTOSHOW.toString(), (Letter) object);
         } finally {
             VaadinSession.getCurrent().getLockInstance().unlock();
         }
-        view.getUI().getNavigator().navigateTo("LETTERVIEW");
+        view.getUI().getNavigator().navigateTo(LETTER.toString());
     }
 }

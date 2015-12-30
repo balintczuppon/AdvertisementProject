@@ -1,7 +1,6 @@
+package com.mycompany.advertisementproject.vaadinviews;
 
-package com.mycompany.advertisementproject.UIs.Views;
-
-import com.mycompany.advertisementproject.Enums.control.LetterController;
+import com.mycompany.advertisementproject.control.LetterController;
 import com.mycompany.advertisementproject.entities.Letter;
 import com.mycompany.advertisementproject.facades.LetterFacade;
 import com.vaadin.cdi.CDIView;
@@ -20,15 +19,20 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-@CDIView("LETTERVIEW")
+@CDIView("LETTER")
 public class LetterView extends VerticalLayout implements View {
 
-    private LetterController controller;
-
-    private HorizontalLayout hl;
-    private VerticalLayout vlLetter;
-
-    private Panel panel;
+    private String panelWidth;
+    private String lblEnquirerCaption;
+    private String lblTitleCaption;
+    private String lblTextCaption;
+    private String taLetterToShowWidth;
+    private String btnAnswerMailCaption;
+    private String btnSendMailCaption;
+    private String btnBackCaption;
+    private String taLetterToWritePrompt;
+    private String taLetterToWriteWidth;
+    private String taLetterToWriteHeight;
 
     private Label lblMailTitle;
     private Label lblText;
@@ -36,12 +40,20 @@ public class LetterView extends VerticalLayout implements View {
     private Label lblEnquirerName;
     private Label lblTitle;
 
-    private TextArea taLetterToWrite;
-    private TextArea taLetterToShow;
-
     private Button btnAnswerMail;
     private Button btnDeleteMail;
     private Button btnBack;
+
+    private TextArea taLetterToWrite;
+    private TextArea taLetterToShow;
+
+    private LetterController controller;
+
+    private HorizontalLayout hl;
+
+    private VerticalLayout vlLetter;
+
+    private Panel panel;
 
     @Inject
     private LetterFacade letterFacade;
@@ -144,20 +156,40 @@ public class LetterView extends VerticalLayout implements View {
     }
 
     private void addClickListeners(final Letter letter) {
+        addAnswerButtonListener(letter);
+        addDeleteButtonListener(letter);
+        addBackButtonListener();
+    }
+
+    private void addAnswerButtonListener(final Letter letter) {
         btnAnswerMail.addClickListener(new Button.ClickListener() {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                controller.response(letter);
+                try {
+                    controller.response(letter);
+                } catch (Exception ex) {
+                    Logger.getLogger(LetterView.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
+    }
+
+    private void addDeleteButtonListener(final Letter letter) {
         btnDeleteMail.addClickListener(new Button.ClickListener() {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                controller.deleteLetter(letter);
+                try {
+                    controller.deleteLetter(letter);
+                } catch (Exception ex) {
+                    Logger.getLogger(LetterView.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
+    }
+
+    private void addBackButtonListener() {
         btnBack.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -178,6 +210,49 @@ public class LetterView extends VerticalLayout implements View {
     public LetterFacade getLetterFacade() {
         return letterFacade;
     }
-    
-    
+
+    public void setPanelWidth(String panelWidth) {
+        this.panelWidth = panelWidth;
+    }
+
+    public void setLblEnquirerCaption(String lblEnquirerCaption) {
+        this.lblEnquirerCaption = lblEnquirerCaption;
+    }
+
+    public void setLblTitleCaption(String lblTitleCaption) {
+        this.lblTitleCaption = lblTitleCaption;
+    }
+
+    public void setLblTextCaption(String lblTextCaption) {
+        this.lblTextCaption = lblTextCaption;
+    }
+
+    public void setTaLetterToShowWidth(String taLetterToShowWidth) {
+        this.taLetterToShowWidth = taLetterToShowWidth;
+    }
+
+    public void setBtnAnswerMailCaption(String btnAnswerMailCaption) {
+        this.btnAnswerMailCaption = btnAnswerMailCaption;
+    }
+
+    public void setBtnSendMailCaption(String btnSendMailCaption) {
+        this.btnSendMailCaption = btnSendMailCaption;
+    }
+
+    public void setBtnBackCaption(String btnBackCaption) {
+        this.btnBackCaption = btnBackCaption;
+    }
+
+    public void setTaLetterToWritePrompt(String taLetterToWritePrompt) {
+        this.taLetterToWritePrompt = taLetterToWritePrompt;
+    }
+
+    public void setTaLetterToWriteWidth(String taLetterToWriteWidth) {
+        this.taLetterToWriteWidth = taLetterToWriteWidth;
+    }
+
+    public void setTaLetterToWriteHeight(String taLetterToWriteHeight) {
+        this.taLetterToWriteHeight = taLetterToWriteHeight;
+    }
+
 }

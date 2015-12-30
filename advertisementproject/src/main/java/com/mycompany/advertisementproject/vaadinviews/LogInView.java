@@ -1,7 +1,7 @@
-package com.mycompany.advertisementproject.UIs.Views;
+package com.mycompany.advertisementproject.vaadinviews;
 
 import com.mycompany.advertisementproject.Enums.StyleNames;
-import com.mycompany.advertisementproject.Enums.control.LoginController;
+import com.mycompany.advertisementproject.control.LoginController;
 import com.mycompany.advertisementproject.Tools.XmlFileReader;
 import com.mycompany.advertisementproject.facades.AdvertiserFacade;
 import com.vaadin.cdi.CDIView;
@@ -24,20 +24,21 @@ import javax.inject.Inject;
 @CDIView("LOGIN")
 public class LogInView extends VerticalLayout implements View {
 
-    private LoginController logincontroller;
-    private XmlFileReader xmlReader;
-
-    @Inject
-    private AdvertiserFacade advertiserFacade;
+    private String errorText;
 
     private PasswordField pfPassWord;
     private TextField tfEmail;
     private Button btnLogin;
     private Label lblTitle;
 
-    private String errorText;
+    private LoginController logincontroller;
+
+    private XmlFileReader xmlReader;
 
     private FormLayout fl;
+
+    @Inject
+    private AdvertiserFacade advertiserFacade;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {

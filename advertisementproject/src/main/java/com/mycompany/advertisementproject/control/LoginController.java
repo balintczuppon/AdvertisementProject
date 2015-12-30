@@ -1,9 +1,11 @@
-package com.mycompany.advertisementproject.Enums.control;
+package com.mycompany.advertisementproject.control;
 
+import static com.mycompany.advertisementproject.Enums.SessionAttributes.AUTHORIZATIONLEVEL;
+import static com.mycompany.advertisementproject.Enums.SessionAttributes.CURRENTUSER;
 import static com.mycompany.advertisementproject.Enums.Views.USERPAGE;
 import com.mycompany.advertisementproject.Layouts.AppLayout;
 import com.mycompany.advertisementproject.Tools.Encryptor;
-import com.mycompany.advertisementproject.UIs.Views.LogInView;
+import com.mycompany.advertisementproject.vaadinviews.LogInView;
 import com.mycompany.advertisementproject.entities.Advertiser;
 import com.vaadin.server.VaadinSession;
 import javax.ejb.EJBException;
@@ -47,7 +49,7 @@ public class LoginController {
     private void setCurrentUser(Advertiser a) {
         try {
             VaadinSession.getCurrent().getLockInstance().lock();
-            VaadinSession.getCurrent().setAttribute("current_user", a);
+            VaadinSession.getCurrent().setAttribute(CURRENTUSER.toString(), a);
         } finally {
             VaadinSession.getCurrent().getLockInstance().unlock();
         }
@@ -56,7 +58,7 @@ public class LoginController {
     private void setUserRole(Advertiser a) {
         try {
             VaadinSession.getCurrent().getLockInstance().lock();
-            VaadinSession.getCurrent().setAttribute("authorization_level", a.getAuthority());
+            VaadinSession.getCurrent().setAttribute(AUTHORIZATIONLEVEL.toString(), a.getAuthority());
         } finally {
             VaadinSession.getCurrent().getLockInstance().unlock();
         }

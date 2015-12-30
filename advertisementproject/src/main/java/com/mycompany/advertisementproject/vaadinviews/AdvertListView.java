@@ -1,6 +1,7 @@
-package com.mycompany.advertisementproject.UIs.Views;
+package com.mycompany.advertisementproject.vaadinviews;
 
-import com.mycompany.advertisementproject.Enums.control.AdvertListController;
+import com.mycompany.advertisementproject.Layouts.AppLayout;
+import com.mycompany.advertisementproject.control.AdvertListController;
 import com.mycompany.advertisementproject.Tools.XmlFileReader;
 import com.mycompany.advertisementproject.entities.*;
 import com.mycompany.advertisementproject.facades.*;
@@ -19,7 +20,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -28,23 +28,32 @@ import javax.inject.Inject;
 @CDIView("ADVERTS")
 public class AdvertListView extends VerticalLayout implements View {
 
-    private final SimpleDateFormat formattedDate = new SimpleDateFormat("yyyy MMMM dd");
+    private String searchTextFieldWidth;
+    private String SearchButtonValue;
+    private String searchbarPanelWidth;
+    private String titleLabelWidth;
+    private String filterLabelValue;
+    private String filterPanelWidth;
+    private String advertPanelWidth;
+    private String categoryCmbbxPrompt;
+    private String subCategoryCmbbxPrompt;
+    private String typeCmbbxPromprt;
+    private String stateCmbbxPrompt;
+    private String cityCmbbxPrompt;
+    private String countryCmbbxPrompt;
+    private String minPriceTxtFldPrompt;
+    private String maxPriceTxtFldPrompt;
+    private String filterButtonCaption;
+    private String noResult;
+    private String imageHeight;
+    private String imageWidth;
 
-    private XmlFileReader xmlReader;
+    private String sortCmbbxPrompt;
+    private String sortTypePriceAsc;
+    private String sortTypePriceDesc;
+    private String sortTypeDateAsc;
+    private String sortTypeDateDesc;
 
-    private AdvertListController controller;
-
-    private HorizontalLayout contentLayout;
-    private HorizontalLayout searchBarLayout;
-
-    private VerticalLayout advertList;
-    private VerticalLayout filterForm;
-
-    private Panel filterPanel;
-    private Panel advertPanel;
-    private Panel searchBarPanel;
-
-    private Label lblSort;
     private Label lblTitle;
     private Label lblPrice;
     private Label lblCategory;
@@ -52,8 +61,6 @@ public class AdvertListView extends VerticalLayout implements View {
     private Label lblCity;
     private Label lblDate;
     private Label lblFilter;
-
-    private Embedded image;
 
     private ComboBox cmbBxSortType;
     private ComboBox cmbBxCategory;
@@ -63,16 +70,28 @@ public class AdvertListView extends VerticalLayout implements View {
     private ComboBox cmbBxType;
     private ComboBox cmbBxState;
 
+    private Panel filterPanel;
+    private Panel advertPanel;
+    private Panel searchBarPanel;
+
     private TextField txtFldSearch;
     private TextField txtFldMinPrice;
     private TextField txtFldMaxPrice;
 
+    private HorizontalLayout contentLayout;
+    private HorizontalLayout searchBarLayout;
+
+    private VerticalLayout advertList;
+    private VerticalLayout filterForm;
+
     private Button btnFilter;
     private Button btnSearch;
 
-    private String noResult;
-    private String imageHeight;
-    private String imageWidth;
+    private XmlFileReader xmlReader;
+
+    private AdvertListController controller;
+
+    private Embedded image;
 
     @Inject
     MaincategoryFacade maincategoryFacade;
@@ -101,19 +120,23 @@ public class AdvertListView extends VerticalLayout implements View {
         setSizeFull();
         setMargin(true);
         setSpacing(true);
+        addLabelText();
         buildView();
         addListeners();
-        addLabelText();
     }
 
     public void buildView() {
-        controller = new AdvertListController(this);
-        controller.loadAdverts();
-        buildSearchBar();
-        buildFilters();
-        buildAdverts();
-        layoutSettings();
-        controller.fillComboBoxes();
+        try {
+            controller = new AdvertListController(this);
+            buildSearchBar();
+            buildFilters();
+            controller.fillComboBoxes();
+            controller.fillAdverts();
+            controller.loadAdverts();
+            layoutSettings();
+        } catch (Exception ex) {
+            Logger.getLogger(AdvertListView.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void layoutSettings() {
@@ -128,16 +151,25 @@ public class AdvertListView extends VerticalLayout implements View {
         searchBarLayout.setSpacing(true);
         searchBarLayout.setMargin(true);
         txtFldSearch = new TextField();
-        btnSearch = new Button();
+        txtFldSearch.setWidth(searchTextFieldWidth);
+
+        btnSearch = new Button(SearchButtonValue);
+
+        cmbBxSortType = new ComboBox();
+        cmbBxSortType.setInputPrompt(sortCmbbxPrompt);
+        addSortTypes();
+
         searchBarLayout.addComponent(txtFldSearch);
         searchBarLayout.addComponent(btnSearch);
+        searchBarLayout.addComponent(cmbBxSortType);
 
         searchBarPanel = new Panel();
+        searchBarPanel.setWidth(searchbarPanelWidth);
         searchBarPanel.setContent(searchBarLayout);
         addComponent(searchBarPanel);
     }
 
-    public HorizontalLayout buildSingleAdvert(final Advertisement adv) {
+    public HorizontalLayout buildSingleAdvert(final Advertisement adv) throws Exception {
 
         HorizontalLayout advertHorizontal = new HorizontalLayout();
         VerticalLayout advertLeftVertical = new VerticalLayout();
@@ -156,22 +188,18 @@ public class AdvertListView extends VerticalLayout implements View {
         advertLeftVertical.addComponent(image);
         advertLeftVertical.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
 
-        lblTitle = new Label(adv.getTitle());
-        lblPrice = new Label(String.valueOf(adv.getPrice()));
-        lblCategory = new Label(adv.getMainCategoryId().getName());
-        lblSubCategory = new Label(adv.getSubCategoryId().getName());
-//        lblCity = new Label(adv.getCityId().getCityName());
-        lblDate = new Label(formattedDate.format(adv.getRegistrationDate()));
+        linkDataToLabels(adv);
 
         advertMiddleVertical.addComponent(lblTitle);
         advertMiddleVertical.addComponent(lblPrice);
         advertRightVertical.addComponent(lblCategory);
         advertRightVertical.addComponent(lblSubCategory);
-//        advertRightVertical.addComponent(lblCity);
+        advertRightVertical.addComponent(lblCity);
         advertRightVertical.addComponent(lblDate);
         advertHorizontal.addComponent(advertLeftVertical);
         advertHorizontal.addComponent(advertMiddleVertical);
         advertHorizontal.addComponent(advertRightVertical);
+
         advertHorizontal.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent event) {
@@ -182,7 +210,36 @@ public class AdvertListView extends VerticalLayout implements View {
         return advertHorizontal;
     }
 
-    private void buildFilters() {
+    private void linkDataToLabels(Advertisement adv) {
+        lblTitle = new Label();
+        lblPrice = new Label();
+        lblCategory = new Label();
+        lblSubCategory = new Label();
+        lblCity = new Label();
+        lblDate = new Label();
+
+        if (adv.getTitle() != null) {
+            lblTitle.setValue(adv.getTitle());
+            lblTitle.setWidth(titleLabelWidth);
+        }
+        if (adv.getPrice() != 0) {
+            lblPrice.setValue(String.valueOf(adv.getPrice()) + " " + AppLayout.currency);
+        }
+        if (adv.getMainCategoryId() != null) {
+            lblCategory.setValue(adv.getMainCategoryId().getName());
+        }
+        if (adv.getSubCategoryId() != null) {
+            lblSubCategory.setValue(adv.getSubCategoryId().getName());
+        }
+        if (adv.getCityId() != null) {
+            lblCity.setValue(adv.getCityId().getCityName());
+        }
+        if (adv.getRegistrationDate() != null) {
+            lblDate.setValue(AppLayout.formattedDate.format(adv.getRegistrationDate()));
+        }
+    }
+
+    private void buildFilters() throws Exception {
         contentLayout = new HorizontalLayout();
         contentLayout.setSpacing(true);
 
@@ -191,9 +248,10 @@ public class AdvertListView extends VerticalLayout implements View {
         filterForm.setSpacing(true);
         filterForm.setMargin(true);
 
-        lblFilter = new Label();
-        lblFilter.setSizeUndefined();
+        filterForm.setDefaultComponentAlignment(Alignment.TOP_CENTER);
 
+        lblFilter = new Label(filterLabelValue);
+        lblFilter.setSizeUndefined();
         filterForm.addComponent(lblFilter);
         filterForm.addComponent(new Label("<hr />", ContentMode.HTML));
 
@@ -205,10 +263,19 @@ public class AdvertListView extends VerticalLayout implements View {
         cmbBxState = new ComboBox();
         txtFldMinPrice = new TextField();
         txtFldMaxPrice = new TextField();
-        btnFilter = new Button();
-        
+        btnFilter = new Button(filterButtonCaption);
+
         cmbBxSubCategory.setEnabled(false);
         cmbBxCity.setEnabled(false);
+
+        cmbBxCategory.setInputPrompt(categoryCmbbxPrompt);
+        cmbBxSubCategory.setInputPrompt(subCategoryCmbbxPrompt);
+        cmbBxCountry.setInputPrompt(countryCmbbxPrompt);
+        cmbBxCity.setInputPrompt(cityCmbbxPrompt);
+        cmbBxType.setInputPrompt(typeCmbbxPromprt);
+        cmbBxState.setInputPrompt(stateCmbbxPrompt);
+        txtFldMaxPrice.setInputPrompt(maxPriceTxtFldPrompt);
+        txtFldMinPrice.setInputPrompt(minPriceTxtFldPrompt);
 
         filterForm.addComponent(cmbBxCountry);
         filterForm.addComponent(cmbBxCity);
@@ -220,17 +287,15 @@ public class AdvertListView extends VerticalLayout implements View {
         filterForm.addComponent(txtFldMaxPrice);
         filterForm.addComponent(btnFilter);
 
-        filterForm.setDefaultComponentAlignment(Alignment.TOP_CENTER);
-
         filterPanel = new Panel();
+        filterPanel.setWidth(filterPanelWidth);
         filterPanel.setContent(filterForm);
         contentLayout.addComponent(filterPanel);
     }
 
-    public void buildAdverts() {
+    public void buildAdverts() throws Exception {
 
         advertList = new VerticalLayout();
-
         advertList.setSpacing(true);
         advertList.setMargin(true);
 
@@ -239,6 +304,7 @@ public class AdvertListView extends VerticalLayout implements View {
 
         if (advertPanel == null) {
             advertPanel = new Panel();
+            advertPanel.setWidth(advertPanelWidth);
             advertPanel.setHeightUndefined();
             advertPanel.setContent(advertList);
             contentLayout.addComponent(advertPanel);
@@ -247,14 +313,42 @@ public class AdvertListView extends VerticalLayout implements View {
     }
 
     private void addListeners() {
+        addSearchButtonListener();
+        addFilterButtonListener();;
+        addCountyComboListener();
+        addCategoryComboListener();
+        addSortTypeComboListener();
+    }
+
+    private void addSearchButtonListener() {
+        btnSearch.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.searchAdverts(txtFldSearch.getValue());
+                } catch (Exception ex) {
+                    Logger.getLogger(AdvertListView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+    }
+
+    private void addFilterButtonListener() {
         btnFilter.addClickListener(new Button.ClickListener() {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                controller.filterAdverts();
+                try {
+                    controller.filterAdverts();
+                } catch (Exception ex) {
+                    Logger.getLogger(AdvertListView.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
+    }
 
+    private void addCountyComboListener() {
         cmbBxCountry.addValueChangeListener(new Property.ValueChangeListener() {
 
             @Override
@@ -267,7 +361,9 @@ public class AdvertListView extends VerticalLayout implements View {
                 }
             }
         });
+    }
 
+    private void addCategoryComboListener() {
         cmbBxCategory.addValueChangeListener(new Property.ValueChangeListener() {
 
             @Override
@@ -280,7 +376,27 @@ public class AdvertListView extends VerticalLayout implements View {
                 }
             }
         });
+    }
 
+    private void addSortTypeComboListener() {
+        cmbBxSortType.addValueChangeListener(new Property.ValueChangeListener() {
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                try {
+                    controller.sort(event.getProperty().getValue());
+                } catch (Exception ex) {
+                    Logger.getLogger(AdvertListView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+    }
+
+    private void addSortTypes() {
+        cmbBxSortType.addItem(sortTypeDateAsc);
+        cmbBxSortType.addItem(sortTypeDateDesc);
+        cmbBxSortType.addItem(sortTypePriceAsc);
+        cmbBxSortType.addItem(sortTypePriceDesc);
     }
 
     private void addLabelText() {
@@ -394,32 +510,107 @@ public class AdvertListView extends VerticalLayout implements View {
         this.imageWidth = imageWidth;
     }
 
-    public Button getBtnFilter() {
-        return btnFilter;
-    }
-
     public TextField getTxtFldSearch() {
         return txtFldSearch;
     }
 
-    public Button getBtnSearch() {
-        return btnSearch;
+    public void setSearchTextFieldWidth(String searchTextFieldWidth) {
+        this.searchTextFieldWidth = searchTextFieldWidth;
     }
 
-    public Panel getSearchBarPanel() {
-        return searchBarPanel;
+    public void setSearchButtonValue(String SearchButtonValue) {
+        this.SearchButtonValue = SearchButtonValue;
     }
 
-    public Label getLblTitle() {
-        return lblTitle;
+    public void setTitleLabelWidth(String titleLabelWidth) {
+        this.titleLabelWidth = titleLabelWidth;
     }
 
-    public Label getLblFilter() {
-        return lblFilter;
+    public void setFilterLabelValue(String filterLabelValue) {
+        this.filterLabelValue = filterLabelValue;
     }
 
-    public Panel getFilterPanel() {
-        return filterPanel;
+    public void setFilterPanelWidth(String filterPanelWidth) {
+        this.filterPanelWidth = filterPanelWidth;
     }
 
+    public void setAdvertPanelWidth(String advertPanelWidth) {
+        this.advertPanelWidth = advertPanelWidth;
+    }
+
+    public void setCategoryCmbbxPrompt(String categoryCmbbxPrompt) {
+        this.categoryCmbbxPrompt = categoryCmbbxPrompt;
+    }
+
+    public void setSubCategoryCmbbxPrompt(String subCategoryCmbbxPrompt) {
+        this.subCategoryCmbbxPrompt = subCategoryCmbbxPrompt;
+    }
+
+    public void setTypeCmbbxPromprt(String typeCmbbxPromprt) {
+        this.typeCmbbxPromprt = typeCmbbxPromprt;
+    }
+
+    public void setCityCmbbxPrompt(String cityCmbbxPrompt) {
+        this.cityCmbbxPrompt = cityCmbbxPrompt;
+    }
+
+    public void setCountryCmbbxPrompt(String countryCmbbxPrompt) {
+        this.countryCmbbxPrompt = countryCmbbxPrompt;
+    }
+
+    public void setMaxPriceTxtFldPrompt(String maxPriceTxtFldPrompt) {
+        this.maxPriceTxtFldPrompt = maxPriceTxtFldPrompt;
+    }
+
+    public void setFilterButtonCaption(String filterButtonCaption) {
+        this.filterButtonCaption = filterButtonCaption;
+    }
+
+    public void setSearchbarPanelWidth(String searchbarPanelWidth) {
+        this.searchbarPanelWidth = searchbarPanelWidth;
+    }
+
+    public void setStateCmbbxPrompt(String stateCmbbxPrompt) {
+        this.stateCmbbxPrompt = stateCmbbxPrompt;
+    }
+
+    public void setMinPriceTxtFldPrompt(String minPriceTxtFldPrompt) {
+        this.minPriceTxtFldPrompt = minPriceTxtFldPrompt;
+    }
+
+    public String getSortTypePriceAsc() {
+        return sortTypePriceAsc;
+    }
+
+    public void setSortTypePriceAsc(String sortTypePriceAsc) {
+        this.sortTypePriceAsc = sortTypePriceAsc;
+    }
+
+    public String getSortTypePriceDesc() {
+        return sortTypePriceDesc;
+    }
+
+    public void setSortTypePriceDesc(String sortTypePriceDesc) {
+        this.sortTypePriceDesc = sortTypePriceDesc;
+    }
+
+    public String getSortTypeDateAsc() {
+        return sortTypeDateAsc;
+    }
+
+    public void setSortTypeDateAsc(String sortTypeDateAsc) {
+        this.sortTypeDateAsc = sortTypeDateAsc;
+    }
+
+    public String getSortTypeDateDesc() {
+        return sortTypeDateDesc;
+    }
+
+    public void setSortTypeDateDesc(String sortTypeDateDesc) {
+        this.sortTypeDateDesc = sortTypeDateDesc;
+    }
+
+    public void setSortCmbbxPrompt(String sortCmbbxPrompt) {
+        this.sortCmbbxPrompt = sortCmbbxPrompt;
+    }
 }

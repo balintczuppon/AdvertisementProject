@@ -1,4 +1,3 @@
-
 package com.mycompany.advertisementproject.facades;
 
 import com.mycompany.advertisementproject.entities.Advertisement;
@@ -35,7 +34,7 @@ public class AdvertisementFacade extends AbstractFacade<Advertisement> {
                 .getResultList();
     }
 
-    public List<Advertisement> findAdvertsByFilters(Maincategory category, Subcategory subcategory, Country country, City city, Advertstate state, Adverttype type, int min, int max) {
+    public List<Advertisement> findAdvertsByFilters(Maincategory category, Subcategory subcategory, Country country, City city, Advertstate state, Adverttype type, int min, int max, String text) {
         String query;
 
         query = "SELECT a FROM Advertisement a WHERE ";
@@ -77,9 +76,17 @@ public class AdvertisementFacade extends AbstractFacade<Advertisement> {
         }
 
         if (max == 0) {
-            query += "AND a.price > :minprice AND :maxprice = 0";
+            query += "AND a.price > :minprice AND :maxprice = 0 ";
         } else {
-            query += "AND a.price BETWEEN :minprice AND :maxprice";
+            query += "AND a.price BETWEEN :minprice AND :maxprice ";
+        }
+
+        if (text == null) {
+            query += "AND :text is null";
+        } else if (text.isEmpty()) {
+            query += "AND :text is null";
+        } else {
+            query += "AND a.title like :text OR a.description like :text";
         }
 
         System.out.println(em.createQuery(query)
@@ -91,6 +98,7 @@ public class AdvertisementFacade extends AbstractFacade<Advertisement> {
                 .setParameter("typeId", type)
                 .setParameter("countryId", country)
                 .setParameter("cityId", city)
+                .setParameter("text", text)
                 .toString());
 
         return em.createQuery(query)
@@ -102,6 +110,13 @@ public class AdvertisementFacade extends AbstractFacade<Advertisement> {
                 .setParameter("typeId", type)
                 .setParameter("countryId", country)
                 .setParameter("cityId", city)
+                .setParameter("text", text)
+                .getResultList();
+    }
+
+    public List<Advertisement> findByText(String value) {
+        return em.createQuery("SELECT a FROM Advertisement a WHERE a.title like :text OR a.description like :text")
+                .setParameter("text", value)
                 .getResultList();
     }
 }

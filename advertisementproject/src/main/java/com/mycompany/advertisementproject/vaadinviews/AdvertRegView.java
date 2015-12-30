@@ -1,7 +1,7 @@
-package com.mycompany.advertisementproject.UIs.Views;
+package com.mycompany.advertisementproject.vaadinviews;
 
 import static com.mycompany.advertisementproject.Enums.Views.USERPAGE;
-import com.mycompany.advertisementproject.Enums.control.AdvertRegController;
+import com.mycompany.advertisementproject.control.AdvertRegController;
 import com.mycompany.advertisementproject.Tools.XmlFileReader;
 import com.mycompany.advertisementproject.entities.*;
 import com.mycompany.advertisementproject.facades.*;
@@ -21,10 +21,49 @@ import javax.inject.Inject;
 @CDIView("ADVERTREG")
 public class AdvertRegView extends VerticalLayout implements View {
 
-    private AdvertRegController controller;
+    private String modify;
+    private String register;
+    private String failedUpload;
+    private String successUpload;
+    private String dropHere;
+    private String removeButtonText;
+    private String imageHeight;
+    private String imageWidth;
+    private String btnText;
+
+    private ComboBox cmbbxCategory;
+    private ComboBox cmbbxSubCategory;
+    private ComboBox cmbbxAdvertType;
+    private ComboBox cmbbxAdvertState;
+    private ComboBox cmbbxCountry;
+    private ComboBox cmbbxCity;
+
+    private VerticalLayout pictureLayout;
+    private VerticalLayout advertDataLayout;
 
     private Panel adverRegPanel;
     private Panel picturePanel;
+
+    private Button btnRegister;
+    private Button removeBtn;
+
+    private Label lblAdvertDetails;
+    private Label labelPictureUpload;
+
+    private TextField txtFieldTitle;
+    private TextField txtFldPrice;
+
+    private TextArea txtAreaDescription;
+
+    private AdvertRegController controller;
+
+    private XmlFileReader xmlReader;
+
+    private FormLayout regFormLayout;
+
+    private HorizontalLayout innerPictureLayout;
+
+    private Embedded image;
 
     @Inject
     private MaincategoryFacade maincategoryFacade;
@@ -42,41 +81,6 @@ public class AdvertRegView extends VerticalLayout implements View {
     private CountryFacade countryFacade;
     @Inject
     private CityFacade cityFacade;
-
-    private TextField txtFieldTitle;
-    private TextArea txtAreaDescription;
-    private ComboBox cmbbxCategory;
-    private ComboBox cmbbxSubCategory;
-    private ComboBox cmbbxAdvertType;
-    private ComboBox cmbbxAdvertState;
-    private ComboBox cmbbxCountry;
-    private ComboBox cmbbxCity;
-
-    private TextField txtFldPrice;
-
-    private String btnText;
-    private Button btnRegister;
-    private Button removeBtn;
-
-    private FormLayout regFormLayout;
-    private HorizontalLayout innerPictureLayout;
-    private VerticalLayout pictureLayout;
-    private VerticalLayout advertDataLayout;
-    private XmlFileReader xmlReader;
-
-    private Label lblAdvertDetails;
-    private Label labelPictureUpload;
-    
-    private String modify;
-    private String register;
-    private String failedUpload;
-    private String successUpload;
-    private String dropHere;
-    private String removeButtonText;
-    
-    private Embedded image;
-    private String imageHeight;
-    private String imageWidth;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -248,7 +252,6 @@ public class AdvertRegView extends VerticalLayout implements View {
                     controller.registerAdvert();
                 } catch (Exception e) {
                     Notification.show(failedUpload);
-                    e.printStackTrace();
                 }
                 Notification.show(successUpload);
                 getUI().getNavigator().navigateTo(USERPAGE.toString());
@@ -386,7 +389,7 @@ public class AdvertRegView extends VerticalLayout implements View {
     public Label getLblPictureUpload() {
         return labelPictureUpload;
     }
-    
+
     public Button getRemoveBtn() {
         return removeBtn;
     }
@@ -422,5 +425,5 @@ public class AdvertRegView extends VerticalLayout implements View {
     public void setRemoveButtonText(String removeButtonText) {
         this.removeButtonText = removeButtonText;
     }
-    
+
 }

@@ -1,7 +1,10 @@
-package com.mycompany.advertisementproject.Enums.control;
+package com.mycompany.advertisementproject.control;
 
+import static com.mycompany.advertisementproject.Enums.SessionAttributes.SELECTEDADVERT;
 import static com.mycompany.advertisementproject.Enums.Views.SELECTED;
-import com.mycompany.advertisementproject.UIs.Views.AdvertListView;
+import static com.mycompany.advertisementproject.Enums.SortAttributes.*;
+import com.mycompany.advertisementproject.Tools.AdvertComparator;
+import com.mycompany.advertisementproject.vaadinviews.AdvertListView;
 import com.mycompany.advertisementproject.entities.Advertisement;
 import com.mycompany.advertisementproject.entities.Advertstate;
 import com.mycompany.advertisementproject.entities.Adverttype;
@@ -30,12 +33,15 @@ import com.vaadin.ui.themes.BaseTheme;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class AdvertListController {
 
-    private List<Advertisement> filteredAdverts = new ArrayList<>();
-    private final List<HorizontalLayout> adverts = new ArrayList<>();
+    private List<Advertisement> adverts = new ArrayList<>();
+    private final List<HorizontalLayout> advertlayouts = new ArrayList<>();
+
+    private String filterText;
 
     private boolean filled = false;
 
@@ -132,7 +138,7 @@ public class AdvertListController {
             }
         };
 
-        final PagingComponent<HorizontalLayout> pagingComponent = PagingComponent.paginate(adverts)
+        final PagingComponent<HorizontalLayout> pagingComponent = PagingComponent.paginate(advertlayouts)
                 .numberOfItemsPerPage(5)
                 .numberOfButtonsPage(5)
                 .globalCustomizer(adaptator).addListener(new LazyPagingComponentListener<HorizontalLayout>(itemsArea) {
@@ -141,7 +147,7 @@ public class AdvertListController {
 
                     @Override
                     protected Collection<HorizontalLayout> getItemsList(int startIndex, int endIndex) {
-                        return adverts.subList(startIndex, endIndex);
+                        return advertlayouts.subList(startIndex, endIndex);
                     }
 
                     @Override
@@ -176,7 +182,7 @@ public class AdvertListController {
         }
     }
 
-    public void filterAdverts() {
+    public void filterAdverts() throws Exception {
         Maincategory mcategory = null;
         Subcategory subCategory = null;
         Country country = null;
@@ -239,21 +245,10 @@ public class AdvertListController {
             maxPrice = Integer.valueOf(view.getTxtFldMaxPrice().getValue());
         }
 
-        filteredAdverts = view.getAdvertisementFacade().findAdvertsByFilters(
-                mcategory,subCategory,country,city,state,type,minPrice,maxPrice
+        adverts = view.getAdvertisementFacade().findAdvertsByFilters(
+                mcategory, subCategory, country, city, state, type, minPrice, maxPrice, filterText
         );
-
-        adverts.clear();
-        for (Advertisement a : filteredAdverts) {
-            adverts.add(view.buildSingleAdvert(a));
-        }
-        if (filteredAdverts.isEmpty()) {
-            addLabelNoResult();
-        } else {
-            view.buildAdverts();
-            view.getAdvertPanel().setContent(view.getAdvertList());
-        }
-        view.getUI().focus();
+        loadAdverts();
     }
 
     private void addLabelNoResult() {
@@ -261,17 +256,27 @@ public class AdvertListController {
         view.getAdvertPanel().setContent(lblNoResult);
     }
 
-    public void loadAdverts() {
-        adverts.clear();
-        for (Advertisement a : view.getAdvertisementFacade().findAll()) {
-            adverts.add(view.buildSingleAdvert(a));
+    public void fillAdverts() {
+        adverts = view.getAdvertisementFacade().findAll();
+    }
+
+    public void loadAdverts() throws Exception {
+        advertlayouts.clear();
+        for (Advertisement a : adverts) {
+            advertlayouts.add(view.buildSingleAdvert(a));
+        }
+        if (adverts.isEmpty()) {
+            addLabelNoResult();
+        } else {
+            view.buildAdverts();
+            view.getAdvertPanel().setContent(view.getAdvertList());
         }
     }
 
     public void selectedAdvert(Advertisement adv) {
         try {
             VaadinSession.getCurrent().getLockInstance().lock();
-            VaadinSession.getCurrent().setAttribute("selected_advert", adv);
+            VaadinSession.getCurrent().setAttribute(SELECTEDADVERT.toString(),adv);
         } finally {
             VaadinSession.getCurrent().getLockInstance().unlock();
         }
@@ -291,5 +296,36 @@ public class AdvertListController {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    public void searchAdverts(String value) throws Exception {
+        filterText = value;
+        if (!filterText.isEmpty()) {
+            adverts = view.getAdvertisementFacade().findByText(filterText);
+            loadAdverts();
+        } else {
+            filterText = null;
+            loadAdverts();
+        }
+    }
+
+    private void sortAdverts(List<Advertisement> list, String sortAttribute, boolean ascending) {
+        Collections.sort(list, new AdvertComparator(sortAttribute, ascending));
+    }
+
+    public void sort(Object value) throws Exception {
+        if (String.valueOf(value).equals(view.getSortTypeDateAsc())) {
+            sortAdverts(adverts, DATE.toString(), Boolean.TRUE);
+        }
+        if (String.valueOf(value).equals(view.getSortTypeDateDesc())) {
+            sortAdverts(adverts, DATE.toString(), Boolean.FALSE);
+        }
+        if (String.valueOf(value).equals(view.getSortTypePriceAsc())) {
+            sortAdverts(adverts, PRICE.toString(), Boolean.TRUE);
+        }
+        if (String.valueOf(value).equals(view.getSortTypePriceDesc())) {
+            sortAdverts(adverts, PRICE.toString(), Boolean.FALSE);
+        }
+        loadAdverts();
     }
 }

@@ -1,7 +1,7 @@
-package com.mycompany.advertisementproject.UIs.Views;
+package com.mycompany.advertisementproject.vaadinviews;
 
 import static com.mycompany.advertisementproject.Enums.StyleNames.NAVBUTTON;
-import com.mycompany.advertisementproject.Enums.control.AccountController;
+import com.mycompany.advertisementproject.control.AccountController;
 import com.mycompany.advertisementproject.Tools.XmlFileReader;
 import com.mycompany.advertisementproject.entities.Advertisement;
 import com.mycompany.advertisementproject.entities.Letter;
@@ -13,7 +13,6 @@ import com.mycompany.advertisementproject.facades.MaincategoryFacade;
 import com.mycompany.advertisementproject.facades.PictureFacade;
 import com.mycompany.advertisementproject.facades.SubcategoryFacade;
 import com.vaadin.cdi.CDIView;
-import com.vaadin.data.Item;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -52,29 +51,29 @@ public class AccountView extends VerticalLayout implements View {
     private String delButtonText;
     private String modButtonText;
 
-    private XmlFileReader xmlReader;
-
-    private AccountController controller;
-
-    private TabSheet tabsheet;
-    private TabSheet letterTabSheet;
-
     private VerticalLayout advertLayout;
     private VerticalLayout postBoxLayout;
     private VerticalLayout hlInComingLetters;
     private VerticalLayout hlOutGoingLetters;
-
-    private Button btnDeleteAdvert;
-    private Button btnModifyAdvert;
-
-    private Panel advertPanel;
     private VerticalLayout innerAdvert;
-    private Panel postBoxPanel;
     private VerticalLayout innerPostBox;
 
     private Table tblAdverts;
     private Table tbloutgLetters;
     private Table tblIncLetters;
+
+    private TabSheet tabsheet;
+    private TabSheet letterTabSheet;
+
+    private Button btnDeleteAdvert;
+    private Button btnModifyAdvert;
+
+    private Panel advertPanel;
+    private Panel postBoxPanel;
+
+    private XmlFileReader xmlReader;
+
+    private AccountController controller;
 
     @Inject
     MaincategoryFacade maincategoryFacade;

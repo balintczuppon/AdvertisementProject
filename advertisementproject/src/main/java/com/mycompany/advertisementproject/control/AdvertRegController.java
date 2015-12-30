@@ -1,7 +1,10 @@
-package com.mycompany.advertisementproject.Enums.control;
+package com.mycompany.advertisementproject.control;
 
+import static com.mycompany.advertisementproject.Enums.SessionAttributes.ADVERTTOMODIFY;
+import static com.mycompany.advertisementproject.Enums.SessionAttributes.CURRENTUSER;
+import com.mycompany.advertisementproject.Layouts.AppLayout;
 import com.mycompany.advertisementproject.Tools.MyMultiFileUpload;
-import com.mycompany.advertisementproject.UIs.Views.AdvertRegView;
+import com.mycompany.advertisementproject.vaadinviews.AdvertRegView;
 import com.mycompany.advertisementproject.entities.Advertisement;
 import com.mycompany.advertisementproject.entities.Advertiser;
 import com.mycompany.advertisementproject.entities.Advertstate;
@@ -13,7 +16,6 @@ import com.mycompany.advertisementproject.entities.Picture;
 import com.mycompany.advertisementproject.entities.Subcategory;
 import com.vaadin.server.VaadinSession;
 import java.io.File;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import org.vaadin.easyuploads.FileBuffer;
@@ -36,8 +38,8 @@ public class AdvertRegController {
 
     public AdvertRegController(AdvertRegView view) {
         this.view = view;
-        current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute("current_user");
-        advert_to_mod = (Advertisement) VaadinSession.getCurrent().getAttribute("AdvertToModify");
+        current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
+        advert_to_mod = (Advertisement) VaadinSession.getCurrent().getAttribute(ADVERTTOMODIFY.toString());
     }
 
     public void checkSessionAttribute() {
@@ -74,7 +76,7 @@ public class AdvertRegController {
         advertisement.setMainCategoryId(selectedMainCategory());
         advertisement.setSubCategoryId(selectedSubCategory());
         advertisement.setPrice(Integer.valueOf(view.getTxtFldPrice().getValue()));
-        advertisement.setRegistrationDate(currentDate());
+        advertisement.setRegistrationDate(AppLayout.currentDate());
         advertisement.setTitle(view.getTxtFieldTitle().getValue());
 
         for (File f : files) {
@@ -105,13 +107,14 @@ public class AdvertRegController {
         view.getCmbbxAdvertState().select(ad.getAdvertStateId().getName());
         view.getCmbbxCountry().select(ad.getCountryId().getCountryName());
 
-        view.getCmbbxCity().select(ad.getCityId().getCityName());
         fillCmbBxCity(ad.getCountryId().getCountryName());
         for (City c : ad.getCountryId().getCityCollection()) {
             if (c.getId().equals(ad.getCityId())) {
                 view.getCmbbxSubCategory().select(c.getCityName());
             }
         }
+        view.getCmbbxCity().select(ad.getCityId().getCityName());
+
         for (Picture p : ad.getPictureCollection()) {
             File file = new File(p.getAccessPath());
             files.add(file);
@@ -171,9 +174,11 @@ public class AdvertRegController {
     public void fillCmbBxCity(Object value) {
         view.getCmbbxCity().removeAllItems();
         view.getCmbbxCity().setEnabled(true);
-        for (City c : view.getCityFacade().findAll()) {
-            if (c.getCountryId().equals(value)) {
-                view.getCmbbxCity().addItem(c.getCityName());
+        for (Country c : view.getCountryFacade().findAll()) {
+            if (c.getCountryName().equals(value)) {
+                for (City city : c.getCityCollection()) {
+                    view.getCmbbxCity().addItem(city.getCityName());
+                }
             }
         }
     }
@@ -236,12 +241,6 @@ public class AdvertRegController {
             }
         }
         return null;
-    }
-
-    private Date currentDate() {
-        java.util.Date utilDate = new java.util.Date();
-        java.sql.Date sqlDate = new Date(utilDate.getTime());
-        return sqlDate;
     }
 
     public void removeFile(File file) {
