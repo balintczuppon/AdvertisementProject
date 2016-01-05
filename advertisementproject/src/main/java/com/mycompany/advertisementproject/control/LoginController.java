@@ -1,12 +1,12 @@
 package com.mycompany.advertisementproject.control;
 
-import static com.mycompany.advertisementproject.Enums.SessionAttributes.AUTHORIZATIONLEVEL;
-import static com.mycompany.advertisementproject.Enums.SessionAttributes.CURRENTUSER;
-import static com.mycompany.advertisementproject.Enums.Views.USERPAGE;
-import com.mycompany.advertisementproject.Layouts.AppLayout;
-import com.mycompany.advertisementproject.Tools.Encryptor;
-import com.mycompany.advertisementproject.vaadinviews.LogInView;
-import com.mycompany.advertisementproject.entities.Advertiser;
+import static com.mycompany.advertisementproject.enumz.SessionAttributes.AUTHORIZATIONLEVEL;
+import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTUSER;
+import static com.mycompany.advertisementproject.enumz.Views.USERPAGE;
+import com.mycompany.advertisementproject.view.layouts.AppLayout;
+import com.mycompany.advertisementproject.toolz.Encryptor;
+import com.mycompany.advertisementproject.view.vaadinviews.LogInView;
+import com.mycompany.advertisementproject.model.entities.Advertiser;
 import com.vaadin.server.VaadinSession;
 import javax.ejb.EJBException;
 

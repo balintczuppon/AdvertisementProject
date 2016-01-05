@@ -1,22 +1,20 @@
 package com.mycompany.advertisementproject.control;
 
-import static com.mycompany.advertisementproject.Enums.SessionAttributes.ADVERTTOMODIFY;
-import static com.mycompany.advertisementproject.Enums.SessionAttributes.CURRENTUSER;
-import static com.mycompany.advertisementproject.Enums.SessionAttributes.LETTERTOSHOW;
-import static com.mycompany.advertisementproject.Enums.Views.ADVERTREG;
-import static com.mycompany.advertisementproject.Enums.Views.LETTER;
-import com.mycompany.advertisementproject.Layouts.AppLayout;
-import com.mycompany.advertisementproject.vaadinviews.AccountView;
-import com.mycompany.advertisementproject.entities.Advertisement;
-import com.mycompany.advertisementproject.entities.Advertiser;
-import com.mycompany.advertisementproject.entities.Letter;
-import com.mycompany.advertisementproject.entities.Picture;
+import static com.mycompany.advertisementproject.enumz.SessionAttributes.ADVERTTOMODIFY;
+import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTUSER;
+import static com.mycompany.advertisementproject.enumz.SessionAttributes.LETTERTOSHOW;
+import static com.mycompany.advertisementproject.enumz.Views.ADVERTREG;
+import static com.mycompany.advertisementproject.enumz.Views.LETTER;
+import com.mycompany.advertisementproject.view.layouts.AppLayout;
+import com.mycompany.advertisementproject.view.vaadinviews.AccountView;
+import com.mycompany.advertisementproject.model.entities.Advertisement;
+import com.mycompany.advertisementproject.model.entities.Advertiser;
+import com.mycompany.advertisementproject.model.entities.Letter;
+import com.mycompany.advertisementproject.model.entities.Picture;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class AccountController {
@@ -120,8 +118,8 @@ public class AccountController {
     }
 
     private String formLetterText(String text) {
-        if (text.length() > 20) {
-            text = text.substring(0, 20);
+        if (text.length() > Integer.valueOf(view.getLetterTextBoundary())) {
+            text = text.substring(0, Integer.valueOf(view.getLetterTextBoundary()));
         }
         return text;
     }

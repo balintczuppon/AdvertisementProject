@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <LogInView>
+        <email>E-mail:</email>
+        <password>Jelszó:</password>
+        <loginbutton>Bejelentkezés:</loginbutton>
+        <errortext>Hibás felhasználónév vagy jelszó!</errortext> 
+    </LogInView>
+    <RegistrationView>
+        <title>Fiók létrehozása</title>
+        <email>E-mail:</email>
+        <name>Név:</name>
+        <phone>Telefonszám:</phone>
+        <password>Jelszó:</password>
+        <passwordre>Jelszó újra:</passwordre>
+        <newsletter>Kérek hírlevelet</newsletter>
+        <terms>Szerződési feltételek elfogadása.</terms>
+        <regbutton>Regisztrálok</regbutton>
+        <succestext>Sikeres regisztráció!</succestext>
+        <emailusederror>Az email cím már használatban van.</emailusederror>
+        <emptyfielderror>Minden mező kitöltése kötelező.</emptyfielderror>
+        <passworderror>A megadott jelszavak nem egyeznek.</passworderror>
+        <conditionerror>A feltételek elfogadása nélkül nem regisztrálhat.</conditionerror>
+        <emailvalidatormessage>Nem megfelelő e-mail cím formátum.</emailvalidatormessage>
+    </RegistrationView> 
+    <AdvertListView>
+        <searchbutton>Keresés</searchbutton>
+        <filterlabel>Részletes keresés</filterlabel>
+        <category>Kategória</category>
+        <subcategory>Alkategória</subcategory>
+        <county>Megye</county>
+        <city> Város </city>
+        <type>Típus</type>
+        <state>Állapot</state>
+        <minprice>Minimum Ár</minprice>
+        <maxprice>Maximum Ár</maxprice>
+        <filterbutton>Szűrés</filterbutton>
+        <noresult>A megadott szűrési feltételekre nincs találat.</noresult>
+        <imageheight>96</imageheight>
+        <imagewidth>128</imagewidth>
+        <searchfieldwidth>300</searchfieldwidth>
+        <adverttitlewidth>300</adverttitlewidth>
+        <filterpanelwidth>300</filterpanelwidth>
+        <advertpanelwidth>700</advertpanelwidth>
+        <searchpanelwidth>700</searchpanelwidth>       
+        <sorttypeprompt>Rendezés</sorttypeprompt>
+        <sorttypepriceasc>Legolcsóbb elől</sorttypepriceasc>
+        <sorttypepricedesc>Legdrágább elől</sorttypepricedesc>
+        <sorttypedateasc>Legrégebbi elől</sorttypedateasc>
+        <sorttypedatedesc>Legfrissebb elől</sorttypedatedesc>
+    </AdvertListView>   
+    <AdvertRegView>
+        <title>Hirdetés címe</title>
+        <titlewidth>500</titlewidth>
+        <description>Hirdetés leírása</description>
+        <descriptionwidth>500</descriptionwidth>
+        <descriptionheight>200</descriptionheight>
+        <category>Kategória</category>
+        <subcategory>Alkategória</subcategory>
+        <county>Megye</county>
+        <city> Város </city>
+        <type>Hirdetés típusa</type>
+        <state>Állapot</state>
+        <price>Ár</price>
+        <regpanelwidth>600</regpanelwidth>
+        <advertdetails>Hirdetés adatainak megadása</advertdetails>
+        <imagewidth>128</imagewidth>
+        <imageheight>96</imageheight>
+        <removebutton>X</removebutton>
+        <picturepanelwidth>600</picturepanelwidth>
+        <pictureupload>Képek feltöltése</pictureupload>
+        <uploadfail>Sajnos a hirdetés feladása nem sikerült.</uploadfail>
+        <uploadsuccess>Hirdetését sikeresen feladta.</uploadsuccess>
+        <drophere>Dobd ide a képet!</drophere>
+        <modify>Módosít</modify>
+        <register>Regisztrál</register>
+    </AdvertRegView>
+    <AccountView>  
+        <adverttab>Hirdetéseim</adverttab>
+        <postboxtab>Postaláda</postboxtab>
+        <advertpanelweight>1000</advertpanelweight>
+        <postboxpanelweight>1000</postboxpanelweight>
+        <adverttableweight>950</adverttableweight>
+        <adverttabletitle>Cím</adverttabletitle>
+        <adverttableprice>Ár</adverttableprice>
+        <adverttabledate>Dátum</adverttabledate>
+        <adverttabledelete>Törlés</adverttabledelete>
+        <adverttablemodify>Módosítás</adverttablemodify>
+        <deleteadvertbutton>Törlöm</deleteadvertbutton>
+        <modifyadvertbutton>Módosítom</modifyadvertbutton>
+        <lettertabweight>850</lettertabweight>
+        <incomingletters>Bejövő</incomingletters>
+        <outgoingletters>Kimenő</outgoingletters>
+        <lettertableweight>800</lettertableweight>
+        <lettertablesubject>Tárgy</lettertablesubject>
+        <lettertablemessage>Üzenet</lettertablemessage>
+        <lettertabledate>Dátum</lettertabledate>
+        <lettertablesender>Feladó</lettertablesender>        
+    </AccountView> 
+    <SelectedAdvertView>
+        <advertpanelwidth>1000</advertpanelwidth>
+        <advertiserLabel>Hirdető: </advertiserLabel>
+        <advertiserphone>Elérhetősége: </advertiserphone>
+        <registrationdate>Feladás ideje: </registrationdate>
+        <price>Ár: </price>
+        <descriptionwidth>640</descriptionwidth>
+        <googlemaplocal>Hungarian</googlemaplocal>
+        <googlemapzoom>18</googlemapzoom>
+        <connection>További Információk</connection>
+        <hlfieldswidth>640</hlfieldswidth>
+        <nametextfield>Név</nametextfield>
+        <emailtextfield>E-mail cím</emailtextfield>
+        <phonetextfield>Telefonszám</phonetextfield>
+        <messagetextareawidth>640</messagetextareawidth>
+        <messagetextareaprompt>Ide írja az üzenetét...</messagetextareaprompt>
+        <sendbutton>Elküldöm az üzenetet</sendbutton>
+        <commitmessage>Üzenetét továbbítottuk!</commitmessage>
+        <lettersubject>Enquiry</lettersubject>
+        <imagewidth>128</imagewidth>
+        <imageheight>96</imageheight>
+        <mainimagewidth>640</mainimagewidth>
+        <mainimageheigth>480</mainimageheigth>
+        <validatormessage>Nem megfelelő e-mail cím formátum.</validatormessage>
+        <pagelink>http://localhost:8080/advertisementproject/#!</pagelink>
+        <viewname>LOGIN</viewname>
+        <linktext>I check it.</linktext>
+        <greetingtext>Dear Advertiser,</greetingtext>
+        <messagetext1> has some questions about your advertisenment: </messagetext1>
+        <messagetext2>Answer them!</messagetext2>
+        <goodbyetext>Best regards,</goodbyetext>
+        <sendername>VaadinThesis Team</sendername>
+    </SelectedAdvertView>
+    <LetterView>
+        <panelwidth>1000</panelwidth>
+        <enqurier>Feladó:</enqurier>
+        <subject>Tárgy:</subject>
+        <text>Üzenet:</text>
+        <talettertoshowwidth>950</talettertoshowwidth>
+        <answerbutton>Válaszolok</answerbutton>
+        <deletebutton>Törlöm</deletebutton>
+        <backbutton>Vissza</backbutton>
+        <talettertowriteprompt>Ide írhatja az üzetet..</talettertowriteprompt>
+        <talettertowritewidth>800</talettertowritewidth>
+        <talettertowriteheight>200</talettertowriteheight>
+        <responseprefix>RE:</responseprefix>
+        <pagelink>http://localhost:8080/advertisementproject/#!</pagelink>
+        <viewname>LETTER</viewname>
+        <linktext>I check it.</linktext>
+        <greetingtext>Dear Enquirer,</greetingtext>
+        <messagetext1> has answered to your question. </messagetext1>
+        <messagetext2>Check it!</messagetext2>
+        <goodbyetext>Best regards,</goodbyetext>
+        <sendername>VaadinThesis Team</sendername>
+    </LetterView>
+    <AppLayout>    
+        <dateformat>yyyy MMMM dd</dateformat>
+        <currency>Huf</currency>
+        <advertbutton>Hirdetések</advertbutton>
+        <loginbutton>Bejelentkezés</loginbutton>
+        <registrationbutton>Regisztráció</registrationbutton>
+        <advertregistrationbutton>Hirdetés feladás</advertregistrationbutton>
+        <myaccountbutton>Fiókom</myaccountbutton>
+        <logoutbutton>Kijelentkezés</logoutbutton>
+        <bannerheight>120</bannerheight>   
+    </AppLayout>
+</root>
