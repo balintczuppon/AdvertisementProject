@@ -1,11 +1,14 @@
 package com.mycompany.advertisementproject.view.layouts;
 
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.ADVERTTOMODIFY;
-import static com.mycompany.advertisementproject.enumz.SessionAttributes.AUTHORIZATIONLEVEL;
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTUSER;
 import static com.mycompany.advertisementproject.enumz.StyleNames.*;
 import static com.mycompany.advertisementproject.enumz.Views.*;
 import com.mycompany.advertisementproject.toolz.XmlFileReader;
+import com.mycompany.advertisementproject.view.vaadinviews.AccountView;
+import com.mycompany.advertisementproject.view.vaadinviews.AdminView;
+import com.mycompany.advertisementproject.view.vaadinviews.AdvertRegView;
+import com.mycompany.advertisementproject.view.vaadinviews.LetterView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.VaadinSession;
@@ -29,7 +32,9 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
     private String btnAdvertRegCaption;
     private String btnMyAccoutCaption;
     private String btnLogoutCaption;
+    private String btnAdminAccCaption = "Admin oldal";
     private String bannerHeight;
+
     private String dateformat;
 
     private static Button btnAdverts;
@@ -38,6 +43,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
     private static Button btnAdvertReg;
     private static Button btnMyAccout;
     private static Button btnLogout;
+    private static Button btnAdminAccount;
 
     private VerticalLayout header = new VerticalLayout();
 
@@ -66,6 +72,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         navigation.addComponent(btnRegistration);
         navigation.addComponent(btnAdvertReg);
         navigation.addComponent(btnMyAccout);
+        navigation.addComponent(btnAdminAccount);
         navigation.addComponent(btnLogout);
         navigation.setHeightUndefined();
 
@@ -89,6 +96,9 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         btnLogout = new Button(btnLogoutCaption);
         btnLogout.setStyleName(NAVBUTTON.toString());
         btnLogout.setVisible(false);
+        btnAdminAccount = new Button(btnAdminAccCaption);
+        btnAdminAccount.setStyleName(NAVBUTTON.toString());
+        btnAdminAccount.setVisible(false);
     }
 
     private void addBanner() {
@@ -111,6 +121,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         addBtnAdvertRegListener();
         addBtnMyAccountListener();
         addBtnLogoutListener();
+        addBtnAdminAccListener();
     }
 
     private void addBtnAdvertListener() {
@@ -118,7 +129,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 nodePath = ADVERTS.toString();
-                onMenuClick(nodePath);
+                jump(nodePath);
             }
         });
     }
@@ -129,7 +140,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 nodePath = LOGIN.toString();
-                onMenuClick(nodePath);
+                jump(nodePath);
             }
         });
     }
@@ -140,7 +151,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 nodePath = REGISTRATION.toString();
-                onMenuClick(nodePath);
+                jump(nodePath);
             }
         });
     }
@@ -157,7 +168,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
                     VaadinSession.getCurrent().getLockInstance().unlock();
                 }
                 nodePath = ADVERTREG.toString();
-                onMenuClick(nodePath);
+                jump(nodePath);
             }
         });
     }
@@ -168,7 +179,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 nodePath = USERPAGE.toString();
-                onMenuClick(nodePath);
+                jump(nodePath);
             }
         });
 
@@ -180,12 +191,23 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
             public void buttonClick(Button.ClickEvent event) {
                 logout();
                 nodePath = ADVERTS.toString();
-                onMenuClick(nodePath);
+                jump(nodePath);
             }
         });
     }
 
-    private void onMenuClick(String nodePath) {
+    private void addBtnAdminAccListener() {
+        btnAdminAccount.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                nodePath = ADMINPAGE.toString();
+                jump(nodePath);
+            }
+        });
+    }
+
+    private void jump(String nodePath) {
         getUI().getNavigator().navigateTo(nodePath);
     }
 
@@ -199,21 +221,31 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         btnAdvertReg.setVisible(false);
         btnMyAccout.setVisible(false);
         btnLogout.setVisible(false);
+        btnAdminAccount.setVisible(false);
+
+        AccountView.setAvailability(false);
+        AdvertRegView.setAvailability(false);
+        LetterView.setAvailability(false);
+        AdminView.setAvailability(false);
+
         try {
             VaadinSession.getCurrent().getLockInstance().lock();
             VaadinSession.getCurrent().setAttribute(CURRENTUSER.toString(), null);
         } finally {
             VaadinSession.getCurrent().getLockInstance().unlock();
         }
-        try {
-            VaadinSession.getCurrent().getLockInstance().lock();
-            VaadinSession.getCurrent().setAttribute(AUTHORIZATIONLEVEL.toString(), null);
-        } finally {
-            VaadinSession.getCurrent().getLockInstance().unlock();
-        }
     }
 
-    public static void login() {
+    public static void userLogin() {
+        btnLogin.setVisible(false);
+        btnRegistration.setVisible(false);
+        btnAdvertReg.setVisible(true);
+        btnMyAccout.setVisible(true);
+        btnLogout.setVisible(true);
+    }
+
+    public static void adminLogin() {
+        btnAdminAccount.setVisible(true);
         btnLogin.setVisible(false);
         btnRegistration.setVisible(false);
         btnAdvertReg.setVisible(true);

@@ -1,13 +1,9 @@
 package com.mycompany.advertisementproject.control;
 
-import static com.mycompany.advertisementproject.enumz.SessionAttributes.AUTHORIZATIONLEVEL;
-import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTUSER;
-import static com.mycompany.advertisementproject.enumz.Views.USERPAGE;
-import com.mycompany.advertisementproject.view.layouts.AppLayout;
 import com.mycompany.advertisementproject.toolz.Encryptor;
 import com.mycompany.advertisementproject.view.vaadinviews.LogInView;
 import com.mycompany.advertisementproject.model.entities.Advertiser;
-import com.vaadin.server.VaadinSession;
+import com.mycompany.advertisementproject.toolz.Authorizator;
 import javax.ejb.EJBException;
 
 public class LoginController {
@@ -39,28 +35,6 @@ public class LoginController {
     }
 
     private void revealSecuredContex(Advertiser a) {
-        setCurrentUser(a);
-        setUserRole(a);
-        
-        AppLayout.login();
-        view.getUI().getNavigator().navigateTo(USERPAGE.toString());
-    }
-
-    private void setCurrentUser(Advertiser a) {
-        try {
-            VaadinSession.getCurrent().getLockInstance().lock();
-            VaadinSession.getCurrent().setAttribute(CURRENTUSER.toString(), a);
-        } finally {
-            VaadinSession.getCurrent().getLockInstance().unlock();
-        }
-    }
-
-    private void setUserRole(Advertiser a) {
-        try {
-            VaadinSession.getCurrent().getLockInstance().lock();
-            VaadinSession.getCurrent().setAttribute(AUTHORIZATIONLEVEL.toString(), a.getAuthority());
-        } finally {
-            VaadinSession.getCurrent().getLockInstance().unlock();
-        }
+        new Authorizator(view).authorize(a);
     }
 }

@@ -23,6 +23,8 @@ import javax.inject.Inject;
 @CDIView("LETTER")
 public class LetterView extends VerticalLayout implements View {
 
+    private static boolean availability = false;
+
     private String panelWidth;
     private String lblEnquirerCaption;
     private String lblTitleCaption;
@@ -82,9 +84,11 @@ public class LetterView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initComponents() {
-        addLabelText();
-        defaultSettings();
-        buildView();
+        if (availability) {
+            addLabelText();
+            defaultSettings();
+            buildView();
+        }
     }
 
     public void defaultSettings() {
@@ -210,8 +214,8 @@ public class LetterView extends VerticalLayout implements View {
             }
         });
     }
-    
-        private void addLabelText() {
+
+    private void addLabelText() {
         try {
             xmlReader = new XmlFileReader();
             xmlReader.setLetterView(this);
@@ -348,6 +352,10 @@ public class LetterView extends VerticalLayout implements View {
 
     public void setSenderName(String senderName) {
         this.senderName = senderName;
+    }
+
+    public static void setAvailability(boolean availability) {
+        LetterView.availability = availability;
     }
 
 }

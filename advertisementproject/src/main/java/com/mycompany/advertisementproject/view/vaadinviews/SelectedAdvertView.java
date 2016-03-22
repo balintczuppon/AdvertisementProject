@@ -531,7 +531,4 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     public void setSenderName(String senderName) {
         this.senderName = senderName;
     }
-    
-    
-
 }

@@ -1,57 +1,68 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mycompany.advertisementproject.toolz;
 
+import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTUSER;
+import static com.mycompany.advertisementproject.enumz.Views.ADMINPAGE;
+import static com.mycompany.advertisementproject.enumz.Views.USERPAGE;
+import com.mycompany.advertisementproject.model.entities.Advertiser;
+import com.mycompany.advertisementproject.view.layouts.AppLayout;
+import com.mycompany.advertisementproject.view.vaadinviews.AccountView;
+import com.mycompany.advertisementproject.view.vaadinviews.AdminView;
+import com.mycompany.advertisementproject.view.vaadinviews.AdvertRegView;
+import com.mycompany.advertisementproject.view.vaadinviews.LetterView;
+import com.mycompany.advertisementproject.view.vaadinviews.LogInView;
 import com.vaadin.server.VaadinSession;
 
-/**
- *
- * @author balin
- */
 public class Authorizator {
 
-    private int currentLevel;
+    private LogInView view;
 
-    public boolean isAuthorized(int requieredLevel) {
-        getCurrentLevel();
-        boolean value = false;
-        switch (requieredLevel) {
-            case 0: {
-                if (currentLevel >= 0) {
-                    value = true;
-                }
-                break;
-            }
+    public Authorizator(LogInView loginView) {
+        this.view = loginView;
+    }
+
+    public void authorize(Advertiser a) {
+        setCurrentUser(a);
+        maintainAvailability(a);
+    }
+
+    private void setCurrentUser(Advertiser a) {
+        try {
+            VaadinSession.getCurrent().getLockInstance().lock();
+            VaadinSession.getCurrent().setAttribute(CURRENTUSER.toString(), a);
+        } finally {
+            VaadinSession.getCurrent().getLockInstance().unlock();
+        }
+    }
+
+    private void maintainAvailability(Advertiser a) {
+        switch (a.getAuthority()) {
             case 1: {
-                if (currentLevel >= 1) {
-                    value = true;
-                }
+                userSettings();
                 break;
             }
             case 2: {
-                if (currentLevel >= 2) {
-                    value = true;
-                }
-                break;
-            }
-            default: {
-                value = false;
+                adminSettings();
                 break;
             }
         }
-        return value;
     }
 
-    private int getCurrentLevel() {
-        try {
-            currentLevel = (int) VaadinSession.getCurrent().getAttribute("authorization_level");
-            return currentLevel;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
+    private void userSettings() {
+        AccountView.setAvailability(true);
+        AdvertRegView.setAvailability(true);
+        LetterView.setAvailability(true);
+        AdminView.setAvailability(false);
+        AppLayout.userLogin();
+        view.getUI().getNavigator().navigateTo(USERPAGE.toString());
     }
+
+    private void adminSettings() {
+        AccountView.setAvailability(true);
+        AdvertRegView.setAvailability(true);
+        LetterView.setAvailability(true);
+        AdminView.setAvailability(true);
+        AppLayout.adminLogin();
+        view.getUI().getNavigator().navigateTo(ADMINPAGE.toString());
+    }
+
 }

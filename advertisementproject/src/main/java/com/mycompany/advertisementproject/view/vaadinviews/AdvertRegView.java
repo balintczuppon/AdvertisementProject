@@ -28,6 +28,8 @@ import javax.inject.Inject;
 @CDIView("ADVERTREG")
 public class AdvertRegView extends VerticalLayout implements View {
 
+    private static boolean availability = false;
+
     private String modify;
     private String register;
     private String failedUpload;
@@ -97,11 +99,13 @@ public class AdvertRegView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initComponent() {
-        defaultSettings();
-        addPictureUpload();
-        addForm();
-        addLabelText();
-        controller.fillComboBoxes();
+        if (availability) {
+            defaultSettings();
+            addPictureUpload();
+            addForm();
+            addLabelText();
+            controller.fillComboBoxes();
+        }
     }
 
     private void defaultSettings() {
@@ -433,4 +437,7 @@ public class AdvertRegView extends VerticalLayout implements View {
         this.removeButtonText = removeButtonText;
     }
 
+    public static void setAvailability(boolean availability) {
+        AdvertRegView.availability = availability;
+    }
 }

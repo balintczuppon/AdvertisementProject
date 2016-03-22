@@ -239,5 +239,4 @@ public class RegistrationView extends VerticalLayout implements View {
     public void setEmailValidatorMessage(String emailValidatorMessage) {
         this.emailValidatorMessage = emailValidatorMessage;
     }
-
 }

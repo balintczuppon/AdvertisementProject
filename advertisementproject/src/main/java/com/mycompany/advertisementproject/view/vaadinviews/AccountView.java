@@ -30,6 +30,8 @@ import javax.inject.Inject;
 @CDIView("USERPAGE")
 public class AccountView extends VerticalLayout implements View {
 
+    private static boolean availability;
+
     private String advertTabText;
     private String postboxTabText;
     private String incoming;
@@ -98,13 +100,15 @@ public class AccountView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initComponent() {
-        try {
-            controller = new AccountController(this);
-            readLabelText();
-            buildTabs();
-            buildView();
-        } catch (Exception ex) {
-            Logger.getLogger(AccountView.class.getName()).log(Level.SEVERE, null, ex);
+        if (availability) {
+            try {
+                controller = new AccountController(this);
+                readLabelText();
+                buildTabs();
+                buildView();
+            } catch (Exception ex) {
+                Logger.getLogger(AccountView.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -440,5 +444,9 @@ public class AccountView extends VerticalLayout implements View {
 
     public void setLetterTextBoundary(String letterTextBoundary) {
         this.letterTextBoundary = letterTextBoundary;
+    }
+
+    public static void setAvailability(boolean availability) {
+        AccountView.availability = availability;
     }
 }

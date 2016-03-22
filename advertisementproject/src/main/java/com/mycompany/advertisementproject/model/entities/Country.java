@@ -112,7 +112,7 @@ public class Country implements Serializable {
 
     @Override
     public String toString() {
-        return "com.mycompany.advertisementproject.entities.Country[ id=" + id + " ]";
+        return countryName;
     }
 
 }

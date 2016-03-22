@@ -98,7 +98,7 @@ public class AccountController {
             Object object[] = new Object[]{
                 letter,
                 letter.getMailtitle(),
-                formLetterText(letter.getMailtext()),
+                letter.getMailtext(),
                 letter.getSendername(),
                 date
 
@@ -117,12 +117,12 @@ public class AccountController {
         }
     }
 
-    private String formLetterText(String text) {
-        if (text.length() > Integer.valueOf(view.getLetterTextBoundary())) {
-            text = text.substring(0, Integer.valueOf(view.getLetterTextBoundary()));
-        }
-        return text;
-    }
+//    private String formLetterText(String text) {
+//        if (text.length() > Integer.valueOf(view.getLetterTextBoundary())) {
+//            text = text.substring(0, Integer.valueOf(view.getLetterTextBoundary()));
+//        }
+//        return text;
+//    }
 
     public void selectInComingLetter(ItemClickEvent event) {
         Object object = event.getItem().getItemProperty("").getValue();

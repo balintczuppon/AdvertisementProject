@@ -47,11 +47,11 @@ public class LogInView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initContent() {
-        setMargin(true);
-        addTitle();
-        addForm();
-        addButton();
-        addLabelText();
+            setMargin(true);
+            addTitle();
+            addForm();
+            addButton();
+            addLabelText();
     }
 
     private void addTitle() {
@@ -65,7 +65,9 @@ public class LogInView extends VerticalLayout implements View {
     private void addForm() {
         fl = new FormLayout();
         tfEmail = new TextField();
+        tfEmail.setValue("admin@vaadinthesis.java");
         pfPassWord = new PasswordField();
+        pfPassWord.setValue("admin");
         fl.addComponent(tfEmail);
         fl.addComponent(pfPassWord);
         fl.setWidthUndefined();
