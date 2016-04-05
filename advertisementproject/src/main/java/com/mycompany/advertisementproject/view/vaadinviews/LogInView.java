@@ -2,8 +2,8 @@ package com.mycompany.advertisementproject.view.vaadinviews;
 
 import com.mycompany.advertisementproject.enumz.StyleNames;
 import com.mycompany.advertisementproject.control.LoginController;
-import com.mycompany.advertisementproject.toolz.XmlFileReader;
 import com.mycompany.advertisementproject.model.facades.AdvertiserFacade;
+import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -16,15 +16,14 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 @CDIView("LOGIN")
 public class LogInView extends VerticalLayout implements View {
 
-    private String errorText;
+    private ResourceBundle bundle;
 
     private PasswordField pfPassWord;
     private TextField tfEmail;
@@ -32,8 +31,6 @@ public class LogInView extends VerticalLayout implements View {
     private Label lblTitle;
 
     private LoginController logincontroller;
-
-    private XmlFileReader xmlReader;
 
     private FormLayout fl;
 
@@ -47,11 +44,13 @@ public class LogInView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initContent() {
-            setMargin(true);
-            addTitle();
-            addForm();
-            addButton();
-            addLabelText();
+        bundle = AppBundle.currentBundle("");
+        setMargin(true);
+        setImmediate(true);
+        addTitle();
+        addForm();
+        addButton();
+        updateStrings();
     }
 
     private void addTitle() {
@@ -65,11 +64,10 @@ public class LogInView extends VerticalLayout implements View {
     private void addForm() {
         fl = new FormLayout();
         tfEmail = new TextField();
-        tfEmail.setValue("admin@vaadinthesis.java");
         pfPassWord = new PasswordField();
+        tfEmail.setValue("admin@vaadinthesis.java");
         pfPassWord.setValue("admin");
-        fl.addComponent(tfEmail);
-        fl.addComponent(pfPassWord);
+        fl.addComponents(tfEmail, pfPassWord);
         fl.setWidthUndefined();
         addComponent(fl);
         setComponentAlignment(fl, Alignment.MIDDLE_CENTER);
@@ -89,8 +87,8 @@ public class LogInView extends VerticalLayout implements View {
                     logincontroller.authentication(user, password);
                 } catch (Exception e) {
                     Notification.show(e.getMessage());
-                    tfEmail.setComponentError(new UserError(errorText));
-                    pfPassWord.setComponentError(new UserError(errorText));
+                    tfEmail.setComponentError(new UserError(errorText()));
+                    pfPassWord.setComponentError(new UserError(errorText()));
                 } finally {
                     tfEmail.clear();
                     pfPassWord.clear();
@@ -101,42 +99,18 @@ public class LogInView extends VerticalLayout implements View {
         setComponentAlignment(btnLogin, Alignment.MIDDLE_CENTER);
     }
 
-    private void addLabelText() {
-        try {
-            xmlReader = new XmlFileReader();
-            xmlReader.setLoginView(this);
-            xmlReader.setTagName(this.getClass().getSimpleName());
-            xmlReader.readXml();
-        } catch (Exception ex) {
-            Logger.getLogger(LogInView.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public PasswordField getPfPassWord() {
-        return pfPassWord;
-    }
-
-    public TextField getTfEmail() {
-        return tfEmail;
-    }
-
-    public Button getBtnLogin() {
-        return btnLogin;
-    }
-
-    public Label getLblTitle() {
-        return lblTitle;
-    }
-
-    public void setErrorText(String errorText) {
-        this.errorText = errorText;
-    }
-
-    public String getErrorText() {
-        return errorText;
+    public String errorText() {
+        return bundle.getString("LoginError");
     }
 
     public AdvertiserFacade getAdvertiserFacade() {
         return advertiserFacade;
+    }
+
+    public void updateStrings() {
+        lblTitle.setValue(bundle.getString("Login"));
+        tfEmail.setCaption(bundle.getString("TfEmail"));
+        pfPassWord.setCaption(bundle.getString("PfPassword"));
+        btnLogin.setCaption(bundle.getString("Login"));
     }
 }

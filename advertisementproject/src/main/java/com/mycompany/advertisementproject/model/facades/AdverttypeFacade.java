@@ -27,5 +27,9 @@ public class AdverttypeFacade extends AbstractFacade<Adverttype> {
     public AdverttypeFacade() {
         super(Adverttype.class);
     }
+
+    public Adverttype getTypeByName(Object value) {
+        return (Adverttype) em.createNamedQuery("Adverttype.findByName").setParameter("name", value).getSingleResult();
+    }
     
 }

@@ -4,10 +4,11 @@ import static com.mycompany.advertisementproject.enumz.SessionAttributes.SELECTE
 import static com.mycompany.advertisementproject.enumz.StyleNames.ADVERTTITLE;
 import static com.mycompany.advertisementproject.enumz.StyleNames.TITLE;
 import com.mycompany.advertisementproject.view.layouts.AppLayout;
-import com.mycompany.advertisementproject.toolz.XmlFileReader;
 import com.mycompany.advertisementproject.control.SelectedAdvertController;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
 import com.mycompany.advertisementproject.model.facades.LetterFacade;
+import com.mycompany.advertisementproject.toolz.AppBundle;
+import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.navigator.View;
@@ -26,6 +27,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -33,6 +35,8 @@ import javax.inject.Inject;
 
 @CDIView("SELECTED")
 public class SelectedAdvertView extends HorizontalLayout implements View {
+
+    private ResourceBundle bundle;
 
     private String advertPanelWidth;
     private String lblAdvertiserCaption;
@@ -98,14 +102,12 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
 
     private Button btnSendMessage;
 
-    private XmlFileReader xmlReader;
-
     @Inject
     private LetterFacade letterFacade;
 
     @PostConstruct
     public void initComponent() {
-        addLabelText();
+        bundle = AppBundle.currentBundle("");
         buildView();
     }
 
@@ -115,9 +117,14 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     }
 
     private void buildView() {
+        advertisement = (Advertisement) VaadinSession.getCurrent().getAttribute(SELECTEDADVERT.toString());
+        controller = new SelectedAdvertController(this);
+        build();
+    }
+
+    public void build() {
         try {
-            advertisement = (Advertisement) VaadinSession.getCurrent().getAttribute(SELECTEDADVERT.toString());
-            controller = new SelectedAdvertController(this);
+            updateStrings();
             addTitle();
             addMeta();
             addMainPicture();
@@ -177,7 +184,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     }
 
     private void addPrice() {
-        lblPrice = new Label(lblPriceCaption + advertisement.getPrice().toString() + AppLayout.currency);
+        lblPrice = new Label(lblPriceCaption + advertisement.getPrice().toString() + Global.CURRENCY);
         lblPrice.setWidthUndefined();
         lblPrice.setStyleName(TITLE.toString());
     }
@@ -195,9 +202,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
             googleMap.setCenter(
                     new LatLon(advertisement.getMapId().getCordx(), advertisement.getMapId().getCordy())
             );
-//        googleMap.setCenter(new LatLon(46.080472, 18.211872));
             googleMap.setZoom(Integer.valueOf(googlemapzoom));
-//        googleMap.addMarker("", new LatLon(46.080472, 18.211872), true, null);
             googleMap.addMarker(
                     "",
                     new LatLon(advertisement.getMapId().getCordx(), advertisement.getMapId().getCordy()),
@@ -309,15 +314,38 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         vlContent.addComponent(new Label("<hr />", ContentMode.HTML));
     }
 
-    private void addLabelText() {
-        try {
-            xmlReader = new XmlFileReader();
-            xmlReader.setSelectedView(this);
-            xmlReader.setTagName(this.getClass().getSimpleName());
-            xmlReader.readXml();
-        } catch (Exception ex) {
-            Logger.getLogger(SelectedAdvertView.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void updateStrings() {
+        advertPanelWidth = bundle.getString("Selected.AdvertPanelWidth");
+        lblAdvertiserCaption = bundle.getString("Advertiser");
+        lblAdvertiserPhoneCaption = bundle.getString("Attainability");
+        lblRegDateCaption = bundle.getString("UploadDate");
+        lblPriceCaption = bundle.getString("Price");
+        lblDescriptionWidth = bundle.getString("Selected.DescriptionLabelWidth");
+        lblConnectionCaption = bundle.getString("OtherDetails");
+        hlFieldsWidth = bundle.getString("Selected.FieldsLayoutWidth");
+        txtFldNameCaption = bundle.getString("TfName");
+        txtFldEmailCaption = bundle.getString("TfEmail");
+        txtFldPhoneCaption = bundle.getString("TfPhone");
+        txtAreaMessageWidth = bundle.getString("Selected.TaMessageWidth");
+        txtAreaMessagePrompt = bundle.getString("TaMessage");
+        btnSendMessageCaption = bundle.getString("Send");
+        googlemaplocal = bundle.getString("GoogleMapLocal");
+        googlemapzoom = bundle.getString("GoogleMapZoom");
+        commitMessage = bundle.getString("CommitMessage");
+        letterSubject = bundle.getString("Selected.LetterSubject");
+        imageWidth = bundle.getString("Selected.imageWidth");
+        imageHeight = bundle.getString("Selected.imageHeight");
+        mainImageHeight = bundle.getString("Selected.mainImageHeight");
+        mainImageWidth = bundle.getString("Selected.mainImageWidth");
+        validatorMessage = bundle.getString("Selected.vaildatorMessage");
+        pageLink = bundle.getString("Selected.Pagelink");
+        viewName = bundle.getString("Selected.ViewName");
+        linkText = bundle.getString("Selected.LinkText");
+        greetingText = bundle.getString("Selected.GreetingText");
+        messageText1 = bundle.getString("Selected.MessageText1");
+        messageText2 = bundle.getString("Selected.MessageText2");
+        goodbyeText = bundle.getString("Selected.GoodbyeText");
+        senderName = bundle.getString("Selected.SenderName");
     }
 
     public TextField getTxtFldName() {
@@ -352,183 +380,59 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         this.mainImage = mainImage;
     }
 
-    public void setAdvertPanelWidth(String advertPanelWidth) {
-        this.advertPanelWidth = advertPanelWidth;
-    }
-
-    public void setLblAdvertiserCaption(String lblAdvertiserCaption) {
-        this.lblAdvertiserCaption = lblAdvertiserCaption;
-    }
-
-    public void setLblAdvertiserPhoneCaption(String lblAdvertiserPhoneCaption) {
-        this.lblAdvertiserPhoneCaption = lblAdvertiserPhoneCaption;
-    }
-
-    public void setLblRegDateCaption(String lblRegDateCaption) {
-        this.lblRegDateCaption = lblRegDateCaption;
-    }
-
-    public void setLblPriceCaption(String lblPriceCaption) {
-        this.lblPriceCaption = lblPriceCaption;
-    }
-
-    public void setLblDescriptionWidth(String lblDescriptionWidth) {
-        this.lblDescriptionWidth = lblDescriptionWidth;
-    }
-
-    public void setLblConnectionCaption(String lblConnectionCaption) {
-        this.lblConnectionCaption = lblConnectionCaption;
-    }
-
-    public void setHlFieldsWidth(String hlFieldsWidth) {
-        this.hlFieldsWidth = hlFieldsWidth;
-    }
-
-    public void setTxtFldNameCaption(String txtFldNameCaption) {
-        this.txtFldNameCaption = txtFldNameCaption;
-    }
-
-    public void setTxtFldEmailCaption(String txtFldEmailCaption) {
-        this.txtFldEmailCaption = txtFldEmailCaption;
-    }
-
-    public void setTxtFldPhoneCaption(String txtFldPhoneCaption) {
-        this.txtFldPhoneCaption = txtFldPhoneCaption;
-    }
-
-    public void setTxtAreaMessageWidth(String txtAreaMessageWidth) {
-        this.txtAreaMessageWidth = txtAreaMessageWidth;
-    }
-
-    public void setTxtAreaMessagePrompt(String txtAreaMessagePrompt) {
-        this.txtAreaMessagePrompt = txtAreaMessagePrompt;
-    }
-
-    public void setBtnSendMessageCaption(String btnSendMessageCaption) {
-        this.btnSendMessageCaption = btnSendMessageCaption;
-    }
-
-    public void setGooglemaplocal(String googlemaplocal) {
-        this.googlemaplocal = googlemaplocal;
-    }
-
-    public void setGooglemapzoom(String googlemapzoom) {
-        this.googlemapzoom = googlemapzoom;
-    }
-
-    public void setCommitMessage(String commitMessage) {
-        this.commitMessage = commitMessage;
-    }
-
     public String getLetterSubject() {
         return letterSubject;
-    }
-
-    public void setLetterSubject(String letterSubject) {
-        this.letterSubject = letterSubject;
     }
 
     public String getImageWidth() {
         return imageWidth;
     }
 
-    public void setImageWidth(String imageWidth) {
-        this.imageWidth = imageWidth;
-    }
-
     public String getImageHeight() {
         return imageHeight;
-    }
-
-    public void setImageHeight(String imageHeight) {
-        this.imageHeight = imageHeight;
     }
 
     public String getMainImageWidth() {
         return mainImageWidth;
     }
 
-    public void setMainImageWidth(String mainImageWidth) {
-        this.mainImageWidth = mainImageWidth;
-    }
-
     public String getMainImageHeight() {
         return mainImageHeight;
-    }
-
-    public void setMainImageHeight(String mainImageHeight) {
-        this.mainImageHeight = mainImageHeight;
     }
 
     public String getValidatorMessage() {
         return validatorMessage;
     }
 
-    public void setValidatorMessage(String validatorMessage) {
-        this.validatorMessage = validatorMessage;
-    }
-
     public String getPageLink() {
         return pageLink;
-    }
-
-    public void setPageLink(String pageLink) {
-        this.pageLink = pageLink;
     }
 
     public String getViewName() {
         return viewName;
     }
 
-    public void setViewName(String viewName) {
-        this.viewName = viewName;
-    }
-
     public String getLinkText() {
         return linkText;
-    }
-
-    public void setLinkText(String linkText) {
-        this.linkText = linkText;
     }
 
     public String getGreetingText() {
         return greetingText;
     }
 
-    public void setGreetingText(String greetingText) {
-        this.greetingText = greetingText;
-    }
-
     public String getMessageText1() {
         return messageText1;
-    }
-
-    public void setMessageText1(String messageText1) {
-        this.messageText1 = messageText1;
     }
 
     public String getMessageText2() {
         return messageText2;
     }
 
-    public void setMessageText2(String messageText2) {
-        this.messageText2 = messageText2;
-    }
-
     public String getGoodbyeText() {
         return goodbyeText;
     }
 
-    public void setGoodbyeText(String goodbyeText) {
-        this.goodbyeText = goodbyeText;
-    }
-
     public String getSenderName() {
         return senderName;
-    }
-
-    public void setSenderName(String senderName) {
-        this.senderName = senderName;
     }
 }

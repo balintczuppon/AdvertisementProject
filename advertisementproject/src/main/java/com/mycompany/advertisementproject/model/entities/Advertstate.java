@@ -99,7 +99,7 @@ public class Advertstate implements Serializable {
 
     @Override
     public String toString() {
-        return "com.mycompany.advertisementproject.Enums.Advertstate[ id=" + id + " ]";
+        return name;
     }
     
 }

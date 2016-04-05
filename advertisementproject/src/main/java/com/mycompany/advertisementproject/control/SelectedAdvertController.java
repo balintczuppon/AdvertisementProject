@@ -6,6 +6,7 @@ import com.mycompany.advertisementproject.view.vaadinviews.SelectedAdvertView;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
 import com.mycompany.advertisementproject.model.entities.Letter;
 import com.mycompany.advertisementproject.model.entities.Picture;
+import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.server.FileResource;
@@ -36,7 +37,7 @@ public class SelectedAdvertController {
         letter.setSendermail(view.getTxtFldEmail().getValue());
         letter.setSendername(view.getTxtFldName().getValue());
         letter.setSenderphone(view.getTxtFldCustomerPhoneNumber().getValue());
-        letter.setSendDate(AppLayout.currentDate());
+        letter.setSendDate(Global.currentDate());
         letter.setSender(Boolean.FALSE);
         letter.setPostBoxId(adv.getAdvertiserId().getPostbox());
         letter.setAdvertisementId(adv.getId());

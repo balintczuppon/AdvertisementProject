@@ -38,4 +38,8 @@ public class SubcategoryFacade extends AbstractFacade<Subcategory> {
         return query.getResultList();
     }
 
+    public Subcategory getSubCateogryByName(Object value) {
+        return (Subcategory) em.createNamedQuery("Subcategory.findByName").setParameter("name", value).getSingleResult();
+    }
+
 }

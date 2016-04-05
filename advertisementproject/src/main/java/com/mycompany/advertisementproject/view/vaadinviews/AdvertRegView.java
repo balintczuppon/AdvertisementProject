@@ -11,22 +11,23 @@ import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
 import static com.mycompany.advertisementproject.enumz.Views.USERPAGE;
 import com.mycompany.advertisementproject.control.AdvertRegController;
-import com.mycompany.advertisementproject.toolz.XmlFileReader;
+import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.data.Property;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileResource;
 import com.vaadin.shared.ui.label.ContentMode;
-import java.util.logging.Logger;
 import com.vaadin.ui.*;
 import java.io.File;
-import java.util.logging.Level;
+import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 @CDIView("ADVERTREG")
 public class AdvertRegView extends VerticalLayout implements View {
+
+    private ResourceBundle bundle;
 
     private static boolean availability = false;
 
@@ -34,6 +35,8 @@ public class AdvertRegView extends VerticalLayout implements View {
     private String register;
     private String failedUpload;
     private String successUpload;
+    private String failedModification;
+    private String successModification;
     private String dropHere;
     private String removeButtonText;
     private String imageHeight;
@@ -65,8 +68,6 @@ public class AdvertRegView extends VerticalLayout implements View {
     private TextArea txtAreaDescription;
 
     private AdvertRegController controller;
-
-    private XmlFileReader xmlReader;
 
     private FormLayout regFormLayout;
 
@@ -100,12 +101,17 @@ public class AdvertRegView extends VerticalLayout implements View {
     @PostConstruct
     public void initComponent() {
         if (availability) {
-            defaultSettings();
-            addPictureUpload();
-            addForm();
-            addLabelText();
-            controller.fillComboBoxes();
+            bundle = AppBundle.currentBundle("");
+            build();
         }
+    }
+
+    public void build() {
+        defaultSettings();
+        addPictureUpload();
+        addForm();
+        updateStrings();
+        controller.fillComboBoxes();
     }
 
     private void defaultSettings() {
@@ -249,10 +255,16 @@ public class AdvertRegView extends VerticalLayout implements View {
         btnRegister.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                controller.modifyAdvert();
+                try {
+                    controller.modifyAdvert();
+                } catch (Exception e) {
+                    Notification.show(failedModification);
+                }
+                Notification.show(successModification);
                 getUI().getNavigator().navigateTo(USERPAGE.toString());
             }
-        });
+        }
+        );
     }
 
     private void addRegListener() {
@@ -298,19 +310,33 @@ public class AdvertRegView extends VerticalLayout implements View {
         });
     }
 
-    private void addLabelText() {
-        try {
-            xmlReader = new XmlFileReader();
-            xmlReader.setAdvertRegView(this);
-            xmlReader.setTagName(this.getClass().getSimpleName());
-            xmlReader.readXml();
-        } catch (Exception ex) {
-            Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public Button getBtnRegister() {
-        return btnRegister;
+    public void updateStrings() {
+        txtFieldTitle.setInputPrompt(bundle.getString("AdvertTitle"));
+        txtFieldTitle.setWidth(bundle.getString("AdvertReg.TxtFldTitleWidth"));
+        txtAreaDescription.setInputPrompt(bundle.getString("AdvertDescription"));
+        txtAreaDescription.setWidth(bundle.getString("AdvertReg.taDesctriptionWidth"));
+        txtAreaDescription.setHeight(bundle.getString("AdvertReg.taDesctriptionHeight"));
+        cmbbxCategory.setInputPrompt(bundle.getString("Category"));
+        cmbbxSubCategory.setInputPrompt(bundle.getString("SubCategory"));
+        cmbbxAdvertType.setInputPrompt(bundle.getString("Type"));
+        cmbbxAdvertState.setInputPrompt(bundle.getString("State"));
+        cmbbxCity.setInputPrompt(bundle.getString("City"));
+        cmbbxCountry.setInputPrompt(bundle.getString("Country"));
+        txtFldPrice.setInputPrompt(bundle.getString("Price"));
+        adverRegPanel.setWidth(bundle.getString("AdvertReg.advertPanelWidth"));
+        lblAdvertDetails.setValue(bundle.getString("AdvertDetails"));
+        imageWidth = bundle.getString("AdvertReg.imageWidth");
+        imageHeight = bundle.getString("AdvertReg.imageHeight");
+        removeButtonText = bundle.getString("Remove(X)");
+        labelPictureUpload.setValue(bundle.getString("UploadPicture"));
+        picturePanel.setWidth(bundle.getString("AdvertReg.PicturePanelWidth"));
+        dropHere = bundle.getString("DropHere");
+        failedUpload = bundle.getString("UpLoadFail");
+        modify = bundle.getString("Modify");
+        register = bundle.getString("Register");
+        successUpload = bundle.getString("UpLoadSuccess");
+        failedModification = bundle.getString("ModificationSuccess");
+        successModification = bundle.getString("ModificationFailed");
     }
 
     public ComboBox getCmbbxCategory() {
@@ -383,58 +409,6 @@ public class AdvertRegView extends VerticalLayout implements View {
 
     public String getDropHere() {
         return dropHere;
-    }
-
-    public void setDropHere(String dropHere) {
-        this.dropHere = dropHere;
-    }
-
-    public Panel getAdverRegPanel() {
-        return adverRegPanel;
-    }
-
-    public Label getLblAdvertDetails() {
-        return lblAdvertDetails;
-    }
-
-    public Label getLblPictureUpload() {
-        return labelPictureUpload;
-    }
-
-    public Button getRemoveBtn() {
-        return removeBtn;
-    }
-
-    public void setModify(String modify) {
-        this.modify = modify;
-    }
-
-    public void setRegister(String register) {
-        this.register = register;
-    }
-
-    public void setFailedUpload(String failedUpload) {
-        this.failedUpload = failedUpload;
-    }
-
-    public void setSuccessUpload(String successUpload) {
-        this.successUpload = successUpload;
-    }
-
-    public Panel getPicturePanel() {
-        return picturePanel;
-    }
-
-    public void setImageHeight(String imageHeight) {
-        this.imageHeight = imageHeight;
-    }
-
-    public void setImageWidth(String imageWidth) {
-        this.imageWidth = imageWidth;
-    }
-
-    public void setRemoveButtonText(String removeButtonText) {
-        this.removeButtonText = removeButtonText;
     }
 
     public static void setAvailability(boolean availability) {

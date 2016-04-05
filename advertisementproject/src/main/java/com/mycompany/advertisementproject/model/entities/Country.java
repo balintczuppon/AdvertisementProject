@@ -87,8 +87,6 @@ public class Country implements Serializable {
     public void setAdvertisementCollection(Collection<Advertisement> advertisementCollection) {
         this.advertisementCollection = advertisementCollection;
     }
-    
-    
 
     @Override
     public int hashCode() {
@@ -108,6 +106,20 @@ public class Country implements Serializable {
             return false;
         }
         return true;
+    }
+
+    public boolean nameEquals(Object object) {
+        if (!(object instanceof Country)) {
+            return false;
+        }
+        Country other = (Country) object;
+
+        if (object instanceof Country) {
+            if (this.id != null && this.countryName.equals(other.countryName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

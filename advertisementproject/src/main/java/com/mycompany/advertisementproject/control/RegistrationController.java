@@ -5,15 +5,12 @@ import com.mycompany.advertisementproject.view.vaadinviews.RegistrationView;
 import com.mycompany.advertisementproject.model.entities.Advertiser;
 import com.mycompany.advertisementproject.model.entities.Postbox;
 import com.vaadin.data.validator.EmailValidator;
-import com.vaadin.ui.Notification;
-import javax.persistence.NoResultException;
 
 public class RegistrationController {
 
     private final int DEFAULT_AUTHORITY;
 
-    private RegistrationView view;
-
+    private final RegistrationView view;
     private Advertiser advertiserToCheck;
 
     public RegistrationController(RegistrationView registrationView) {
@@ -58,7 +55,7 @@ public class RegistrationController {
     private void checkUserExists() throws Exception {
         if (advertiserToCheck != null) {
             advertiserToCheck = null;
-            throw new Exception(view.getEmailUsedError());
+            throw new Exception(view.emailUsedError());
         }
     }
 
@@ -68,24 +65,24 @@ public class RegistrationController {
                 || view.getPfPassWord2().isEmpty()
                 || view.getTfName().isEmpty()
                 || view.getTfPhoneNumber().isEmpty()) {
-            throw new Exception(view.getEmptyFieldError());
+            throw new Exception(view.emptyFieldError());
         }
     }
 
     private void checkPasswordsEquals() throws Exception {
         if (!view.getPfPassWord1().getValue().equals(view.getPfPassWord2().getValue())) {
-            throw new Exception(view.getPasswordError());
+            throw new Exception(view.passwordError());
         }
     }
 
     private void checkTermsChecked() throws Exception {
         if (!view.getChkBxTerms().getValue()) {
-            throw new Exception(view.getConditionError());
+            throw new Exception(view.conditionError());
         }
     }
 
     private void validateEmail(String value) {
-        EmailValidator validator = new EmailValidator(view.getEmailValidatorMessage());
+        EmailValidator validator = new EmailValidator(view.emailValidatorMessage());
         validator.validate(value);
     }
 

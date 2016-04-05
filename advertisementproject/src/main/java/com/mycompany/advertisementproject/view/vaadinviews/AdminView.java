@@ -2,9 +2,16 @@ package com.mycompany.advertisementproject.view.vaadinviews;
 
 import com.mycompany.advertisementproject.control.AdminController;
 import static com.mycompany.advertisementproject.enumz.Fields.*;
+import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
+import com.mycompany.advertisementproject.model.facades.AdverttypeFacade;
 import com.mycompany.advertisementproject.model.facades.CityFacade;
 import com.mycompany.advertisementproject.model.facades.CountryFacade;
+import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
+import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
+import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.vaadin.cdi.CDIView;
+import com.vaadin.data.Container;
+import com.vaadin.data.Property;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Accordion;
@@ -16,11 +23,18 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 @CDIView("ADMINPAGE")
 public class AdminView extends VerticalLayout implements View {
+
+    private ResourceBundle bundle;
 
     private AdminController controller;
 
@@ -62,10 +76,29 @@ public class AdminView extends VerticalLayout implements View {
     private TextField txtFldModifyType;
     private ComboBox cmbBxModifyType;
 
+    private String countryCaption;
+    private String cityCaption;
+    private String categoryCaption;
+    private String subCateogryCaption;
+    private String stateCaption;
+    private String typeCaption;
+    private String expansion;
+    private String create;
+    private String modify;
+    private String delete;
+
     @Inject
     private CountryFacade countryFacade;
     @Inject
     private CityFacade cityFacade;
+    @Inject
+    private MaincategoryFacade categoryFacade;
+    @Inject
+    private SubcategoryFacade subcategoryFacade;
+    @Inject
+    private AdvertstateFacade stateFacade;
+    @Inject
+    private AdverttypeFacade typeFacade;
 
     private static boolean availability = false;
 
@@ -77,6 +110,7 @@ public class AdminView extends VerticalLayout implements View {
     @PostConstruct
     public void initComponent() {
         if (availability) {
+            bundle = AppBundle.currentBundle("");
             buildView();
             Notification.show("Hi there Admin!");
         } else {
@@ -88,12 +122,25 @@ public class AdminView extends VerticalLayout implements View {
         AdminView.availability = availability;
     }
 
-    private void buildView() {
+    public void buildView() {
+        try {
+            setController();
+            updateStrings();
+            setViewParameters();
+            buildAccoordion();
+        } catch (Exception ex) {
+            Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void setController() {
         controller = new AdminController();
         controller.setCountryFacade(countryFacade);
         controller.setCityFacade(cityFacade);
-        setViewParameters();
-        buildAccoordion();
+        controller.setCategoryFacade(categoryFacade);
+        controller.setSubcategoryFacade(subcategoryFacade);
+        controller.setStateFacade(stateFacade);
+        controller.setTypeFacade(typeFacade);
     }
 
     private void setViewParameters() {
@@ -110,6 +157,7 @@ public class AdminView extends VerticalLayout implements View {
         addSubCategory();
         addState();
         addType();
+        addAccoridonChangeListener();
         this.addComponent(accordion);
     }
 
@@ -117,7 +165,7 @@ public class AdminView extends VerticalLayout implements View {
         createCountryFields();
 
         accordionLayout.addComponent(tabSheet);
-        accordion.addTab(accordionLayout, "Megye");
+        accordion.addTab(accordionLayout, countryCaption);
 
         addCountryButtonLogic(btnCreate, btnDelete, btnModify);
     }
@@ -126,7 +174,7 @@ public class AdminView extends VerticalLayout implements View {
         createCityFields();
 
         accordionLayout.addComponent(tabSheet);
-        accordion.addTab(accordionLayout, "Város");
+        accordion.addTab(accordionLayout, cityCaption);
 
         addCityButtonLogic(btnCreate, btnDelete, btnModify);
     }
@@ -135,7 +183,7 @@ public class AdminView extends VerticalLayout implements View {
         createCategoryFields();
 
         accordionLayout.addComponent(tabSheet);
-        accordion.addTab(accordionLayout, "Kategória");
+        accordion.addTab(accordionLayout, categoryCaption);
 
         addCategoryButtonLogic(btnCreate, btnDelete, btnModify);
     }
@@ -144,7 +192,7 @@ public class AdminView extends VerticalLayout implements View {
         createSubCategoryFields();
 
         accordionLayout.addComponent(tabSheet);
-        accordion.addTab(accordionLayout, "Alkategória");
+        accordion.addTab(accordionLayout, subCateogryCaption);
 
         addSubCategoryButtonLogic(btnCreate, btnDelete, btnModify);
     }
@@ -153,7 +201,7 @@ public class AdminView extends VerticalLayout implements View {
         createStateFields();
 
         accordionLayout.addComponent(tabSheet);
-        accordion.addTab(accordionLayout, "Állapot");
+        accordion.addTab(accordionLayout, stateCaption);
 
         addStateButtonLogic(btnCreate, btnDelete, btnModify);
     }
@@ -162,7 +210,7 @@ public class AdminView extends VerticalLayout implements View {
         createTypeFields();
 
         accordionLayout.addComponent(tabSheet);
-        accordion.addTab(accordionLayout, "Típus");
+        accordion.addTab(accordionLayout, typeCaption);
 
         addTypeButtonLogic(btnCreate, btnDelete, btnModify);
     }
@@ -180,12 +228,12 @@ public class AdminView extends VerticalLayout implements View {
         tabsheetLayoutLeft = formattedHLayout();
         tabsheetLayoutRight = formattedHLayout();
 
-        tabsheetLayoutLeft.setCaption("Bővítés");
-        tabsheetLayoutRight.setCaption("Módosítás");
+        tabsheetLayoutLeft.setCaption(expansion);
+        tabsheetLayoutRight.setCaption(modify);
 
         tSheet.addTab(tabsheetLayoutLeft);
         tSheet.addTab(tabsheetLayoutRight);
-
+        
         accordionLayout = new VerticalLayout();
         accordionLayout.setSpacing(true);
         accordionLayout.setMargin(true);
@@ -197,6 +245,8 @@ public class AdminView extends VerticalLayout implements View {
         txtFldCreateCountry = new TextField();
         txtFldModifyCountry = new TextField();
         cmbBxModifyCountry = new ComboBox();
+
+        controller.popluateCountryFields(cmbBxModifyCountry);
 
         createButtons();
 
@@ -212,6 +262,7 @@ public class AdminView extends VerticalLayout implements View {
         cmbBxCreateCity = new ComboBox();
         cmbBxModifyCity = new ComboBox();
 
+        controller.popluateCityFields(cmbBxModifyCity);
         cmbBxCreateCity.addItems(countryFacade.findAll());
 
         createButtons();
@@ -227,6 +278,7 @@ public class AdminView extends VerticalLayout implements View {
         txtFldModifyCategory = new TextField();
         cmbBxModifyCategory = new ComboBox();
 
+        controller.popluateCategoryFields(cmbBxModifyCategory);
         createButtons();
 
         tabSheet = basicTabSheet();
@@ -241,6 +293,9 @@ public class AdminView extends VerticalLayout implements View {
         cmbBxCreateSubCategory = new ComboBox();
         cmbBxModifySubCategory = new ComboBox();
 
+        controller.popluateSubCategoryFields(cmbBxModifySubCategory);
+        cmbBxCreateSubCategory.addItems(categoryFacade.findAll());
+
         createButtons();
 
         tabSheet = basicTabSheet();
@@ -254,6 +309,7 @@ public class AdminView extends VerticalLayout implements View {
         txtFldModifyState = new TextField();
         cmbBxModifyState = new ComboBox();
 
+        controller.popluateStateFields(cmbBxModifyState);
         createButtons();
 
         tabSheet = basicTabSheet();
@@ -267,6 +323,7 @@ public class AdminView extends VerticalLayout implements View {
         txtFldModifyType = new TextField();
         cmbBxModifyType = new ComboBox();
 
+        controller.popluateTypeFields(cmbBxModifyType);
         createButtons();
 
         tabSheet = basicTabSheet();
@@ -276,9 +333,9 @@ public class AdminView extends VerticalLayout implements View {
     }
 
     private void createButtons() {
-        btnCreate = new Button("Létrehoz");
-        btnModify = new Button("Módosít");
-        btnDelete = new Button("Töröl");
+        btnCreate = new Button(create);
+        btnModify = new Button(modify);
+        btnDelete = new Button(delete);
     }
 
     private void addCountryButtonLogic(Button btnCreate, Button btnDelete, Button btnModify) {
@@ -286,7 +343,40 @@ public class AdminView extends VerticalLayout implements View {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                controller.createCountry(txtFldCreateCountry.getValue());
+                try {
+                    controller.createCountry(txtFldCreateCountry.getValue());
+                    txtFldCreateCountry.clear();
+                } catch (SQLIntegrityConstraintViolationException e) {
+                    Notification.show("Ennek kéne működnie de nem működik és már le is szarom.");
+                } catch (Exception ex) {
+                    Notification.show("Nem ennek kéne működnie de már leszarom.");
+                }
+            }
+        }
+        );
+        btnDelete.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.deleteCountry(cmbBxModifyCountry.getValue().toString());
+                    controller.popluateCountryFields(cmbBxModifyCountry);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        btnModify.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.modifyCountry(cmbBxModifyCountry.getValue().toString(), txtFldModifyCountry.getValue());
+                    controller.popluateCountryFields(cmbBxModifyCountry);
+                    txtFldModifyCountry.clear();
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -296,20 +386,244 @@ public class AdminView extends VerticalLayout implements View {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                controller.createCity(txtFldCreateCity.getValue());
+                try {
+                    controller.createCity(txtFldCreateCity.getValue());
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        btnDelete.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.deleteCity(cmbBxModifyCity.getValue().toString());
+                    controller.popluateCityFields(cmbBxModifyCity);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        btnModify.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.modifyCity(cmbBxModifyCity.getValue().toString(), txtFldModifyCity.getValue());
+                    controller.popluateCityFields(cmbBxModifyCity);
+                    txtFldModifyCity.clear();
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
 
     private void addCategoryButtonLogic(Button btnCreate, Button btnDelete, Button btnModify) {
+        btnCreate.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.createCategory(txtFldCreateCategory.getValue());
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        btnDelete.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.deleteCategory(cmbBxModifyCategory.getValue().toString());
+                    controller.popluateCategoryFields(cmbBxModifyCategory);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        btnModify.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.modifyCategory(cmbBxModifyCategory.getValue().toString(), txtFldModifyCategory.getValue());
+                    controller.popluateCategoryFields(cmbBxModifyCategory);
+                    txtFldModifyCategory.clear();
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
     }
 
     private void addSubCategoryButtonLogic(Button btnCreate, Button btnDelete, Button btnModify) {
+        btnCreate.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.createSubCategory(txtFldCreateSubCategory.getValue());
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        btnDelete.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.deleteSubCategory(cmbBxModifySubCategory.getValue().toString());
+                    controller.popluateSubCategoryFields(cmbBxModifySubCategory);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        btnModify.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.modifySubCategory(cmbBxModifySubCategory.getValue().toString(), txtFldModifySubCategory.getValue());
+                    controller.popluateSubCategoryFields(cmbBxModifySubCategory);
+                    txtFldModifySubCategory.clear();
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
     }
 
     private void addStateButtonLogic(Button btnCreate, Button btnDelete, Button btnModify) {
+        btnCreate.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.createState(txtFldCreateState.getValue());
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        btnDelete.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.deleteState(cmbBxModifyState.getValue().toString());
+                    controller.popluateStateFields(cmbBxModifyState);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        btnModify.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.modifyState(cmbBxModifyState.getValue().toString(), txtFldModifyState.getValue());
+                    controller.popluateStateFields(cmbBxModifyState);
+                    txtFldModifyState.clear();
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
     }
 
     private void addTypeButtonLogic(Button btnCreate, Button btnDelete, Button btnModify) {
+        btnCreate.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.createType(txtFldCreateType.getValue());
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        btnDelete.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.deleteType(cmbBxModifyType.getValue().toString());
+                    controller.popluateTypeFields(cmbBxModifyType);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        btnModify.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    controller.modifyType(cmbBxModifyType.getValue().toString(), txtFldModifyType.getValue());
+                    controller.popluateTypeFields(cmbBxModifyType);
+                    txtFldModifyType.clear();
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
     }
+
+    private void addCountryComboBoxLogic() {
+        cmbBxModifyCountry.addValueChangeListener(new Property.ValueChangeListener() {
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                txtFldModifyCountry.setValue(cmbBxModifyCountry.getValue().toString());
+            }
+        });
+    }
+
+    public void updateStrings() throws Exception {
+        countryCaption = bundle.getString("Country");
+        cityCaption = bundle.getString("City");
+        categoryCaption = bundle.getString("Category");
+        subCateogryCaption = bundle.getString("SubCategory");
+        stateCaption = bundle.getString("State");
+        typeCaption = bundle.getString("Type");
+        expansion = bundle.getString("Expansion");
+        create = bundle.getString("Create");
+        modify = bundle.getString("Modify");
+        delete = bundle.getString("Delete");
+    }
+
+    private void addAccoridonChangeListener() {
+        accordion.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
+
+            @Override
+            public void selectedTabChange(TabSheet.SelectedTabChangeEvent event) {
+                controller.popluateCountryFields(cmbBxModifyCountry);
+                controller.popluateCityFields(cmbBxModifyCity);
+                cmbBxCreateCity.addItems(countryFacade.findAll());
+                controller.popluateCategoryFields(cmbBxModifyCategory);
+                controller.popluateSubCategoryFields(cmbBxModifySubCategory);
+                cmbBxCreateSubCategory.addItems(categoryFacade.findAll());
+                controller.popluateStateFields(cmbBxModifyState);
+                controller.popluateTypeFields(cmbBxModifyType);
+            }
+        });
+    }
+
 }

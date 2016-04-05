@@ -16,6 +16,7 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class CountryFacade extends AbstractFacade<Country> {
+
     @PersistenceContext(unitName = "com.mycompany_advertisementproject_war_1.0-SNAPSHOTPU")
     private EntityManager em;
 
@@ -27,5 +28,10 @@ public class CountryFacade extends AbstractFacade<Country> {
     public CountryFacade() {
         super(Country.class);
     }
-    
+
+    public Country getCountryByName(String name) {
+        return (Country) em.createNamedQuery("Country.findByCountryName").setParameter("countryName",name).getSingleResult();
+    }
+
+
 }

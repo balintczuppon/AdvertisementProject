@@ -27,5 +27,9 @@ public class CityFacade extends AbstractFacade<City> {
     public CityFacade() {
         super(City.class);
     }
+
+    public City getCityByName(Object value) {
+        return (City) em.createNamedQuery("City.findByCityName").setParameter("cityName", value).getSingleResult();
+    }
     
 }

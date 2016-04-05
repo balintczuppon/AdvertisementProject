@@ -8,6 +8,7 @@ import com.mycompany.advertisementproject.toolz.MailSender;
 import com.mycompany.advertisementproject.view.vaadinviews.LetterView;
 import com.mycompany.advertisementproject.model.entities.Advertiser;
 import com.mycompany.advertisementproject.model.entities.Letter;
+import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinSession;
 
@@ -60,7 +61,7 @@ public class LetterController {
         responseLetter.setSendername(current_advertiser.getName());
         responseLetter.setSenderphone(current_advertiser.getPhonenumber());
         responseLetter.setSender(Boolean.TRUE);
-        responseLetter.setSendDate(AppLayout.currentDate());
+        responseLetter.setSendDate(Global.currentDate());
         responseLetter.setPostBoxId(current_advertiser.getPostbox());
         responseLetter.setAdvertisementId(letter.getAdvertisementId());
 

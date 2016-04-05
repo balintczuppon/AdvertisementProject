@@ -3,9 +3,9 @@ package com.mycompany.advertisementproject.view.vaadinviews;
 import static com.mycompany.advertisementproject.enumz.StyleNames.TITLE;
 import static com.mycompany.advertisementproject.enumz.Views.LOGIN;
 import com.mycompany.advertisementproject.control.RegistrationController;
-import com.mycompany.advertisementproject.toolz.XmlFileReader;
 import com.mycompany.advertisementproject.model.facades.AdvertiserFacade;
 import com.mycompany.advertisementproject.model.facades.PostboxFacade;
+import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -18,6 +18,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -26,12 +27,7 @@ import javax.inject.Inject;
 @CDIView("REGISTRATION")
 public class RegistrationView extends VerticalLayout implements View {
 
-    private String emailUsedError;
-    private String emptyFieldError;
-    private String passwordError;
-    private String conditionError;
-    private String txtSuccess;
-    private String emailValidatorMessage;
+    private ResourceBundle bundle;
 
     private TextField tfEmail;
     private TextField tfName;
@@ -46,8 +42,6 @@ public class RegistrationView extends VerticalLayout implements View {
     private Label lblTitle;
 
     private Button btnRegistration;
-
-    private XmlFileReader xmlReader;
 
     private RegistrationController controller;
 
@@ -65,11 +59,12 @@ public class RegistrationView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initComponent() {
+        bundle = AppBundle.currentBundle("");
         setMargin(true);
         addTitle();
         addForm();
         addButton();
-        addLabelText();
+        updateStrings();
     }
 
     private void addTitle() {
@@ -103,13 +98,7 @@ public class RegistrationView extends VerticalLayout implements View {
     }
 
     private void addComponentsToContent() {
-        fl.addComponent(tfEmail);
-        fl.addComponent(pfPassWord1);
-        fl.addComponent(pfPassWord2);
-        fl.addComponent(tfName);
-        fl.addComponent(tfPhoneNumber);
-        fl.addComponent(chkBxNewsLetter);
-        fl.addComponent(chkBxTerms);
+        fl.addComponents(tfEmail, pfPassWord1, pfPassWord2, tfName, tfPhoneNumber, chkBxNewsLetter, chkBxTerms);
     }
 
     private void addButton() {
@@ -136,36 +125,40 @@ public class RegistrationView extends VerticalLayout implements View {
         });
     }
 
+    public void updateStrings(){
+        lblTitle.setCaption(bundle.getString("Registration"));
+        tfEmail.setCaption(bundle.getString("TfEmail"));
+        tfName.setCaption(bundle.getString("TfName"));
+        tfPhoneNumber.setCaption(bundle.getString("TfPhone"));
+        pfPassWord1.setCaption(bundle.getString("PfPassword"));
+        pfPassWord2.setCaption(bundle.getString("PfPassword"));
+        chkBxNewsLetter.setCaption(bundle.getString("CbNewsLetter"));
+        chkBxTerms.setCaption(bundle.getString("CbTerms"));
+        btnRegistration.setCaption(bundle.getString("Registration"));
+    }
+    
     public void goForward() {
-        Notification.show(txtSuccess);
         getUI().getNavigator().navigateTo(LOGIN.toString());
     }
 
-    private void addLabelText() {
-        try {
-            xmlReader = new XmlFileReader();
-            xmlReader.setRegView(this);
-            xmlReader.setTagName(this.getClass().getSimpleName());
-            xmlReader.readXml();
-        } catch (Exception ex) {
-            Logger.getLogger(RegistrationView.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public String emailUsedError() {
+        return bundle.getString("EmailUsedError");
     }
 
-    public PasswordField getPfPassWord1() {
-        return pfPassWord1;
+    public String emptyFieldError() {
+        return bundle.getString("EmptyFieldError");
     }
 
-    public PasswordField getPfPassWord2() {
-        return pfPassWord2;
+    public String passwordError() {
+        return bundle.getString("PasswordMissMatchError");
     }
 
-    public TextField getTfEmail() {
-        return tfEmail;
+    public String conditionError() {
+        return bundle.getString("ConditionError");
     }
 
-    public CheckBox getChkBxTerms() {
-        return chkBxTerms;
+    public String emailValidatorMessage() {
+        return bundle.getString("ValidatorMessage");
     }
 
     public AdvertiserFacade getAdvertiserFacade() {
@@ -176,6 +169,18 @@ public class RegistrationView extends VerticalLayout implements View {
         return postboxFacade;
     }
 
+    public CheckBox getChkBxTerms() {
+        return chkBxTerms;
+    }
+
+    public CheckBox getChkBxNewsLetter() {
+        return chkBxNewsLetter;
+    }
+
+    public TextField getTfEmail() {
+        return tfEmail;
+    }
+
     public TextField getTfName() {
         return tfName;
     }
@@ -184,59 +189,11 @@ public class RegistrationView extends VerticalLayout implements View {
         return tfPhoneNumber;
     }
 
-    public CheckBox getChkBxNewsLetter() {
-        return chkBxNewsLetter;
+    public PasswordField getPfPassWord1() {
+        return pfPassWord1;
     }
 
-    public Label getLblTitle() {
-        return lblTitle;
-    }
-
-    public Button getBtnRegistration() {
-        return btnRegistration;
-    }
-
-    public void setTxtSuccess(String txtSuccess) {
-        this.txtSuccess = txtSuccess;
-    }
-
-    public String getEmailUsedError() {
-        return emailUsedError;
-    }
-
-    public void setEmailUsedError(String emailUsedError) {
-        this.emailUsedError = emailUsedError;
-    }
-
-    public String getEmptyFieldError() {
-        return emptyFieldError;
-    }
-
-    public void setEmptyFieldError(String emptyFieldError) {
-        this.emptyFieldError = emptyFieldError;
-    }
-
-    public String getPasswordError() {
-        return passwordError;
-    }
-
-    public void setPasswordError(String passwordError) {
-        this.passwordError = passwordError;
-    }
-
-    public String getConditionError() {
-        return conditionError;
-    }
-
-    public void setConditionError(String conditionError) {
-        this.conditionError = conditionError;
-    }
-
-    public String getEmailValidatorMessage() {
-        return emailValidatorMessage;
-    }
-
-    public void setEmailValidatorMessage(String emailValidatorMessage) {
-        this.emailValidatorMessage = emailValidatorMessage;
+    public PasswordField getPfPassWord2() {
+        return pfPassWord2;
     }
 }

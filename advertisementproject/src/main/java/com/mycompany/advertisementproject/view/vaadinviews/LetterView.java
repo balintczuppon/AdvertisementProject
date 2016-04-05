@@ -1,9 +1,9 @@
 package com.mycompany.advertisementproject.view.vaadinviews;
 
-import com.mycompany.advertisementproject.toolz.XmlFileReader;
 import com.mycompany.advertisementproject.control.LetterController;
 import com.mycompany.advertisementproject.model.entities.Letter;
 import com.mycompany.advertisementproject.model.facades.LetterFacade;
+import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -15,6 +15,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -22,6 +23,8 @@ import javax.inject.Inject;
 
 @CDIView("LETTER")
 public class LetterView extends VerticalLayout implements View {
+
+    private ResourceBundle bundle;
 
     private static boolean availability = false;
 
@@ -69,7 +72,6 @@ public class LetterView extends VerticalLayout implements View {
 
     @Inject
     private LetterFacade letterFacade;
-    private XmlFileReader xmlReader;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -85,9 +87,9 @@ public class LetterView extends VerticalLayout implements View {
     @PostConstruct
     public void initComponents() {
         if (availability) {
-            addLabelText();
+            bundle = AppBundle.currentBundle("");
             defaultSettings();
-            buildView();
+            build();
         }
     }
 
@@ -99,7 +101,8 @@ public class LetterView extends VerticalLayout implements View {
         setMargin(true);
     }
 
-    private void buildView() {
+    public void build() {
+        updateStrings();
         initPanel();
     }
 
@@ -215,15 +218,27 @@ public class LetterView extends VerticalLayout implements View {
         });
     }
 
-    private void addLabelText() {
-        try {
-            xmlReader = new XmlFileReader();
-            xmlReader.setLetterView(this);
-            xmlReader.setTagName(this.getClass().getSimpleName());
-            xmlReader.readXml();
-        } catch (Exception ex) {
-            Logger.getLogger(LetterView.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void updateStrings() {
+        panelWidth = bundle.getString("Letter.PanelWidth");
+        lblEnquirerCaption = bundle.getString("TfSender");
+        lblTitleCaption = bundle.getString("TfSubject");
+        lblTextCaption = bundle.getString("TfText");
+        taLetterToShowWidth = bundle.getString("Letter.TaLetterToShowWidth");
+        btnAnswerMailCaption = bundle.getString("Answer");
+        btnDeleteMailCaption = bundle.getString("Delete");
+        btnBackCaption = bundle.getString("Back");
+        taLetterToWritePrompt = bundle.getString("TaMessage");
+        taLetterToWriteWidth = bundle.getString("Letter.TaLetterToWriteWidth");
+        taLetterToWriteHeight = bundle.getString("Letter.TaLetterToWriteHeight");
+        responsePrefix = bundle.getString("responsePrefix");
+        pageLink = bundle.getString("Letter.PageLink");
+        linkText = bundle.getString("Letter.LinkText");
+        greetingText = bundle.getString("Letter.GreetingText");
+        messageText1 = bundle.getString("Letter.MessageText1");
+        messageText2 = bundle.getString("Letter.MessageText2");
+        goodbyeText = bundle.getString("Letter.GoodbyeText");
+        senderName = bundle.getString("Letter.Sendername");
+        viewName = bundle.getString("Letter.ViewName");
     }
 
     public TextArea getTaLetterToWrite() {
@@ -238,122 +253,42 @@ public class LetterView extends VerticalLayout implements View {
         return letterFacade;
     }
 
-    public void setPanelWidth(String panelWidth) {
-        this.panelWidth = panelWidth;
-    }
-
-    public void setLblEnquirerCaption(String lblEnquirerCaption) {
-        this.lblEnquirerCaption = lblEnquirerCaption;
-    }
-
-    public void setLblTitleCaption(String lblTitleCaption) {
-        this.lblTitleCaption = lblTitleCaption;
-    }
-
-    public void setLblTextCaption(String lblTextCaption) {
-        this.lblTextCaption = lblTextCaption;
-    }
-
-    public void setTaLetterToShowWidth(String taLetterToShowWidth) {
-        this.taLetterToShowWidth = taLetterToShowWidth;
-    }
-
-    public void setBtnAnswerMailCaption(String btnAnswerMailCaption) {
-        this.btnAnswerMailCaption = btnAnswerMailCaption;
-    }
-
-    public void setBtnDeleteMailCaption(String btnDeleteMailCaption) {
-        this.btnDeleteMailCaption = btnDeleteMailCaption;
-    }
-
-    public void setBtnBackCaption(String btnBackCaption) {
-        this.btnBackCaption = btnBackCaption;
-    }
-
-    public void setTaLetterToWritePrompt(String taLetterToWritePrompt) {
-        this.taLetterToWritePrompt = taLetterToWritePrompt;
-    }
-
-    public void setTaLetterToWriteWidth(String taLetterToWriteWidth) {
-        this.taLetterToWriteWidth = taLetterToWriteWidth;
-    }
-
-    public void setTaLetterToWriteHeight(String taLetterToWriteHeight) {
-        this.taLetterToWriteHeight = taLetterToWriteHeight;
-    }
-
     public String getResponsePrefix() {
         return responsePrefix;
-    }
-
-    public void setResponsePrefix(String responsePrefix) {
-        this.responsePrefix = responsePrefix;
     }
 
     public String getPageLink() {
         return pageLink;
     }
 
-    public void setPageLink(String pageLink) {
-        this.pageLink = pageLink;
-    }
-
     public String getViewName() {
         return viewName;
-    }
-
-    public void setViewName(String viewName) {
-        this.viewName = viewName;
     }
 
     public String getLinkText() {
         return linkText;
     }
 
-    public void setLinkText(String linkText) {
-        this.linkText = linkText;
-    }
-
     public String getGreetingText() {
         return greetingText;
-    }
-
-    public void setGreetingText(String greetingText) {
-        this.greetingText = greetingText;
     }
 
     public String getMessageText1() {
         return messageText1;
     }
 
-    public void setMessageText1(String messageText1) {
-        this.messageText1 = messageText1;
-    }
-
     public String getMessageText2() {
         return messageText2;
-    }
-
-    public void setMessageText2(String messageText2) {
-        this.messageText2 = messageText2;
     }
 
     public String getGoodbyeText() {
         return goodbyeText;
     }
 
-    public void setGoodbyeText(String goodbyeText) {
-        this.goodbyeText = goodbyeText;
-    }
-
     public String getSenderName() {
         return senderName;
     }
-
-    public void setSenderName(String senderName) {
-        this.senderName = senderName;
-    }
-
+    
     public static void setAvailability(boolean availability) {
         LetterView.availability = availability;
     }

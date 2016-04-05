@@ -43,4 +43,10 @@ public class RootUI extends UI {
     public AppLayout getAppLayout() {
         return appLayout;
     }
+
+    public CDIViewProvider getViewProvider() {
+        return viewProvider;
+    }
+    
+    
 }

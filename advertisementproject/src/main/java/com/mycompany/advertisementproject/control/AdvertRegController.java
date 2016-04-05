@@ -14,6 +14,7 @@ import com.mycompany.advertisementproject.model.entities.Country;
 import com.mycompany.advertisementproject.model.entities.Maincategory;
 import com.mycompany.advertisementproject.model.entities.Picture;
 import com.mycompany.advertisementproject.model.entities.Subcategory;
+import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.server.VaadinSession;
 import java.io.File;
 import java.util.ArrayList;
@@ -26,8 +27,8 @@ public class AdvertRegController {
 
     private final AdvertRegView view;
 
-    private List<File> files = new ArrayList<>();
-    private List<Picture> pictureCollection = new ArrayList<>();
+    private final List<File> files = new ArrayList<>();
+    private final List<Picture> pictureCollection = new ArrayList<>();
 
     private MyMultiFileUpload mfu;
     private Picture picture;
@@ -55,17 +56,6 @@ public class AdvertRegController {
     }
 
     public void registerAdvert() {
-        Advertisement a = handleAdvert();
-        view.getAdvertisementFacade().create(a);
-    }
-
-    public void modifyAdvert() {
-        Advertisement a = handleAdvert();
-        view.getAdvertisementFacade().edit(a);
-        view.getAdvertisementFacade().remove(advert_to_mod);
-    }
-
-    private Advertisement handleAdvert() {
         Advertisement advertisement = new Advertisement();
         advertisement.setAdvertiserId(current_advertiser);
         advertisement.setAdvertStateId(selectedState());
@@ -76,7 +66,7 @@ public class AdvertRegController {
         advertisement.setMainCategoryId(selectedMainCategory());
         advertisement.setSubCategoryId(selectedSubCategory());
         advertisement.setPrice(Integer.valueOf(view.getTxtFldPrice().getValue()));
-        advertisement.setRegistrationDate(AppLayout.currentDate());
+        advertisement.setRegistrationDate(Global.currentDate());
         advertisement.setTitle(view.getTxtFieldTitle().getValue());
 
         for (File f : files) {
@@ -87,39 +77,128 @@ public class AdvertRegController {
         }
 
         advertisement.setPictureCollection(pictureCollection);
-        return advertisement;
+        view.getAdvertisementFacade().create(advertisement);
+    }
+
+    public void modifyAdvert() {
+        advert_to_mod.setAdvertStateId(selectedState());
+        advert_to_mod.setAdvertTypeId(selectedType());
+        advert_to_mod.setDescription(view.getTxtAreaDescription().getValue());
+        advert_to_mod.setCityId(selectedCity());
+        advert_to_mod.setCountryId(selectedCountry());
+        advert_to_mod.setMainCategoryId(selectedMainCategory());
+        advert_to_mod.setSubCategoryId(selectedSubCategory());
+        advert_to_mod.setPrice(Integer.valueOf(view.getTxtFldPrice().getValue()));
+        advert_to_mod.setRegistrationDate(Global.currentDate());
+        advert_to_mod.setTitle(view.getTxtFieldTitle().getValue());
+
+        for (File f : files) {
+            picture = new Picture();
+            picture.setAccessPath(f.getAbsolutePath());
+            picture.setAdvertisementId(advert_to_mod);
+            pictureCollection.add(picture);
+        }
+
+        advert_to_mod.setPictureCollection(pictureCollection);
+        view.getAdvertisementFacade().edit(advert_to_mod);
     }
 
     public void linkDataToFields(Advertisement ad) {
         view.getTxtFieldTitle().setValue(ad.getTitle());
         view.getTxtAreaDescription().setValue(ad.getDescription());
         view.getTxtFldPrice().setValue(String.valueOf(ad.getPrice()));
-        view.getCmbbxCategory().select(ad.getMainCategoryId().getName());
-
-        fillCmbBxSubCategory(ad.getMainCategoryId().getName());
-        for (Subcategory s : ad.getMainCategoryId().getSubcategoryCollection()) {
-            if (s.getId().equals(ad.getSubCategoryId())) {
-                view.getCmbbxSubCategory().select(s.getName());
-            }
-        }
+        view.getCmbbxCategory().select(ad.getMainCategoryId());
+        fillCmbBxSubCategory(ad.getMainCategoryId());
         view.getCmbbxSubCategory().select(ad.getSubCategoryId());
-        view.getCmbbxAdvertType().select(ad.getAdvertTypeId().getName());
-        view.getCmbbxAdvertState().select(ad.getAdvertStateId().getName());
-        view.getCmbbxCountry().select(ad.getCountryId().getCountryName());
-
-        fillCmbBxCity(ad.getCountryId().getCountryName());
-        for (City c : ad.getCountryId().getCityCollection()) {
-            if (c.getId().equals(ad.getCityId())) {
-                view.getCmbbxSubCategory().select(c.getCityName());
-            }
-        }
-        view.getCmbbxCity().select(ad.getCityId().getCityName());
-
+        view.getCmbbxAdvertType().select(ad.getAdvertTypeId());
+        view.getCmbbxAdvertState().select(ad.getAdvertStateId());
+        view.getCmbbxCountry().select(ad.getCountryId());
+        fillCmbBxCity(ad.getCountryId());
+        view.getCmbbxCity().select(ad.getCityId());
         for (Picture p : ad.getPictureCollection()) {
             File file = new File(p.getAccessPath());
             files.add(file);
             view.showImage(file);
         }
+    }
+
+    public void fillComboBoxes() {
+        if (!filled) {
+            view.getCmbbxCategory().addItems(view.getMaincategoryFacade().findAll());
+            view.getCmbbxAdvertState().addItems(view.getAdvertstateFacade().findAll());
+            view.getCmbbxAdvertType().addItems(view.getAdverttypeFacade().findAll());
+            view.getCmbbxCountry().addItems(view.getCountryFacade().findAll());
+            filled = true;
+        }
+    }
+
+    public void fillCmbBxSubCategory(Object value) {
+        view.getCmbbxSubCategory().removeAllItems();
+        view.getCmbbxSubCategory().setEnabled(true);
+        if (value != null && !((Maincategory) (value)).getSubcategoryCollection().isEmpty()) {
+            view.getCmbbxSubCategory().addItems(((Maincategory) (value)).getSubcategoryCollection());
+        }
+    }
+
+    public void fillCmbBxCity(Object value) {
+        view.getCmbbxCity().removeAllItems();
+        view.getCmbbxCity().setEnabled(true);
+        if (value != null && !((Country) value).getCityCollection().isEmpty()) {
+            view.getCmbbxCity().addItems(((Country) value).getCityCollection());
+        }
+    }
+
+    private Advertstate selectedState() {
+        if (!view.getCmbbxAdvertState().isEmpty()) {
+            return view.getAdvertstateFacade().getStateByName(view.getCmbbxAdvertState().getValue().toString());
+        } else {
+            return null;
+        }
+    }
+
+    private Adverttype selectedType() {
+        if (!view.getCmbbxAdvertType().isEmpty()) {
+            return view.getAdverttypeFacade().getTypeByName(view.getCmbbxAdvertType().getValue().toString());
+        } else {
+            return null;
+        }
+    }
+
+    private Country selectedCountry() {
+        if (!view.getCmbbxCountry().isEmpty()) {
+            return view.getCountryFacade().getCountryByName(view.getCmbbxCountry().getValue().toString());
+        } else {
+            return null;
+        }
+    }
+
+    private City selectedCity() {
+        if (!view.getCmbbxCity().isEmpty()) {
+            return view.getCityFacade().getCityByName(view.getCmbbxCity().getValue().toString());
+        } else {
+            return null;
+        }
+    }
+
+    private Maincategory selectedMainCategory() {
+        if (!view.getCmbbxCategory().isEmpty()) {
+            return view.getMaincategoryFacade().getCategoryByName(view.getCmbbxCategory().getValue().toString());
+        } else {
+            return null;
+        }
+    }
+
+    private Subcategory selectedSubCategory() {
+        if (!view.getCmbbxSubCategory().isEmpty()) {
+            return view.getSubcategoryFacade().getSubCateogryByName(view.getCmbbxSubCategory().getValue().toString());
+        } else {
+            return null;
+        }
+    }
+
+    public void removeFile(File file) {
+        file.delete();
+        files.remove(file);
     }
 
     public void setUpLoadField() {
@@ -139,113 +218,6 @@ public class AdvertRegController {
         };
         mfu.setRootDirectory(TEMP_FILE_DIR);
         mfu.setCaption(view.getDropHere());
-    }
-
-    public void fillComboBoxes() {
-        if (!filled) {
-            for (Maincategory m : view.getMaincategoryFacade().findAll()) {
-                view.getCmbbxCategory().addItem(m.getName());
-            }
-            for (Advertstate a : view.getAdvertstateFacade().findAll()) {
-                view.getCmbbxAdvertState().addItem(a.getName());
-            }
-            for (Adverttype a : view.getAdverttypeFacade().findAll()) {
-                view.getCmbbxAdvertType().addItem(a.getName());
-            }
-            for (Country c : view.getCountryFacade().findAll()) {
-                view.getCmbbxCountry().addItem(c.getCountryName());
-            }
-            filled = true;
-        }
-    }
-
-    public void fillCmbBxSubCategory(Object value) {
-        view.getCmbbxSubCategory().removeAllItems();
-        view.getCmbbxSubCategory().setEnabled(true);
-        for (Maincategory mcat : view.getMaincategoryFacade().findAll()) {
-            if (mcat.getName().equals(value)) {
-                for (Subcategory s : mcat.getSubcategoryCollection()) {
-                    view.getCmbbxSubCategory().addItem(s.getName());
-                }
-            }
-        }
-    }
-
-    public void fillCmbBxCity(Object value) {
-        view.getCmbbxCity().removeAllItems();
-        view.getCmbbxCity().setEnabled(true);
-        for (Country c : view.getCountryFacade().findAll()) {
-            if (c.getCountryName().equals(value)) {
-                for (City city : c.getCityCollection()) {
-                    view.getCmbbxCity().addItem(city.getCityName());
-                }
-            }
-        }
-    }
-
-    private Advertstate selectedState() {
-        List<Advertstate> states = view.getAdvertstateFacade().findAll();
-        for (Advertstate state : states) {
-            if (state.getName().equals(view.getCmbbxAdvertState().getValue())) {
-                return state;
-            }
-        }
-        return null;
-    }
-
-    private Adverttype selectedType() {
-        List<Adverttype> types = view.getAdverttypeFacade().findAll();
-        for (Adverttype type : types) {
-            if (type.getName().equals(view.getCmbbxAdvertType().getValue())) {
-                return type;
-            }
-        }
-        return null;
-    }
-
-    private Country selectedCountry() {
-        List<Country> countries = view.getCountryFacade().findAll();
-        for (Country country : countries) {
-            if (country.getCountryName().equals(view.getCmbbxCountry().getValue())) {
-                return country;
-            }
-        }
-        return null;
-    }
-
-    private City selectedCity() {
-        List<City> cities = view.getCityFacade().findAll();
-        for (City city : cities) {
-            if (city.getCityName().equals(view.getCmbbxCity().getValue())) {
-                return city;
-            }
-        }
-        return null;
-    }
-
-    private Maincategory selectedMainCategory() {
-        List<Maincategory> categoires = view.getMaincategoryFacade().findAll();
-        for (Maincategory category : categoires) {
-            if (category.getName().equals(view.getCmbbxCategory().getValue())) {
-                return category;
-            }
-        }
-        return null;
-    }
-
-    private Subcategory selectedSubCategory() {
-        List<Subcategory> categoires = view.getSubcategoryFacade().findAll();
-        for (Subcategory category : categoires) {
-            if (category.getName().equals(view.getCmbbxSubCategory().getValue())) {
-                return category;
-            }
-        }
-        return null;
-    }
-
-    public void removeFile(File file) {
-        file.delete();
-        files.remove(file);
     }
 
     public MyMultiFileUpload getMfu() {

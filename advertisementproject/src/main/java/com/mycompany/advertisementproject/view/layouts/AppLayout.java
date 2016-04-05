@@ -1,41 +1,48 @@
 package com.mycompany.advertisementproject.view.layouts;
 
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.ADVERTTOMODIFY;
+import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTLOCALE;
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTUSER;
 import static com.mycompany.advertisementproject.enumz.StyleNames.*;
 import static com.mycompany.advertisementproject.enumz.Views.*;
-import com.mycompany.advertisementproject.toolz.XmlFileReader;
+import com.mycompany.advertisementproject.toolz.AppBundle;
+import com.mycompany.advertisementproject.toolz.Global;
+import com.mycompany.advertisementproject.view.UIs.RootUI;
 import com.mycompany.advertisementproject.view.vaadinviews.AccountView;
 import com.mycompany.advertisementproject.view.vaadinviews.AdminView;
+import com.mycompany.advertisementproject.view.vaadinviews.AdvertListView;
 import com.mycompany.advertisementproject.view.vaadinviews.AdvertRegView;
 import com.mycompany.advertisementproject.view.vaadinviews.LetterView;
+import com.mycompany.advertisementproject.view.vaadinviews.LogInView;
+import com.mycompany.advertisementproject.view.vaadinviews.RegistrationView;
+import com.mycompany.advertisementproject.view.vaadinviews.SelectedAdvertView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import java.text.SimpleDateFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ResourceBundle;
 
 public class AppLayout extends VerticalLayout implements ViewDisplay {
 
-    public static SimpleDateFormat formattedDate;
-    public static String currency;
+    private LogInView loginView;
+    private RegistrationView regView;
+    private AccountView accView;
+    private AdminView adminView;
+    private AdvertListView advListView;
+    private AdvertRegView advRegView;
 
-    private String btnAdvertsCaption;
-    private String btnLoginCaption;
-    private String btnRegistrationCaption;
-    private String btnAdvertRegCaption;
-    private String btnMyAccoutCaption;
-    private String btnLogoutCaption;
-    private String btnAdminAccCaption = "Admin oldal";
-    private String bannerHeight;
+    private LetterView letterView;
+    private SelectedAdvertView selectedView;
 
-    private String dateformat;
+    private ResourceBundle bundle;
+
+    public static SimpleDateFormat formattedDate = new SimpleDateFormat(Global.DATEFORMAT);
 
     private static Button btnAdverts;
     private static Button btnLogin;
@@ -45,65 +52,154 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
     private static Button btnLogout;
     private static Button btnAdminAccount;
 
-    private VerticalLayout header = new VerticalLayout();
+    private Button btnHun;
+    private Button btnEng;
+
+    private VerticalLayout header;
 
     private String nodePath;
-    private XmlFileReader xmlReader;
 
     public AppLayout() {
-        addLabelText();
+        bundle = AppBundle.currentBundle("");
         buildHeader();
         addListeners();
     }
 
     private void buildHeader() {
+        header = new VerticalLayout();
+        header.setHeightUndefined();
+        addLangButtons();
+        addNavButtons();
         addNavigation();
         addBanner();
-        header.setHeightUndefined();
         addComponent(header);
     }
 
     private void addNavigation() {
-        addNavButtons();
 
         HorizontalLayout navigation = new HorizontalLayout();
-        navigation.addComponent(btnAdverts);
-        navigation.addComponent(btnLogin);
-        navigation.addComponent(btnRegistration);
-        navigation.addComponent(btnAdvertReg);
-        navigation.addComponent(btnMyAccout);
-        navigation.addComponent(btnAdminAccount);
-        navigation.addComponent(btnLogout);
-        navigation.setHeightUndefined();
+        HorizontalLayout languages = new HorizontalLayout();
+        navigation.addComponents(btnAdverts, btnLogin, btnRegistration, btnAdvertReg, btnMyAccout, btnAdminAccount, btnLogout);
+        languages.addComponents(btnHun, btnEng);
 
-        header.addComponent(navigation);
-        header.setComponentAlignment(navigation, Alignment.TOP_CENTER);
+        HorizontalLayout headersplitter = new HorizontalLayout();
+        headersplitter.addComponents(navigation, languages);
+        headersplitter.setWidth("100%");
+        headersplitter.setComponentAlignment(navigation, Alignment.TOP_RIGHT);
+        headersplitter.setComponentAlignment(languages, Alignment.TOP_RIGHT);
+
+        header.addComponent(headersplitter);
+        header.setComponentAlignment(headersplitter, Alignment.TOP_CENTER);
+    }
+
+    private void addLangButtons() {
+        addHungarianButton();
+        addEnglishButton();
+    }
+
+    private void addHungarianButton() {
+        btnHun = new Button("HUN");
+        btnHun.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    VaadinSession.getCurrent().getLockInstance().lock();
+                    VaadinSession.getCurrent().setAttribute(CURRENTLOCALE.toString(), "hu");
+                } finally {
+                    VaadinSession.getCurrent().getLockInstance().unlock();
+                }
+                bundle = AppBundle.currentBundle("hu");
+                updateStrings();
+            }
+        });
+    }
+
+    private void addEnglishButton() {
+        btnEng = new Button("ENG");
+        btnEng.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    VaadinSession.getCurrent().getLockInstance().lock();
+                    VaadinSession.getCurrent().setAttribute(CURRENTLOCALE.toString(), "en");
+                } finally {
+                    VaadinSession.getCurrent().getLockInstance().unlock();
+                }
+                bundle = AppBundle.currentBundle("en");
+                updateStrings();
+            }
+        });
     }
 
     private void addNavButtons() {
-        btnAdverts = new Button(btnAdvertsCaption);
-        btnAdverts.setStyleName(NAVBUTTON.toString());
-        btnLogin = new Button(btnLoginCaption);
-        btnLogin.setStyleName(NAVBUTTON.toString());
-        btnRegistration = new Button(btnRegistrationCaption);
-        btnRegistration.setStyleName(NAVBUTTON.toString());
-        btnAdvertReg = new Button(btnAdvertRegCaption);
-        btnAdvertReg.setStyleName(NAVBUTTON.toString());
+        btnAdverts = navButton(bundle.getString("Adverts"));
+        btnLogin = navButton(bundle.getString("Login"));
+        btnRegistration = navButton(bundle.getString("Registration"));
+        btnAdvertReg = navButton(bundle.getString("AdvertRegistration"));
+        btnMyAccout = navButton(bundle.getString("Account"));
+        btnLogout = navButton(bundle.getString("Logout"));
+        btnAdminAccount = navButton(bundle.getString("AdminAccount"));
+        hidebuttons();
+    }
+
+    private void updateStrings() {
+        btnAdverts.setCaption(bundle.getString("Adverts"));
+        btnLogin.setCaption(bundle.getString("Login"));
+        btnRegistration.setCaption(bundle.getString("Registration"));
+        btnAdvertReg.setCaption(bundle.getString("AdvertRegistration"));
+        btnMyAccout.setCaption(bundle.getString("Account"));
+        btnLogout.setCaption(bundle.getString("Logout"));
+        btnAdminAccount.setCaption(bundle.getString("AdminAccount"));
+        checkViews();
+        JavaScript.getCurrent().execute("window.location.reload();");
+    }
+
+    private void checkViews() {
+        if (loginView != null) {
+            loginView.updateStrings();
+        }
+        if (regView != null) {
+            regView.updateStrings();
+        }
+        if (accView != null) {
+            accView.removeAllComponents();
+            accView.build();
+        }
+        if (adminView != null) {
+            adminView.removeAllComponents();
+            adminView.buildView();
+        }
+        if (advListView != null) {
+            advListView.removeAllComponents();
+            advListView.build();
+        }
+        if (advRegView != null) {
+            advRegView.updateStrings();
+        }
+        selectedView = (SelectedAdvertView) RootUI.getCurrent().getViewProvider().getView("SELECTED");
+        if (selectedView != null) {
+            selectedView.removeAllComponents();
+            selectedView.build();
+        }
+//        letterView = (LetterView) RootUI.getCurrent().getViewProvider().getView("LETTER");
+//        if (letterView != null) {
+//            letterView.removeAllComponents();
+//            letterView.build();
+//        }
+    }
+
+    private void hidebuttons() {
         btnAdvertReg.setVisible(false);
-        btnMyAccout = new Button(btnMyAccoutCaption);
-        btnMyAccout.setStyleName(NAVBUTTON.toString());
         btnMyAccout.setVisible(false);
-        btnLogout = new Button(btnLogoutCaption);
-        btnLogout.setStyleName(NAVBUTTON.toString());
         btnLogout.setVisible(false);
-        btnAdminAccount = new Button(btnAdminAccCaption);
-        btnAdminAccount.setStyleName(NAVBUTTON.toString());
         btnAdminAccount.setVisible(false);
     }
 
     private void addBanner() {
         Panel bannerPanel = new Panel();
-        bannerPanel.setHeight(bannerHeight);
+        bannerPanel.setHeight(Global.APP_BANNER_HEIGHT);
         bannerPanel.setStyleName(BANNERPANEL.toString());
 
         VerticalLayout banner = new VerticalLayout();
@@ -112,107 +208,6 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
 
         header.addComponent(banner);
         header.setComponentAlignment(banner, Alignment.TOP_CENTER);
-    }
-
-    private void addListeners() {
-        addBtnAdvertListener();
-        addBtnLoginListener();
-        addBtnRegistrationListener();
-        addBtnAdvertRegListener();
-        addBtnMyAccountListener();
-        addBtnLogoutListener();
-        addBtnAdminAccListener();
-    }
-
-    private void addBtnAdvertListener() {
-        btnAdverts.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                nodePath = ADVERTS.toString();
-                jump(nodePath);
-            }
-        });
-    }
-
-    private void addBtnLoginListener() {
-        btnLogin.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                nodePath = LOGIN.toString();
-                jump(nodePath);
-            }
-        });
-    }
-
-    private void addBtnRegistrationListener() {
-        btnRegistration.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                nodePath = REGISTRATION.toString();
-                jump(nodePath);
-            }
-        });
-    }
-
-    private void addBtnAdvertRegListener() {
-        btnAdvertReg.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                try {
-                    VaadinSession.getCurrent().getLockInstance().lock();
-                    VaadinSession.getCurrent().setAttribute(ADVERTTOMODIFY.toString(), null);
-                } finally {
-                    VaadinSession.getCurrent().getLockInstance().unlock();
-                }
-                nodePath = ADVERTREG.toString();
-                jump(nodePath);
-            }
-        });
-    }
-
-    private void addBtnMyAccountListener() {
-        btnMyAccout.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                nodePath = USERPAGE.toString();
-                jump(nodePath);
-            }
-        });
-
-    }
-
-    private void addBtnLogoutListener() {
-        btnLogout.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                logout();
-                nodePath = ADVERTS.toString();
-                jump(nodePath);
-            }
-        });
-    }
-
-    private void addBtnAdminAccListener() {
-        btnAdminAccount.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                nodePath = ADMINPAGE.toString();
-                jump(nodePath);
-            }
-        });
-    }
-
-    private void jump(String nodePath) {
-        getUI().getNavigator().navigateTo(nodePath);
-    }
-
-    @Override
-    public void showView(View view) {
     }
 
     private void logout() {
@@ -253,61 +248,116 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         btnLogout.setVisible(true);
     }
 
-    public static java.sql.Date currentDate() {
-        java.util.Date utilDate = new java.util.Date();
-        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-        return sqlDate;
+    private Button navButton(String caption) {
+        Button button = new Button(caption);
+        button.setStyleName(NAVBUTTON.toString());
+        return button;
     }
 
-    private void addLabelText() {
-        try {
-            xmlReader = new XmlFileReader();
-            xmlReader.setAppLayout(this);
-            xmlReader.setTagName(this.getClass().getSimpleName());
-            xmlReader.readXml();
-        } catch (Exception ex) {
-            Logger.getLogger(AppLayout.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    private void addListeners() {
+        addBtnAdvertListener();
+        addBtnLoginListener();
+        addBtnRegistrationListener();
+        addBtnAdvertRegListener();
+        addBtnMyAccountListener();
+        addBtnLogoutListener();
+        addBtnAdminAccListener();
     }
 
-    public void setBtnAdvertsCaption(String btnAdvertsCaption) {
-        this.btnAdvertsCaption = btnAdvertsCaption;
+    private void addBtnAdvertListener() {
+        btnAdverts.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                nodePath = ADVERTS.toString();
+                jump(nodePath);
+                advListView = (AdvertListView) RootUI.getCurrent().getViewProvider().getView("ADVERTS");
+            }
+        });
     }
 
-    public void setBtnRegistrationCaption(String btnRegistrationCaption) {
-        this.btnRegistrationCaption = btnRegistrationCaption;
+    private void addBtnLoginListener() {
+        btnLogin.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                nodePath = LOGIN.toString();
+                jump(nodePath);
+                loginView = (LogInView) RootUI.getCurrent().getViewProvider().getView("LOGIN");
+            }
+        });
     }
 
-    public void setBtnAdvertRegCaption(String btnAdvertRegCaption) {
-        this.btnAdvertRegCaption = btnAdvertRegCaption;
+    private void addBtnRegistrationListener() {
+        btnRegistration.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                nodePath = REGISTRATION.toString();
+                jump(nodePath);
+                regView = (RegistrationView) RootUI.getCurrent().getViewProvider().getView("REGISTRATION");
+            }
+        });
     }
 
-    public void setBtnMyAccoutCaption(String btnMyAccoutCaption) {
-        this.btnMyAccoutCaption = btnMyAccoutCaption;
+    private void addBtnAdvertRegListener() {
+        btnAdvertReg.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                try {
+                    VaadinSession.getCurrent().getLockInstance().lock();
+                    VaadinSession.getCurrent().setAttribute(ADVERTTOMODIFY.toString(), null);
+                } finally {
+                    VaadinSession.getCurrent().getLockInstance().unlock();
+                }
+                nodePath = ADVERTREG.toString();
+                jump(nodePath);
+                advRegView = (AdvertRegView) RootUI.getCurrent().getViewProvider().getView("ADVERTREG");
+            }
+        });
     }
 
-    public void setBtnLogoutCaption(String btnLogoutCaption) {
-        this.btnLogoutCaption = btnLogoutCaption;
+    private void addBtnMyAccountListener() {
+        btnMyAccout.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                nodePath = USERPAGE.toString();
+                jump(nodePath);
+                accView = (AccountView) RootUI.getCurrent().getViewProvider().getView("USERPAGE");
+            }
+        });
+
     }
 
-    public void setBannerHeight(String bannerHeight) {
-        this.bannerHeight = bannerHeight;
+    private void addBtnLogoutListener() {
+        btnLogout.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                logout();
+                nodePath = ADVERTS.toString();
+                jump(nodePath);
+            }
+        });
     }
 
-    public static void setBtnAdvertReg(Button btnAdvertReg) {
-        AppLayout.btnAdvertReg = btnAdvertReg;
+    private void addBtnAdminAccListener() {
+        btnAdminAccount.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                nodePath = ADMINPAGE.toString();
+                jump(nodePath);
+                adminView = (AdminView) RootUI.getCurrent().getViewProvider().getView("ADMINPAGE");
+            }
+        });
     }
 
-    public static void setCurrency(String currency) {
-        AppLayout.currency = currency;
+    private void jump(String nodePath) {
+        getUI().getNavigator().navigateTo(nodePath);
     }
 
-    public void setBtnLoginCaption(String btnLoginCaption) {
-        this.btnLoginCaption = btnLoginCaption;
-    }
-
-    public void setDateformat(String dateformat) {
-        this.dateformat = dateformat;
-        formattedDate = new SimpleDateFormat(dateformat);
+    @Override
+    public void showView(View view) {
     }
 }

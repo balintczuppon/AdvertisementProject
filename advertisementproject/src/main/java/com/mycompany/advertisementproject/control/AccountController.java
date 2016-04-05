@@ -11,6 +11,7 @@ import com.mycompany.advertisementproject.model.entities.Advertisement;
 import com.mycompany.advertisementproject.model.entities.Advertiser;
 import com.mycompany.advertisementproject.model.entities.Letter;
 import com.mycompany.advertisementproject.model.entities.Picture;
+import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
@@ -19,7 +20,7 @@ import java.util.List;
 
 public class AccountController {
 
-    private AccountView view;
+    private final AccountView view;
 
     private List<Advertisement> adverts = new ArrayList<>();
     private List<Letter> letters = new ArrayList<>();
@@ -47,7 +48,7 @@ public class AccountController {
             String date = AppLayout.formattedDate.format(a.getRegistrationDate());
             view.getTblAdverts().addItem(new Object[]{a.getTitle(),
                 date,
-                a.getPrice() + AppLayout.currency,
+                a.getPrice() + Global.CURRENCY,
                 view.getBtnDeleteAdvert(),
                 view.getBtnModifyAdvert()
             }, i);

@@ -8,7 +8,7 @@ import javax.ejb.EJBException;
 
 public class LoginController {
 
-    private LogInView view;
+    private final LogInView view;
     private Encryptor encryptor;
 
     public LoginController(LogInView loginView) {
@@ -27,10 +27,10 @@ public class LoginController {
             if (current_advertiser.getPassword().equals(encryptor.hashPassword(password))) {
                 revealSecuredContex(current_advertiser);
             } else {
-                throw new Exception(view.getErrorText());
+                throw new Exception(view.errorText());
             }
         } else {
-            throw new Exception(view.getErrorText());
+            throw new Exception(view.errorText());
         }
     }
 

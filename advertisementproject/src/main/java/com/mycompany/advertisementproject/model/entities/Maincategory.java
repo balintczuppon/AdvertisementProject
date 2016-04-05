@@ -110,7 +110,7 @@ public class Maincategory implements Serializable {
 
     @Override
     public String toString() {
-        return "com.mycompany.advertisementproject.Enums.Maincategory[ id=" + id + " ]";
+        return name;
     }
     
 }

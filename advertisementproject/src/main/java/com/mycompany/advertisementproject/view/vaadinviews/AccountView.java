@@ -2,7 +2,6 @@ package com.mycompany.advertisementproject.view.vaadinviews;
 
 import static com.mycompany.advertisementproject.enumz.StyleNames.NAVBUTTON;
 import com.mycompany.advertisementproject.control.AccountController;
-import com.mycompany.advertisementproject.toolz.XmlFileReader;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
 import com.mycompany.advertisementproject.model.entities.Letter;
 import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
@@ -12,6 +11,7 @@ import com.mycompany.advertisementproject.model.facades.LetterFacade;
 import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
 import com.mycompany.advertisementproject.model.facades.PictureFacade;
 import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
+import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
@@ -22,6 +22,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -29,6 +30,8 @@ import javax.inject.Inject;
 
 @CDIView("USERPAGE")
 public class AccountView extends VerticalLayout implements View {
+
+    private ResourceBundle bundle;
 
     private static boolean availability;
 
@@ -74,8 +77,6 @@ public class AccountView extends VerticalLayout implements View {
     private Panel advertPanel;
     private Panel postBoxPanel;
 
-    private XmlFileReader xmlReader;
-
     private AccountController controller;
 
     @Inject
@@ -101,14 +102,19 @@ public class AccountView extends VerticalLayout implements View {
     @PostConstruct
     public void initComponent() {
         if (availability) {
-            try {
-                controller = new AccountController(this);
-                readLabelText();
-                buildTabs();
-                buildView();
-            } catch (Exception ex) {
-                Logger.getLogger(AccountView.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            bundle = AppBundle.currentBundle("");
+            controller = new AccountController(this);
+            build();
+        }
+    }
+
+    public void build() {
+        try {
+            updateStrings();
+            buildTabs();
+            buildView();
+        } catch (Exception ex) {
+            Logger.getLogger(AccountView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -287,15 +293,28 @@ public class AccountView extends VerticalLayout implements View {
         });
     }
 
-    private void readLabelText() {
-        try {
-            xmlReader = new XmlFileReader();
-            xmlReader.setAccView(this);
-            xmlReader.setTagName(this.getClass().getSimpleName());
-            xmlReader.readXml();
-        } catch (Exception ex) {
-            Logger.getLogger(AccountView.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void updateStrings() {
+        advertTabText = bundle.getString("Adverts");
+        postboxTabText = bundle.getString("PostBox");
+        advertPanelWidth = bundle.getString("Account.AdvertPanelWidth");
+        postboxPanelWidth = bundle.getString("Account.PostBoxPanelWidth");
+        tableAdvertWidth = bundle.getString("Account.AdvertTableWidth");
+        advertTblTitle = bundle.getString("Title");
+        advertTblPrice = bundle.getString("Price");
+        advertTblDate = bundle.getString("Date");
+        advertTblDelete = bundle.getString("Delete");
+        advertTblModify = bundle.getString("Modify");
+        delButtonText = bundle.getString("Delete");
+        modButtonText = bundle.getString("Modify");
+        letterTabSheetWidth = bundle.getString("Account.LetterTabSheetWidth");
+        incoming = bundle.getString("Incoming");
+        outgoing = bundle.getString("Outgoing");
+        tableLetterWidth = bundle.getString("Account.IncomingTableWidth");
+        tableLetterWidth = bundle.getString("Account.OutGoingTableWidth");
+        letterTblDate = bundle.getString("Date");
+        letterTblMessage = bundle.getString("Message");
+        letterTblSender = bundle.getString("Sender");
+        letterTblSubject = bundle.getString("Subject");
     }
 
     public AdvertisementFacade getAdvertisementFacade() {
@@ -322,128 +341,12 @@ public class AccountView extends VerticalLayout implements View {
         return tblIncLetters;
     }
 
-    public MaincategoryFacade getMaincategoryFacade() {
-        return maincategoryFacade;
-    }
-
-    public SubcategoryFacade getSubcategoryFacade() {
-        return subcategoryFacade;
-    }
-
     public PictureFacade getPictureFacade() {
         return pictureFacade;
     }
 
-    public AdverttypeFacade getAdverttypeFacade() {
-        return adverttypeFacade;
-    }
-
-    public AdvertstateFacade getAdvertstateFacade() {
-        return advertstateFacade;
-    }
-
     public LetterFacade getLetterFacade() {
         return letterFacade;
-    }
-
-    public Panel getAdvertPanel() {
-        return advertPanel;
-    }
-
-    public Panel getPostBoxPanel() {
-        return postBoxPanel;
-    }
-
-    public TabSheet getLetterTabSheet() {
-        return letterTabSheet;
-    }
-
-    public void setAdvertTabText(String advertTabText) {
-        this.advertTabText = advertTabText;
-    }
-
-    public void setAdvertTblTitle(String advertTblTitle) {
-        this.advertTblTitle = advertTblTitle;
-    }
-
-    public void setAdvertTblDate(String advertTblDate) {
-        this.advertTblDate = advertTblDate;
-    }
-
-    public void setAdvertTblPrice(String advertTblPrice) {
-        this.advertTblPrice = advertTblPrice;
-    }
-
-    public void setAdvertTblDelete(String advertTblDelete) {
-        this.advertTblDelete = advertTblDelete;
-    }
-
-    public void setAdvertTblModify(String advertTblModify) {
-        this.advertTblModify = advertTblModify;
-    }
-
-    public void setLetterTblSubject(String letterTblSubject) {
-        this.letterTblSubject = letterTblSubject;
-    }
-
-    public void setLetterTblMessage(String letterTblMessage) {
-        this.letterTblMessage = letterTblMessage;
-    }
-
-    public void setLetterTblSender(String letterTblSender) {
-        this.letterTblSender = letterTblSender;
-    }
-
-    public void setLetterTblDate(String letterTblDate) {
-        this.letterTblDate = letterTblDate;
-    }
-
-    public void setIncoming(String incoming) {
-        this.incoming = incoming;
-    }
-
-    public void setOutgoing(String outgoing) {
-        this.outgoing = outgoing;
-    }
-
-    public void setAdvertPanelWidth(String advertPanelWidth) {
-        this.advertPanelWidth = advertPanelWidth;
-    }
-
-    public void setPostboxPanelWidth(String letterPanelWidth) {
-        this.postboxPanelWidth = letterPanelWidth;
-    }
-
-    public void setLetterTabSheetWidth(String letterTabSheetWidth) {
-        this.letterTabSheetWidth = letterTabSheetWidth;
-    }
-
-    public void setTableLetterWidth(String tableLetterWidth) {
-        this.tableLetterWidth = tableLetterWidth;
-    }
-
-    public void setTableAdvertWidth(String tableAdvertWidth) {
-        this.tableAdvertWidth = tableAdvertWidth;
-    }
-
-    public void setPostboxTabText(String postboxTabText) {
-        this.postboxTabText = postboxTabText;
-    }
-
-    public void setDelButtonText(String delButtonText) {
-        this.delButtonText = delButtonText;
-    }
-
-    public void setModButtonText(String modButtonText) {
-        this.modButtonText = modButtonText;
-    }
-
-    public String getLetterTextBoundary() {
-        return letterTextBoundary;
-    }
-
-    public void setLetterTextBoundary(String letterTextBoundary) {
-        this.letterTextBoundary = letterTextBoundary;
     }
 
     public static void setAvailability(boolean availability) {

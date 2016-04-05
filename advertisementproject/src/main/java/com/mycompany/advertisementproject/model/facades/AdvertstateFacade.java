@@ -27,5 +27,9 @@ public class AdvertstateFacade extends AbstractFacade<Advertstate> {
     public AdvertstateFacade() {
         super(Advertstate.class);
     }
+
+    public Advertstate getStateByName(Object value) {
+        return (Advertstate) em.createNamedQuery("Advertstate.findByName").setParameter("name", value).getSingleResult();
+    }
     
 }
