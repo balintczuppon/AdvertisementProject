@@ -44,12 +44,6 @@ public class AdminController {
         comboBox.removeAllItems();
         comboBox.addItems(countryFacade.findAll());
     }
-    
-    
-    
-    
-    
-    
 
     public void createCity(String value) throws Exception {
         City city = new City();
@@ -69,10 +63,13 @@ public class AdminController {
         cityFacade.edit(city);
     }
 
-    public void popluateCityFields(ComboBox comboBox) {
-        comboBox.addItems(cityFacade.findAll());
+    public void popluateCityFields(ComboBox comboBoxModify,ComboBox comboBoxCreate) {
+        comboBoxModify.removeAllItems();
+        comboBoxCreate.removeAllItems();
+        comboBoxModify.addItems(cityFacade.findAll());
+        comboBoxCreate.addItems(countryFacade.findAll());
     }
-    
+
     public void createCategory(String value) throws Exception {
         Maincategory category = new Maincategory();
         category.setName(value);
@@ -91,6 +88,7 @@ public class AdminController {
     }
 
     public void popluateCategoryFields(ComboBox comboBox) {
+        comboBox.removeAllItems();
         comboBox.addItems(categoryFacade.findAll());
     }
 
@@ -112,8 +110,11 @@ public class AdminController {
         subcategoryFacade.edit(subcategory);
     }
 
-    public void popluateSubCategoryFields(ComboBox comboBox) {
-        comboBox.addItems(subcategoryFacade.findAll());
+    public void popluateSubCategoryFields(ComboBox comboBoxModify,ComboBox comboBoxCreate) {
+        comboBoxModify.removeAllItems();
+        comboBoxCreate.removeAllItems();
+        comboBoxModify.addItems(subcategoryFacade.findAll());
+        comboBoxCreate.addItems(categoryFacade.findAll());
     }
 
     public void createState(String value) throws Exception {
@@ -134,6 +135,7 @@ public class AdminController {
     }
 
     public void popluateStateFields(ComboBox comboBox) {
+        comboBox.removeAllItems();
         comboBox.addItems(stateFacade.findAll());
     }
 
@@ -156,6 +158,7 @@ public class AdminController {
     }
 
     public void popluateTypeFields(ComboBox comboBox) {
+        comboBox.removeAllItems();
         comboBox.addItems(typeFacade.findAll());
     }
 

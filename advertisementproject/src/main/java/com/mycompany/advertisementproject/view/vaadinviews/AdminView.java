@@ -168,6 +168,7 @@ public class AdminView extends VerticalLayout implements View {
         accordion.addTab(accordionLayout, countryCaption);
 
         addCountryButtonLogic(btnCreate, btnDelete, btnModify);
+        addCountryComboBoxLogic();
     }
 
     private void addCity() {
@@ -233,7 +234,7 @@ public class AdminView extends VerticalLayout implements View {
 
         tSheet.addTab(tabsheetLayoutLeft);
         tSheet.addTab(tabsheetLayoutRight);
-        
+
         accordionLayout = new VerticalLayout();
         accordionLayout.setSpacing(true);
         accordionLayout.setMargin(true);
@@ -262,8 +263,7 @@ public class AdminView extends VerticalLayout implements View {
         cmbBxCreateCity = new ComboBox();
         cmbBxModifyCity = new ComboBox();
 
-        controller.popluateCityFields(cmbBxModifyCity);
-        cmbBxCreateCity.addItems(countryFacade.findAll());
+        controller.popluateCityFields(cmbBxModifyCity, cmbBxCreateCity);
 
         createButtons();
 
@@ -293,8 +293,7 @@ public class AdminView extends VerticalLayout implements View {
         cmbBxCreateSubCategory = new ComboBox();
         cmbBxModifySubCategory = new ComboBox();
 
-        controller.popluateSubCategoryFields(cmbBxModifySubCategory);
-        cmbBxCreateSubCategory.addItems(categoryFacade.findAll());
+        controller.popluateSubCategoryFields(cmbBxModifySubCategory, cmbBxCreateSubCategory);
 
         createButtons();
 
@@ -361,6 +360,7 @@ public class AdminView extends VerticalLayout implements View {
                 try {
                     controller.deleteCountry(cmbBxModifyCountry.getValue().toString());
                     controller.popluateCountryFields(cmbBxModifyCountry);
+                    controller.popluateCityFields(cmbBxModifyCity, cmbBxCreateCity);
                 } catch (Exception ex) {
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -373,6 +373,8 @@ public class AdminView extends VerticalLayout implements View {
                 try {
                     controller.modifyCountry(cmbBxModifyCountry.getValue().toString(), txtFldModifyCountry.getValue());
                     controller.popluateCountryFields(cmbBxModifyCountry);
+                    controller.popluateCityFields(cmbBxModifyCity, cmbBxCreateCity);
+                    cmbBxCreateCity.addItems(countryFacade.findAll());
                     txtFldModifyCountry.clear();
                 } catch (Exception ex) {
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
@@ -401,7 +403,7 @@ public class AdminView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.deleteCity(cmbBxModifyCity.getValue().toString());
-                    controller.popluateCityFields(cmbBxModifyCity);
+                    controller.popluateCityFields(cmbBxModifyCity, cmbBxCreateCity);
                 } catch (Exception ex) {
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -413,7 +415,7 @@ public class AdminView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.modifyCity(cmbBxModifyCity.getValue().toString(), txtFldModifyCity.getValue());
-                    controller.popluateCityFields(cmbBxModifyCity);
+                    controller.popluateCityFields(cmbBxModifyCity, cmbBxCreateCity);
                     txtFldModifyCity.clear();
                 } catch (Exception ex) {
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
@@ -483,7 +485,7 @@ public class AdminView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.deleteSubCategory(cmbBxModifySubCategory.getValue().toString());
-                    controller.popluateSubCategoryFields(cmbBxModifySubCategory);
+                    controller.popluateSubCategoryFields(cmbBxModifySubCategory, cmbBxCreateSubCategory);
                 } catch (Exception ex) {
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -495,7 +497,7 @@ public class AdminView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.modifySubCategory(cmbBxModifySubCategory.getValue().toString(), txtFldModifySubCategory.getValue());
-                    controller.popluateSubCategoryFields(cmbBxModifySubCategory);
+                    controller.popluateSubCategoryFields(cmbBxModifySubCategory, cmbBxCreateSubCategory);
                     txtFldModifySubCategory.clear();
                 } catch (Exception ex) {
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
@@ -591,7 +593,8 @@ public class AdminView extends VerticalLayout implements View {
 
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-                txtFldModifyCountry.setValue(cmbBxModifyCountry.getValue().toString());
+                Notification.show("trigger");
+//                txtFldModifyCountry.setValue(cmbBxModifyCountry.getValue().toString());
             }
         });
     }
@@ -610,20 +613,7 @@ public class AdminView extends VerticalLayout implements View {
     }
 
     private void addAccoridonChangeListener() {
-        accordion.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
-
-            @Override
-            public void selectedTabChange(TabSheet.SelectedTabChangeEvent event) {
-                controller.popluateCountryFields(cmbBxModifyCountry);
-                controller.popluateCityFields(cmbBxModifyCity);
-                cmbBxCreateCity.addItems(countryFacade.findAll());
-                controller.popluateCategoryFields(cmbBxModifyCategory);
-                controller.popluateSubCategoryFields(cmbBxModifySubCategory);
-                cmbBxCreateSubCategory.addItems(categoryFacade.findAll());
-                controller.popluateStateFields(cmbBxModifyState);
-                controller.popluateTypeFields(cmbBxModifyType);
-            }
-        });
+        
     }
 
 }
