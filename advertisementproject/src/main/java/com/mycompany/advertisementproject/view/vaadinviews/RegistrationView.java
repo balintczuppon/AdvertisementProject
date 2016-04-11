@@ -1,8 +1,8 @@
 package com.mycompany.advertisementproject.view.vaadinviews;
 
-import static com.mycompany.advertisementproject.enumz.StyleNames.TITLE;
 import static com.mycompany.advertisementproject.enumz.Views.LOGIN;
 import com.mycompany.advertisementproject.control.RegistrationController;
+import com.mycompany.advertisementproject.enumz.StyleNames;
 import com.mycompany.advertisementproject.model.facades.AdvertiserFacade;
 import com.mycompany.advertisementproject.model.facades.PostboxFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
@@ -69,11 +69,10 @@ public class RegistrationView extends VerticalLayout implements View {
 
     private void addTitle() {
         lblTitle = new Label();
-        lblTitle.setStyleName(TITLE.toString());
         lblTitle.setSizeUndefined();
-
         addComponent(lblTitle);
         setComponentAlignment(lblTitle, Alignment.TOP_CENTER);
+        lblTitle.setStyleName(StyleNames.TITLE.toString());
     }
 
     private void addForm() {
@@ -125,7 +124,7 @@ public class RegistrationView extends VerticalLayout implements View {
         });
     }
 
-    public void updateStrings(){
+    public void updateStrings() {
         lblTitle.setCaption(bundle.getString("Registration"));
         tfEmail.setCaption(bundle.getString("TfEmail"));
         tfName.setCaption(bundle.getString("TfName"));
@@ -136,7 +135,7 @@ public class RegistrationView extends VerticalLayout implements View {
         chkBxTerms.setCaption(bundle.getString("CbTerms"));
         btnRegistration.setCaption(bundle.getString("Registration"));
     }
-    
+
     public void goForward() {
         getUI().getNavigator().navigateTo(LOGIN.toString());
     }

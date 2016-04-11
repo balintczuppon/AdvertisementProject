@@ -1,7 +1,7 @@
 package com.mycompany.advertisementproject.view.vaadinviews;
 
 import com.mycompany.advertisementproject.control.AdminController;
-import static com.mycompany.advertisementproject.enumz.Fields.*;
+import static com.mycompany.advertisementproject.enumz.Views.ERRORVIEW;
 import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
 import com.mycompany.advertisementproject.model.facades.AdverttypeFacade;
 import com.mycompany.advertisementproject.model.facades.CityFacade;
@@ -10,7 +10,6 @@ import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
 import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.vaadin.cdi.CDIView;
-import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -23,8 +22,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,6 +84,9 @@ public class AdminView extends VerticalLayout implements View {
     private String modify;
     private String delete;
 
+    private String operationSuccess;
+    private String operationFailed;
+
     @Inject
     private CountryFacade countryFacade;
     @Inject
@@ -112,9 +112,8 @@ public class AdminView extends VerticalLayout implements View {
         if (availability) {
             bundle = AppBundle.currentBundle("");
             buildView();
-            Notification.show("Hi there Admin!");
-        } else {
-            Notification.show("You shall not pass!");
+        } else{
+            getUI().getNavigator().navigateTo(ERRORVIEW.toString());
         }
     }
 
@@ -157,7 +156,6 @@ public class AdminView extends VerticalLayout implements View {
         addSubCategory();
         addState();
         addType();
-        addAccoridonChangeListener();
         this.addComponent(accordion);
     }
 
@@ -178,6 +176,7 @@ public class AdminView extends VerticalLayout implements View {
         accordion.addTab(accordionLayout, cityCaption);
 
         addCityButtonLogic(btnCreate, btnDelete, btnModify);
+        addCityComboBoxLogic();
     }
 
     private void addCategory() {
@@ -187,6 +186,7 @@ public class AdminView extends VerticalLayout implements View {
         accordion.addTab(accordionLayout, categoryCaption);
 
         addCategoryButtonLogic(btnCreate, btnDelete, btnModify);
+        addCategoryComboBoxLogic();
     }
 
     private void addSubCategory() {
@@ -196,6 +196,7 @@ public class AdminView extends VerticalLayout implements View {
         accordion.addTab(accordionLayout, subCateogryCaption);
 
         addSubCategoryButtonLogic(btnCreate, btnDelete, btnModify);
+        addSubCategoryComboBoxLogic();
     }
 
     private void addState() {
@@ -205,6 +206,7 @@ public class AdminView extends VerticalLayout implements View {
         accordion.addTab(accordionLayout, stateCaption);
 
         addStateButtonLogic(btnCreate, btnDelete, btnModify);
+        addStateComboBoxLogic();
     }
 
     private void addType() {
@@ -214,6 +216,7 @@ public class AdminView extends VerticalLayout implements View {
         accordion.addTab(accordionLayout, typeCaption);
 
         addTypeButtonLogic(btnCreate, btnDelete, btnModify);
+        addTypeComboBoxLogic();
     }
 
     private HorizontalLayout formattedHLayout() {
@@ -225,7 +228,7 @@ public class AdminView extends VerticalLayout implements View {
 
     private TabSheet basicTabSheet() {
         TabSheet tSheet = new TabSheet();
-
+        
         tabsheetLayoutLeft = formattedHLayout();
         tabsheetLayoutRight = formattedHLayout();
 
@@ -236,9 +239,10 @@ public class AdminView extends VerticalLayout implements View {
         tSheet.addTab(tabsheetLayoutRight);
 
         accordionLayout = new VerticalLayout();
+        accordionLayout.setDefaultComponentAlignment(Alignment.TOP_CENTER);
         accordionLayout.setSpacing(true);
         accordionLayout.setMargin(true);
-
+        
         return tSheet;
     }
 
@@ -252,7 +256,6 @@ public class AdminView extends VerticalLayout implements View {
         createButtons();
 
         tabSheet = basicTabSheet();
-
         tabsheetLayoutLeft.addComponents(txtFldCreateCountry, btnCreate);
         tabsheetLayoutRight.addComponents(cmbBxModifyCountry, txtFldModifyCountry, btnModify, btnDelete);
     }
@@ -263,6 +266,7 @@ public class AdminView extends VerticalLayout implements View {
         cmbBxCreateCity = new ComboBox();
         cmbBxModifyCity = new ComboBox();
 
+        cmbBxCreateCity.setNullSelectionAllowed(false);
         controller.popluateCityFields(cmbBxModifyCity, cmbBxCreateCity);
 
         createButtons();
@@ -293,6 +297,7 @@ public class AdminView extends VerticalLayout implements View {
         cmbBxCreateSubCategory = new ComboBox();
         cmbBxModifySubCategory = new ComboBox();
 
+        cmbBxCreateSubCategory.setNullSelectionAllowed(false);
         controller.popluateSubCategoryFields(cmbBxModifySubCategory, cmbBxCreateSubCategory);
 
         createButtons();
@@ -344,11 +349,13 @@ public class AdminView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.createCountry(txtFldCreateCountry.getValue());
+                    controller.popluateCountryFields(cmbBxModifyCountry);
+                    controller.popluateCityFields(cmbBxModifyCity, cmbBxCreateCity);
                     txtFldCreateCountry.clear();
-                } catch (SQLIntegrityConstraintViolationException e) {
-                    Notification.show("Ennek kéne működnie de nem működik és már le is szarom.");
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
-                    Notification.show("Nem ennek kéne működnie de már leszarom.");
+                    Notification.show(operationFailed);
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -361,7 +368,10 @@ public class AdminView extends VerticalLayout implements View {
                     controller.deleteCountry(cmbBxModifyCountry.getValue().toString());
                     controller.popluateCountryFields(cmbBxModifyCountry);
                     controller.popluateCityFields(cmbBxModifyCity, cmbBxCreateCity);
+                    txtFldModifyCountry.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -374,9 +384,10 @@ public class AdminView extends VerticalLayout implements View {
                     controller.modifyCountry(cmbBxModifyCountry.getValue().toString(), txtFldModifyCountry.getValue());
                     controller.popluateCountryFields(cmbBxModifyCountry);
                     controller.popluateCityFields(cmbBxModifyCity, cmbBxCreateCity);
-                    cmbBxCreateCity.addItems(countryFacade.findAll());
                     txtFldModifyCountry.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -390,9 +401,11 @@ public class AdminView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.createCity(txtFldCreateCity.getValue());
-                } catch (SQLException ex) {
-                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    controller.popluateCityFields(cmbBxModifyCity, cmbBxCreateCity);
+                    txtFldCreateCity.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -404,7 +417,10 @@ public class AdminView extends VerticalLayout implements View {
                 try {
                     controller.deleteCity(cmbBxModifyCity.getValue().toString());
                     controller.popluateCityFields(cmbBxModifyCity, cmbBxCreateCity);
+                    txtFldModifyCity.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -417,7 +433,9 @@ public class AdminView extends VerticalLayout implements View {
                     controller.modifyCity(cmbBxModifyCity.getValue().toString(), txtFldModifyCity.getValue());
                     controller.popluateCityFields(cmbBxModifyCity, cmbBxCreateCity);
                     txtFldModifyCity.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -431,9 +449,12 @@ public class AdminView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.createCategory(txtFldCreateCategory.getValue());
-                } catch (SQLException ex) {
-                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    controller.popluateCategoryFields(cmbBxModifyCategory);
+                    controller.popluateSubCategoryFields(cmbBxModifySubCategory, cmbBxCreateSubCategory);
+                    txtFldCreateCategory.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -445,7 +466,11 @@ public class AdminView extends VerticalLayout implements View {
                 try {
                     controller.deleteCategory(cmbBxModifyCategory.getValue().toString());
                     controller.popluateCategoryFields(cmbBxModifyCategory);
+                    controller.popluateSubCategoryFields(cmbBxModifySubCategory, cmbBxCreateSubCategory);
+                    txtFldModifyCategory.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -457,8 +482,11 @@ public class AdminView extends VerticalLayout implements View {
                 try {
                     controller.modifyCategory(cmbBxModifyCategory.getValue().toString(), txtFldModifyCategory.getValue());
                     controller.popluateCategoryFields(cmbBxModifyCategory);
+                    controller.popluateSubCategoryFields(cmbBxModifySubCategory, cmbBxCreateSubCategory);
                     txtFldModifyCategory.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -472,9 +500,11 @@ public class AdminView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.createSubCategory(txtFldCreateSubCategory.getValue());
-                } catch (SQLException ex) {
-                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    controller.popluateSubCategoryFields(cmbBxModifySubCategory, cmbBxCreateSubCategory);
+                    txtFldCreateSubCategory.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -486,7 +516,10 @@ public class AdminView extends VerticalLayout implements View {
                 try {
                     controller.deleteSubCategory(cmbBxModifySubCategory.getValue().toString());
                     controller.popluateSubCategoryFields(cmbBxModifySubCategory, cmbBxCreateSubCategory);
+                    txtFldModifySubCategory.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -499,7 +532,9 @@ public class AdminView extends VerticalLayout implements View {
                     controller.modifySubCategory(cmbBxModifySubCategory.getValue().toString(), txtFldModifySubCategory.getValue());
                     controller.popluateSubCategoryFields(cmbBxModifySubCategory, cmbBxCreateSubCategory);
                     txtFldModifySubCategory.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -513,9 +548,11 @@ public class AdminView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.createState(txtFldCreateState.getValue());
-                } catch (SQLException ex) {
-                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    controller.popluateStateFields(cmbBxModifyState);
+                    txtFldCreateState.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -527,7 +564,10 @@ public class AdminView extends VerticalLayout implements View {
                 try {
                     controller.deleteState(cmbBxModifyState.getValue().toString());
                     controller.popluateStateFields(cmbBxModifyState);
+                    txtFldModifyState.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -540,7 +580,9 @@ public class AdminView extends VerticalLayout implements View {
                     controller.modifyState(cmbBxModifyState.getValue().toString(), txtFldModifyState.getValue());
                     controller.popluateStateFields(cmbBxModifyState);
                     txtFldModifyState.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -554,9 +596,11 @@ public class AdminView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.createType(txtFldCreateType.getValue());
-                } catch (SQLException ex) {
-                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    controller.popluateTypeFields(cmbBxModifyType);
+                    txtFldCreateType.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -568,7 +612,10 @@ public class AdminView extends VerticalLayout implements View {
                 try {
                     controller.deleteType(cmbBxModifyType.getValue().toString());
                     controller.popluateTypeFields(cmbBxModifyType);
+                    txtFldModifyType.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -581,7 +628,9 @@ public class AdminView extends VerticalLayout implements View {
                     controller.modifyType(cmbBxModifyType.getValue().toString(), txtFldModifyType.getValue());
                     controller.popluateTypeFields(cmbBxModifyType);
                     txtFldModifyType.clear();
+                    Notification.show(operationSuccess);
                 } catch (Exception ex) {
+                    Notification.show(operationFailed);
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -593,8 +642,69 @@ public class AdminView extends VerticalLayout implements View {
 
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-                Notification.show("trigger");
-//                txtFldModifyCountry.setValue(cmbBxModifyCountry.getValue().toString());
+                if (!cmbBxModifyCountry.isEmpty()) {
+                    txtFldModifyCountry.setValue(cmbBxModifyCountry.getValue().toString());
+                }
+            }
+        });
+    }
+
+    private void addCityComboBoxLogic() {
+        cmbBxModifyCity.addValueChangeListener(new Property.ValueChangeListener() {
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                if (!cmbBxModifyCity.isEmpty()) {
+                    txtFldModifyCity.setValue(cmbBxModifyCity.getValue().toString());
+                }
+            }
+        });
+    }
+
+    private void addCategoryComboBoxLogic() {
+        cmbBxModifyCategory.addValueChangeListener(new Property.ValueChangeListener() {
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                if (!cmbBxModifyCategory.isEmpty()) {
+                    txtFldModifyCategory.setValue(cmbBxModifyCategory.getValue().toString());
+                }
+            }
+        });
+    }
+
+    private void addSubCategoryComboBoxLogic() {
+        cmbBxModifySubCategory.addValueChangeListener(new Property.ValueChangeListener() {
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                if (!cmbBxModifySubCategory.isEmpty()) {
+                    txtFldModifySubCategory.setValue(cmbBxModifySubCategory.getValue().toString());
+                }
+            }
+        });
+    }
+
+    private void addStateComboBoxLogic() {
+        cmbBxModifyState.addValueChangeListener(new Property.ValueChangeListener() {
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                if (!cmbBxModifyState.isEmpty()) {
+                    txtFldModifyState.setValue(cmbBxModifyState.getValue().toString());
+                }
+            }
+        });
+    }
+
+    private void addTypeComboBoxLogic() {
+        cmbBxModifyType.addValueChangeListener(new Property.ValueChangeListener() {
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                if (!cmbBxModifyType.isEmpty()) {
+                    txtFldModifyType.setValue(cmbBxModifyType.getValue().toString());
+                }
             }
         });
     }
@@ -610,10 +720,7 @@ public class AdminView extends VerticalLayout implements View {
         create = bundle.getString("Create");
         modify = bundle.getString("Modify");
         delete = bundle.getString("Delete");
+        operationSuccess = bundle.getString("operationSuccess");
+        operationFailed = bundle.getString("operationFailed");
     }
-
-    private void addAccoridonChangeListener() {
-        
-    }
-
 }

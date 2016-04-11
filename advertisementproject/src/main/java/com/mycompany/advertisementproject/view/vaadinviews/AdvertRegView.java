@@ -335,8 +335,8 @@ public class AdvertRegView extends VerticalLayout implements View {
         modify = bundle.getString("Modify");
         register = bundle.getString("Register");
         successUpload = bundle.getString("UpLoadSuccess");
-        failedModification = bundle.getString("ModificationSuccess");
-        successModification = bundle.getString("ModificationFailed");
+        failedModification = bundle.getString("operationSuccess");
+        successModification = bundle.getString("operationFailed");
     }
 
     public ComboBox getCmbbxCategory() {

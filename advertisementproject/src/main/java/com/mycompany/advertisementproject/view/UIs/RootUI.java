@@ -34,6 +34,8 @@ public class RootUI extends UI {
         navigator.addProvider(viewProvider);
 
         setContent(new VerticalLayout(appLayout, mainLayout));
+        
+        navigator.navigateTo(ADVERTS.toString());
     }
 
     public static RootUI getCurrent() {

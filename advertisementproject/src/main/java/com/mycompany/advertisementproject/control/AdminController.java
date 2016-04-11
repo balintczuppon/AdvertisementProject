@@ -43,6 +43,7 @@ public class AdminController {
     public void popluateCountryFields(ComboBox comboBox) {
         comboBox.removeAllItems();
         comboBox.addItems(countryFacade.findAll());
+        comboBox.markAsDirtyRecursive();
     }
 
     public void createCity(String value) throws Exception {
@@ -63,7 +64,7 @@ public class AdminController {
         cityFacade.edit(city);
     }
 
-    public void popluateCityFields(ComboBox comboBoxModify,ComboBox comboBoxCreate) {
+    public void popluateCityFields(ComboBox comboBoxModify, ComboBox comboBoxCreate) {
         comboBoxModify.removeAllItems();
         comboBoxCreate.removeAllItems();
         comboBoxModify.addItems(cityFacade.findAll());
@@ -89,6 +90,7 @@ public class AdminController {
 
     public void popluateCategoryFields(ComboBox comboBox) {
         comboBox.removeAllItems();
+        comboBox.markAsDirtyRecursive();
         comboBox.addItems(categoryFacade.findAll());
     }
 
@@ -110,7 +112,7 @@ public class AdminController {
         subcategoryFacade.edit(subcategory);
     }
 
-    public void popluateSubCategoryFields(ComboBox comboBoxModify,ComboBox comboBoxCreate) {
+    public void popluateSubCategoryFields(ComboBox comboBoxModify, ComboBox comboBoxCreate) {
         comboBoxModify.removeAllItems();
         comboBoxCreate.removeAllItems();
         comboBoxModify.addItems(subcategoryFacade.findAll());
