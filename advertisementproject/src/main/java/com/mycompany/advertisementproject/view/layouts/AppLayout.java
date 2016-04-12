@@ -26,6 +26,7 @@ import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class AppLayout extends VerticalLayout implements ViewDisplay {
@@ -42,7 +43,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
 
     private ResourceBundle bundle;
 
-    public static SimpleDateFormat formattedDate = new SimpleDateFormat(Global.DATEFORMAT);
+    public static SimpleDateFormat formattedDate = Global.DATEFORMAT;
 
     private static Button btnAdverts;
     private static Button btnLogin;
@@ -84,7 +85,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
 
         HorizontalLayout headersplitter = new HorizontalLayout();
         headersplitter.addComponents(navigation, languages);
-        headersplitter.setWidth("100%");
+        headersplitter.setWidth(bundle.getString("size_100"));
         headersplitter.setComponentAlignment(navigation, Alignment.TOP_RIGHT);
         headersplitter.setComponentAlignment(languages, Alignment.TOP_RIGHT);
 
@@ -98,36 +99,36 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
     }
 
     private void addHungarianButton() {
-        btnHun = new Button("HUN");
+        btnHun = new Button(bundle.getString("locale_hu"));
         btnHun.addClickListener(new Button.ClickListener() {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     VaadinSession.getCurrent().getLockInstance().lock();
-                    VaadinSession.getCurrent().setAttribute(CURRENTLOCALE.toString(), "hu");
+                    VaadinSession.getCurrent().setAttribute(CURRENTLOCALE.toString(), (Locale) Global.Locale_HU);
                 } finally {
                     VaadinSession.getCurrent().getLockInstance().unlock();
                 }
-                bundle = AppBundle.currentBundle("hu");
+                bundle = AppBundle.currentBundle(bundle.getString("locale_hu"));
                 updateStrings();
             }
         });
     }
 
     private void addEnglishButton() {
-        btnEng = new Button("ENG");
+        btnEng = new Button(bundle.getString("locale_en"));
         btnEng.addClickListener(new Button.ClickListener() {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     VaadinSession.getCurrent().getLockInstance().lock();
-                    VaadinSession.getCurrent().setAttribute(CURRENTLOCALE.toString(), "en");
+                    VaadinSession.getCurrent().setAttribute(CURRENTLOCALE.toString(), (Locale) Global.Locale_EN);
                 } finally {
                     VaadinSession.getCurrent().getLockInstance().unlock();
                 }
-                bundle = AppBundle.currentBundle("en");
+                bundle = AppBundle.currentBundle(bundle.getString("locale_en"));
                 updateStrings();
             }
         });
@@ -178,11 +179,11 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         if (advRegView != null) {
             advRegView.updateStrings();
         }
-        selectedView = (SelectedAdvertView) RootUI.getCurrent().getViewProvider().getView("SELECTED");
-        if (selectedView != null) {
-            selectedView.removeAllComponents();
-            selectedView.build();
-        }
+//        selectedView = (SelectedAdvertView) RootUI.getCurrent().getViewProvider().getView("SELECTED");
+//        if (selectedView != null) {
+//            selectedView.removeAllComponents();
+//            selectedView.build();
+//        }
 //        letterView = (LetterView) RootUI.getCurrent().getViewProvider().getView("LETTER");
 //        if (letterView != null) {
 //            letterView.removeAllComponents();

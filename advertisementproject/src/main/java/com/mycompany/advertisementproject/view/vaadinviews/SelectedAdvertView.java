@@ -166,7 +166,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
 
         lblAdvertiser = new Label(lblAdvertiserCaption + advertisement.getAdvertiserId().getName());
         lblAdvertiserPhoneNumber = new Label(lblAdvertiserPhoneCaption + advertisement.getAdvertiserId().getPhonenumber());
-        lblRegDate = new Label(lblRegDateCaption + AppLayout.formattedDate.format(advertisement.getRegistrationDate()));
+        lblRegDate = new Label(lblRegDateCaption + Global.DATEFORMAT.format(advertisement.getRegistrationDate()));
 
         hlMeta.addComponent(lblAdvertiser);
         hlMeta.addComponent(lblAdvertiserPhoneNumber);

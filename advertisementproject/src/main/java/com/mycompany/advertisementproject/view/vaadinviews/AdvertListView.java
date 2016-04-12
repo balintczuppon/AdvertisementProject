@@ -9,7 +9,6 @@ import com.mycompany.advertisementproject.model.facades.CityFacade;
 import com.mycompany.advertisementproject.model.facades.PictureFacade;
 import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
-import com.mycompany.advertisementproject.view.layouts.AppLayout;
 import com.mycompany.advertisementproject.control.AdvertListController;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.mycompany.advertisementproject.toolz.Global;
@@ -91,6 +90,10 @@ public class AdvertListView extends VerticalLayout implements View {
 
     private HorizontalLayout contentLayout;
     private HorizontalLayout searchBarLayout;
+    private HorizontalLayout advertHorizontal;
+    private VerticalLayout advertLeftVertical;
+    private VerticalLayout advertMiddleVertical;
+    private VerticalLayout advertRightVertical;
 
     private VerticalLayout advertList;
     private VerticalLayout filterForm;
@@ -184,11 +187,19 @@ public class AdvertListView extends VerticalLayout implements View {
     }
 
     public HorizontalLayout buildSingleAdvert(final Advertisement adv) throws Exception {
+        createAdvertLayouts();
+        linkDataToLabels(adv);
+        populateImageLayout(adv);
+        populateAdvertLayouts();
+        addAdvertLayoutListener(adv);
+        return advertHorizontal;
+    }
 
-        HorizontalLayout advertHorizontal = new HorizontalLayout();
-        VerticalLayout advertLeftVertical = new VerticalLayout();
-        VerticalLayout advertMiddleVertical = new VerticalLayout();
-        VerticalLayout advertRightVertical = new VerticalLayout();
+    private void createAdvertLayouts() {
+        advertHorizontal = new HorizontalLayout();
+        advertLeftVertical = new VerticalLayout();
+        advertMiddleVertical = new VerticalLayout();
+        advertRightVertical = new VerticalLayout();
 
         advertHorizontal.setMargin(true);
         advertHorizontal.setSpacing(true);
@@ -196,14 +207,16 @@ public class AdvertListView extends VerticalLayout implements View {
         advertRightVertical.setSpacing(true);
         advertLeftVertical.setSpacing(true);
         advertLeftVertical.setSizeFull();
+    }
 
+    private void populateImageLayout(Advertisement adv) {
         image = new Embedded();
         controller.addPictureToAdvert(image, adv);
         advertLeftVertical.addComponent(image);
         advertLeftVertical.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
+    }
 
-        linkDataToLabels(adv);
-
+    private void populateAdvertLayouts() {
         advertMiddleVertical.addComponent(lblTitle);
         advertMiddleVertical.addComponent(lblPrice);
         advertRightVertical.addComponent(lblCategory);
@@ -214,30 +227,35 @@ public class AdvertListView extends VerticalLayout implements View {
         advertHorizontal.addComponent(advertMiddleVertical);
         advertHorizontal.addComponent(advertRightVertical);
 
+    }
+
+    private void addAdvertLayoutListener(final Advertisement adv) {
         advertHorizontal.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent event) {
                 controller.selectedAdvert(adv);
             }
         });
-
-        return advertHorizontal;
     }
 
-    private void linkDataToLabels(Advertisement adv) {
+    private void createLabels() {
         lblTitle = new Label();
         lblPrice = new Label();
         lblCategory = new Label();
         lblSubCategory = new Label();
         lblCity = new Label();
         lblDate = new Label();
+    }
+
+    private void linkDataToLabels(Advertisement adv) {
+        createLabels();
 
         if (adv.getTitle() != null) {
             lblTitle.setValue(adv.getTitle());
             lblTitle.setWidth(titleLabelWidth);
         }
         if (adv.getPrice() != 0) {
-            lblPrice.setValue(String.valueOf(adv.getPrice()) + " " + Global.CURRENCY);
+            lblPrice.setValue(Global.CURRENCY.format(adv.getPrice()));
         }
         if (adv.getMainCategoryId() != null) {
             lblCategory.setValue(adv.getMainCategoryId().getName());
@@ -249,7 +267,7 @@ public class AdvertListView extends VerticalLayout implements View {
             lblCity.setValue(adv.getCityId().getCityName());
         }
         if (adv.getRegistrationDate() != null) {
-            lblDate.setValue(AppLayout.formattedDate.format(adv.getRegistrationDate()));
+            lblDate.setValue(Global.DATEFORMAT.format(adv.getRegistrationDate()));
         }
     }
 
@@ -257,18 +275,28 @@ public class AdvertListView extends VerticalLayout implements View {
         contentLayout = new HorizontalLayout();
         contentLayout.setSpacing(true);
 
+        addFilterForm();
+        createElements();
+        setElements();
+        populateFilterForm();
+        createFilterPanel();
+
+        contentLayout.addComponent(filterPanel);
+    }
+
+    private void addFilterForm() {
         filterForm = new VerticalLayout();
         filterForm.setWidthUndefined();
         filterForm.setSpacing(true);
         filterForm.setMargin(true);
-
         filterForm.setDefaultComponentAlignment(Alignment.TOP_CENTER);
-
         lblFilter = new Label(filterLabelValue);
         lblFilter.setSizeUndefined();
         filterForm.addComponent(lblFilter);
         filterForm.addComponent(new Label("<hr />", ContentMode.HTML));
+    }
 
+    private void createElements() {
         cmbBxCategory = new ComboBox();
         cmbBxSubCategory = new ComboBox();
         cmbBxCountry = new ComboBox();
@@ -278,10 +306,11 @@ public class AdvertListView extends VerticalLayout implements View {
         txtFldMinPrice = new TextField();
         txtFldMaxPrice = new TextField();
         btnFilter = new Button(filterButtonCaption);
+    }
 
+    private void setElements() {
         cmbBxSubCategory.setEnabled(false);
         cmbBxCity.setEnabled(false);
-
         cmbBxCategory.setInputPrompt(categoryCmbbxPrompt);
         cmbBxSubCategory.setInputPrompt(subCategoryCmbbxPrompt);
         cmbBxCountry.setInputPrompt(countryCmbbxPrompt);
@@ -290,7 +319,9 @@ public class AdvertListView extends VerticalLayout implements View {
         cmbBxState.setInputPrompt(stateCmbbxPrompt);
         txtFldMaxPrice.setInputPrompt(maxPriceTxtFldPrompt);
         txtFldMinPrice.setInputPrompt(minPriceTxtFldPrompt);
+    }
 
+    private void populateFilterForm() {
         filterForm.addComponent(cmbBxCountry);
         filterForm.addComponent(cmbBxCity);
         filterForm.addComponent(cmbBxCategory);
@@ -300,15 +331,15 @@ public class AdvertListView extends VerticalLayout implements View {
         filterForm.addComponent(txtFldMinPrice);
         filterForm.addComponent(txtFldMaxPrice);
         filterForm.addComponent(btnFilter);
+    }
 
+    private void createFilterPanel() {
         filterPanel = new Panel();
         filterPanel.setWidth(filterPanelWidth);
         filterPanel.setContent(filterForm);
-        contentLayout.addComponent(filterPanel);
     }
 
     public void buildAdverts() throws Exception {
-
         advertList = new VerticalLayout();
         advertList.setSpacing(true);
         advertList.setMargin(true);
@@ -519,7 +550,7 @@ public class AdvertListView extends VerticalLayout implements View {
     public String getNoResult() {
         return noResult;
     }
-    
+
     public String getImageHeight() {
         return imageHeight;
     }
@@ -527,7 +558,7 @@ public class AdvertListView extends VerticalLayout implements View {
     public String getImageWidth() {
         return imageWidth;
     }
-    
+
     public String getSortTypePriceAsc() {
         return sortTypePriceAsc;
     }

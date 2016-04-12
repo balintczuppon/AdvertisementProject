@@ -48,7 +48,7 @@ public class AccountController {
             String date = AppLayout.formattedDate.format(a.getRegistrationDate());
             view.getTblAdverts().addItem(new Object[]{a.getTitle(),
                 date,
-                a.getPrice() + Global.CURRENCY,
+                Global.CURRENCY.format(a.getPrice()),
                 view.getBtnDeleteAdvert(),
                 view.getBtnModifyAdvert()
             }, i);
