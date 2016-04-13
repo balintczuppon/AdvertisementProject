@@ -106,21 +106,19 @@ public class AdvertListView extends VerticalLayout implements View {
     private Embedded image;
 
     @Inject
-    MaincategoryFacade maincategoryFacade;
+    private MaincategoryFacade maincategoryFacade;
     @Inject
-    SubcategoryFacade subcategoryFacade;
+    private SubcategoryFacade subcategoryFacade;
     @Inject
-    PictureFacade pictureFacade;
+    private AdverttypeFacade adverttypeFacade;
     @Inject
-    AdverttypeFacade adverttypeFacade;
+    private CountryFacade countryFacade;
     @Inject
-    CountryFacade countryFacade;
+    private CityFacade cityFacade;
     @Inject
-    CityFacade cityFacade;
+    private AdvertisementFacade advertisementFacade;
     @Inject
-    AdvertisementFacade advertisementFacade;
-    @Inject
-    AdvertstateFacade advertstateFacade;
+    private AdvertstateFacade advertstateFacade;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -129,12 +127,14 @@ public class AdvertListView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initComponent() {
-        bundle = AppBundle.currentBundle("");
+        bundle = AppBundle.currentBundle();
         build();
     }
 
     public void build() {
         try {
+            controller = new AdvertListController(this);
+            setController();
             updateStrings();
             setSizeFull();
             setMargin(true);
@@ -147,7 +147,6 @@ public class AdvertListView extends VerticalLayout implements View {
     }
 
     private void buildView() throws Exception {
-        controller = new AdvertListController(this);
         buildSearchBar();
         buildFilters();
         controller.fillComboBoxes();
@@ -167,6 +166,7 @@ public class AdvertListView extends VerticalLayout implements View {
         searchBarLayout = new HorizontalLayout();
         searchBarLayout.setSpacing(true);
         searchBarLayout.setMargin(true);
+
         txtFldSearch = new TextField();
         txtFldSearch.setWidth(searchTextFieldWidth);
 
@@ -471,36 +471,14 @@ public class AdvertListView extends VerticalLayout implements View {
         sortTypePriceDesc = bundle.getString("MostExpensive");
     }
 
-    public MaincategoryFacade getMaincategoryFacade() {
-        return maincategoryFacade;
-    }
-
-    public SubcategoryFacade getSubcategoryFacade() {
-        return subcategoryFacade;
-    }
-
-    public PictureFacade getPictureFacade() {
-        return pictureFacade;
-    }
-
-    public AdverttypeFacade getAdverttypeFacade() {
-        return adverttypeFacade;
-    }
-
-    public CountryFacade getCountryFacade() {
-        return countryFacade;
-    }
-
-    public CityFacade getCityFacade() {
-        return cityFacade;
-    }
-
-    public AdvertisementFacade getAdvertisementFacade() {
-        return advertisementFacade;
-    }
-
-    public AdvertstateFacade getAdvertstateFacade() {
-        return advertstateFacade;
+    private void setController(){
+        controller.setAdvertisementFacade(advertisementFacade);
+        controller.setAdvertstateFacade(advertstateFacade);
+        controller.setAdverttypeFacade(adverttypeFacade);
+        controller.setCityFacade(cityFacade);
+        controller.setCountryFacade(countryFacade);
+        controller.setMaincategoryFacade(maincategoryFacade);
+        controller.setSubcategoryFacade(subcategoryFacade);
     }
 
     public ComboBox getCmbBxSortType() {
@@ -574,4 +552,8 @@ public class AdvertListView extends VerticalLayout implements View {
     public String getSortTypeDateDesc() {
         return sortTypeDateDesc;
     }
+
+    public AdvertListController getController() {
+        return controller;
+    }   
 }

@@ -1,9 +1,7 @@
 package com.mycompany.advertisementproject.view.vaadinviews;
 
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.SELECTEDADVERT;
-import static com.mycompany.advertisementproject.enumz.StyleNames.ADVERTTITLE;
 import static com.mycompany.advertisementproject.enumz.StyleNames.TITLE;
-import com.mycompany.advertisementproject.view.layouts.AppLayout;
 import com.mycompany.advertisementproject.control.SelectedAdvertController;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
 import com.mycompany.advertisementproject.model.facades.LetterFacade;
@@ -107,7 +105,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
 
     @PostConstruct
     public void initComponent() {
-        bundle = AppBundle.currentBundle("");
+        bundle = AppBundle.currentBundle();
         buildView();
     }
 
@@ -119,6 +117,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     private void buildView() {
         advertisement = (Advertisement) VaadinSession.getCurrent().getAttribute(SELECTEDADVERT.toString());
         controller = new SelectedAdvertController(this);
+        controller.setLetterFacade(letterFacade);
         build();
     }
 
@@ -362,10 +361,6 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
 
     public TextArea getTxtAreaMessage() {
         return txtAreaMessage;
-    }
-
-    public LetterFacade getLetterFacade() {
-        return letterFacade;
     }
 
     public Advertisement getAdvertisement() {

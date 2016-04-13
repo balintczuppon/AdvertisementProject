@@ -11,13 +11,13 @@ public class AppBundle {
 
     private static Locale currentLocale;
 
-    public static ResourceBundle currentBundle(String lenyegtelenhogymi) {
+    public static ResourceBundle currentBundle() {
         currentLocale = (Locale) VaadinSession.getCurrent().getAttribute(CURRENTLOCALE.toString());
         if (currentLocale == null) {
             currentLocale = Locale.getDefault();
             setDefaultLocale();
         }
-        switch (currentLocale.getLanguage().trim()) {
+        switch (currentLocale.getLanguage()) {
             case "hu": {
                 getHunSettings();
                 return ResourceBundle.getBundle("ApplicationResources_hu_HU", Global.Locale_HU);

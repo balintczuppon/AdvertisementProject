@@ -3,16 +3,20 @@ package com.mycompany.advertisementproject.control;
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTUSER;
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.LETTERTOSHOW;
 import com.mycompany.advertisementproject.enumz.Views;
-import com.mycompany.advertisementproject.view.layouts.AppLayout;
 import com.mycompany.advertisementproject.toolz.MailSender;
 import com.mycompany.advertisementproject.view.vaadinviews.LetterView;
 import com.mycompany.advertisementproject.model.entities.Advertiser;
 import com.mycompany.advertisementproject.model.entities.Letter;
+import com.mycompany.advertisementproject.model.facades.LetterFacade;
 import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinSession;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LetterController {
+
+    private LetterFacade letterFacade;
 
     private LetterView view;
 
@@ -30,11 +34,11 @@ public class LetterController {
                     view.showLetter(letter);
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                Logger.getLogger(LetterController.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             try {
-                Letter letter = view.getLetterFacade().findById(letterID);
+                Letter letter = letterFacade.findById(letterID);
                 if (letter != null) {
                     view.showLetter(letter);
                 }
@@ -67,22 +71,27 @@ public class LetterController {
 
         current_advertiser.getPostbox().addLetter(responseLetter);
 
-        view.getLetterFacade().create(responseLetter);
+        letterFacade.create(responseLetter);
 
         responseLetterID = responseLetter.getId();
 
         MailSender ms = new MailSender();
         ms.setReceiver(letter.getSendermail());
         ms.setSender(current_advertiser.getEmail());
+        
+        /*
+         Test Sender & Receiver
+        */
         ms.setReceiver("balintczuppon@gmail.com");
         ms.setSender("balintczuppon@gmail.com");
+        
         ms.setSubject(view.getResponsePrefix() + letter.getMailtitle());
         ms.setText(letterText());
         ms.send();
     }
 
     public void deleteLetter(Letter letter) throws Exception {
-        view.getLetterFacade().remove(letter);
+        letterFacade.remove(letter);
         view.getUI().getNavigator().navigateTo(Views.USERPAGE.toString());
     }
 
@@ -94,17 +103,20 @@ public class LetterController {
 
     private String letterText() throws Exception {
         Advertiser current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
-        String htmlLink = "<a href="+view.getPageLink()+view.getViewName()+"/" + responseLetterID + ">"+view.getLinkText()+"</a></br>";
+        String htmlLink = "<a href=" + view.getPageLink() + view.getViewName() + "/" + responseLetterID + ">" + view.getLinkText() + "</a></br>";
         String text
                 = "<p>"
-                + view.getGreetingText()+"<br><br>"
-                + current_advertiser.getName() + view.getMessageText1()+"<br><br>"
-                + view.getMessageText2()+"<br>"
+                + view.getGreetingText() + "<br><br>"
+                + current_advertiser.getName() + view.getMessageText1() + "<br><br>"
+                + view.getMessageText2() + "<br>"
                 + htmlLink + "<br><br>"
-                + view.getGoodbyeText()+"<br>"
+                + view.getGoodbyeText() + "<br>"
                 + view.getSenderName()
                 + "</p>";
         return text;
     }
 
+    public void setLetterFacade(LetterFacade letterFacade) {
+        this.letterFacade = letterFacade;
+    }
 }

@@ -32,7 +32,7 @@ public class LogInView extends VerticalLayout implements View {
 
     private LoginController logincontroller;
 
-    private FormLayout fl;
+    private FormLayout formLayout;
 
     @Inject
     private AdvertiserFacade advertiserFacade;
@@ -44,13 +44,19 @@ public class LogInView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initContent() {
-        bundle = AppBundle.currentBundle("");
-        setMargin(true);
-        setImmediate(true);
+        bundle = AppBundle.currentBundle();
+        defaultSettings();
         addTitle();
         addForm();
         addButton();
         updateStrings();
+    }
+
+    private void defaultSettings() {
+        logincontroller = new LoginController(this);
+        logincontroller.setAdvertiserFacade(advertiserFacade);
+        setMargin(true);
+        setImmediate(true);
     }
 
     private void addTitle() {
@@ -62,19 +68,18 @@ public class LogInView extends VerticalLayout implements View {
     }
 
     private void addForm() {
-        fl = new FormLayout();
+        formLayout = new FormLayout();
         tfEmail = new TextField();
         pfPassWord = new PasswordField();
         tfEmail.setValue("admin@vaadinthesis.java");
         pfPassWord.setValue("admin");
-        fl.addComponents(tfEmail, pfPassWord);
-        fl.setWidthUndefined();
-        addComponent(fl);
-        setComponentAlignment(fl, Alignment.MIDDLE_CENTER);
+        formLayout.addComponents(tfEmail, pfPassWord);
+        formLayout.setWidthUndefined();
+        addComponent(formLayout);
+        setComponentAlignment(formLayout, Alignment.MIDDLE_CENTER);
     }
 
     private void addButton() {
-        logincontroller = new LoginController(this);
         btnLogin = new Button();
         btnLogin.addClickListener(new Button.ClickListener() {
 
@@ -101,10 +106,6 @@ public class LogInView extends VerticalLayout implements View {
 
     public String errorText() {
         return bundle.getString("LoginError");
-    }
-
-    public AdvertiserFacade getAdvertiserFacade() {
-        return advertiserFacade;
     }
 
     public void updateStrings() {

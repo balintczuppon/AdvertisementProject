@@ -61,7 +61,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
     private String nodePath;
 
     public AppLayout() {
-        bundle = AppBundle.currentBundle("");
+        bundle = AppBundle.currentBundle();
         buildHeader();
         addListeners();
     }
@@ -110,7 +110,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
                 } finally {
                     VaadinSession.getCurrent().getLockInstance().unlock();
                 }
-                bundle = AppBundle.currentBundle(bundle.getString("locale_hu"));
+                bundle = AppBundle.currentBundle();
                 updateStrings();
             }
         });
@@ -128,7 +128,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
                 } finally {
                     VaadinSession.getCurrent().getLockInstance().unlock();
                 }
-                bundle = AppBundle.currentBundle(bundle.getString("locale_en"));
+                bundle = AppBundle.currentBundle();
                 updateStrings();
             }
         });

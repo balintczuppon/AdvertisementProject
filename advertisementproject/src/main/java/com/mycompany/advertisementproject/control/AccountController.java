@@ -5,20 +5,29 @@ import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENT
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.LETTERTOSHOW;
 import static com.mycompany.advertisementproject.enumz.Views.ADVERTREG;
 import static com.mycompany.advertisementproject.enumz.Views.LETTER;
-import com.mycompany.advertisementproject.view.layouts.AppLayout;
 import com.mycompany.advertisementproject.view.vaadinviews.AccountView;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
 import com.mycompany.advertisementproject.model.entities.Advertiser;
 import com.mycompany.advertisementproject.model.entities.Letter;
 import com.mycompany.advertisementproject.model.entities.Picture;
+import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
+import com.mycompany.advertisementproject.model.facades.LetterFacade;
+import com.mycompany.advertisementproject.model.facades.PictureFacade;
 import com.mycompany.advertisementproject.toolz.Global;
+import com.mycompany.advertisementproject.view.vaadinviews.AdvertRegView;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AccountController {
+
+    private AdvertisementFacade advertisementFacade;
+    private PictureFacade pictureFacade;
+    private LetterFacade letterFacade;
 
     private final AccountView view;
 
@@ -35,7 +44,7 @@ public class AccountController {
 
     public void fillAdverts() throws Exception {
         current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
-        adverts = view.getAdvertisementFacade().getMyAdvertisements(current_advertiser);
+        adverts = advertisementFacade.getMyAdvertisements(current_advertiser);
     }
 
     public void populateAdverts() {
@@ -45,7 +54,7 @@ public class AccountController {
             view.addListenerToBtnDelete(a);
             view.addListenerToBtnModify(a);
 
-            String date = AppLayout.formattedDate.format(a.getRegistrationDate());
+            String date = Global.DATEFORMAT.format(a.getRegistrationDate());
             view.getTblAdverts().addItem(new Object[]{a.getTitle(),
                 date,
                 Global.CURRENCY.format(a.getPrice()),
@@ -59,11 +68,12 @@ public class AccountController {
     public void deletePicture(Advertisement a) {
         try {
             for (Picture p : a.getPictureCollection()) {
-                view.getPictureFacade().remove(p);
+                pictureFacade.remove(p);
             }
-            view.getAdvertisementFacade().remove(a);
+            advertisementFacade.remove(a);
         } catch (Exception ex) {
             Notification.show(ex.getMessage());
+            Logger.getLogger(AccountController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -79,23 +89,20 @@ public class AccountController {
 
     public void fillLetters() throws Exception {
         current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
-        letters = view.getLetterFacade().getMyLetters(current_advertiser);
+        letters = letterFacade.getMyLetters(current_advertiser);
     }
 
     public void popluateLetters() {
         k = 1;
         j = 1;
-
         String date;
 
         for (final Letter letter : letters) {
-
             if (letter.getSendDate() != null) {
-                date = AppLayout.formattedDate.format(letter.getSendDate());
+                date = Global.DATEFORMAT.format(letter.getSendDate());
             } else {
                 date = null;
             }
-
             Object object[] = new Object[]{
                 letter,
                 letter.getMailtitle(),
@@ -124,7 +131,6 @@ public class AccountController {
 //        }
 //        return text;
 //    }
-
     public void selectInComingLetter(ItemClickEvent event) {
         Object object = event.getItem().getItemProperty("").getValue();
         try {
@@ -146,4 +152,16 @@ public class AccountController {
         }
         view.getUI().getNavigator().navigateTo(LETTER.toString());
     }
+
+    public void setAdvertisementFacade(AdvertisementFacade advertisementFacade) {
+        this.advertisementFacade = advertisementFacade;
+    }
+
+    public void setPictureFacade(PictureFacade pictureFacade) {
+        this.pictureFacade = pictureFacade;
+    }
+
+    public void setLetterFacade(LetterFacade letterFacade) {
+        this.letterFacade = letterFacade;
+    }  
 }

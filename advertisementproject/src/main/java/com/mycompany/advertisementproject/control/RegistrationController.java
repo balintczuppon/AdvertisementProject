@@ -4,18 +4,21 @@ import com.mycompany.advertisementproject.toolz.Encryptor;
 import com.mycompany.advertisementproject.view.vaadinviews.RegistrationView;
 import com.mycompany.advertisementproject.model.entities.Advertiser;
 import com.mycompany.advertisementproject.model.entities.Postbox;
+import com.mycompany.advertisementproject.model.facades.AdvertiserFacade;
+import com.mycompany.advertisementproject.model.facades.PostboxFacade;
+import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.data.validator.EmailValidator;
 
 public class RegistrationController {
 
-    private final int DEFAULT_AUTHORITY;
+    private AdvertiserFacade advertiserFacade;
+    private PostboxFacade postboxFacade;
 
     private final RegistrationView view;
     private Advertiser advertiserToCheck;
 
     public RegistrationController(RegistrationView registrationView) {
         this.view = registrationView;
-        DEFAULT_AUTHORITY = 1;
     }
 
     public void registration() throws Exception {
@@ -35,13 +38,14 @@ public class RegistrationController {
             advertiser.setName(view.getTfName().getValue().trim());
             advertiser.setPhonenumber(view.getTfPhoneNumber().getValue().trim());
             advertiser.setNewsletter(view.getChkBxNewsLetter().getValue());
-            advertiser.setAuthority(DEFAULT_AUTHORITY);
+            advertiser.setAuthority(Global.DEFAULT_AUTHORITY);
 
-            view.getAdvertiserFacade().create(advertiser);
+            advertiserFacade.create(advertiser);
             int id = advertiser.getId();
             postbox.setId(id);
 
-            view.getPostboxFacade().create(postbox);
+            postboxFacade.create(postbox);
+            
             view.goForward();
         } catch (Exception e) {
             throw new Exception();
@@ -49,7 +53,7 @@ public class RegistrationController {
     }
 
     public void checkUser() throws Exception {
-        advertiserToCheck = (Advertiser) view.getAdvertiserFacade().getAdvertiserByMail(view.getTfEmail().getValue());
+        advertiserToCheck = (Advertiser) advertiserFacade.getAdvertiserByMail(view.getTfEmail().getValue());
     }
 
     private void checkUserExists() throws Exception {
@@ -91,5 +95,13 @@ public class RegistrationController {
         checkFieldsFilled();
         checkPasswordsEquals();
         checkTermsChecked();
+    }
+
+    public void setAdvertiserFacade(AdvertiserFacade advertiserFacade) {
+        this.advertiserFacade = advertiserFacade;
+    }
+
+    public void setPostboxFacade(PostboxFacade postboxFacade) {
+        this.postboxFacade = postboxFacade;
     }
 }

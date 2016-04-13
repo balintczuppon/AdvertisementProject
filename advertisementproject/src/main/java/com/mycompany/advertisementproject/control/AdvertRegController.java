@@ -2,7 +2,6 @@ package com.mycompany.advertisementproject.control;
 
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.ADVERTTOMODIFY;
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTUSER;
-import com.mycompany.advertisementproject.view.layouts.AppLayout;
 import com.mycompany.advertisementproject.toolz.MyMultiFileUpload;
 import com.mycompany.advertisementproject.view.vaadinviews.AdvertRegView;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
@@ -14,15 +13,32 @@ import com.mycompany.advertisementproject.model.entities.Country;
 import com.mycompany.advertisementproject.model.entities.Maincategory;
 import com.mycompany.advertisementproject.model.entities.Picture;
 import com.mycompany.advertisementproject.model.entities.Subcategory;
+import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
+import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
+import com.mycompany.advertisementproject.model.facades.AdverttypeFacade;
+import com.mycompany.advertisementproject.model.facades.CityFacade;
+import com.mycompany.advertisementproject.model.facades.CountryFacade;
+import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
+import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
 import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.server.VaadinSession;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.vaadin.easyuploads.FileBuffer;
 
 public class AdvertRegController {
 
+    private MaincategoryFacade maincategoryFacade;
+    private SubcategoryFacade subcategoryFacade;
+    private AdverttypeFacade adverttypeFacade;
+    private AdvertisementFacade advertisementFacade;
+    private AdvertstateFacade advertstateFacade;
+    private CountryFacade countryFacade;
+    private CityFacade cityFacade;
+    
     private static final String TEMP_FILE_DIR = new File(System.getProperty("java.io.tmpdir")).getPath();
 
     private final AdvertRegView view;
@@ -51,7 +67,7 @@ public class AdvertRegController {
                 view.prepareForRegistration();
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            Logger.getLogger(AdvertRegController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -77,7 +93,7 @@ public class AdvertRegController {
         }
 
         advertisement.setPictureCollection(pictureCollection);
-        view.getAdvertisementFacade().create(advertisement);
+        advertisementFacade.create(advertisement);
     }
 
     public void modifyAdvert() {
@@ -100,7 +116,7 @@ public class AdvertRegController {
         }
 
         advert_to_mod.setPictureCollection(pictureCollection);
-        view.getAdvertisementFacade().edit(advert_to_mod);
+        advertisementFacade.edit(advert_to_mod);
     }
 
     public void linkDataToFields(Advertisement ad) {
@@ -124,10 +140,10 @@ public class AdvertRegController {
 
     public void fillComboBoxes() {
         if (!filled) {
-            view.getCmbbxCategory().addItems(view.getMaincategoryFacade().findAll());
-            view.getCmbbxAdvertState().addItems(view.getAdvertstateFacade().findAll());
-            view.getCmbbxAdvertType().addItems(view.getAdverttypeFacade().findAll());
-            view.getCmbbxCountry().addItems(view.getCountryFacade().findAll());
+            view.getCmbbxCategory().addItems(maincategoryFacade.findAll());
+            view.getCmbbxAdvertState().addItems(advertstateFacade.findAll());
+            view.getCmbbxAdvertType().addItems(adverttypeFacade.findAll());
+            view.getCmbbxCountry().addItems(countryFacade.findAll());
             filled = true;
         }
     }
@@ -150,7 +166,7 @@ public class AdvertRegController {
 
     private Advertstate selectedState() {
         if (!view.getCmbbxAdvertState().isEmpty()) {
-            return view.getAdvertstateFacade().getStateByName(view.getCmbbxAdvertState().getValue().toString());
+            return advertstateFacade.getStateByName(view.getCmbbxAdvertState().getValue().toString());
         } else {
             return null;
         }
@@ -158,7 +174,7 @@ public class AdvertRegController {
 
     private Adverttype selectedType() {
         if (!view.getCmbbxAdvertType().isEmpty()) {
-            return view.getAdverttypeFacade().getTypeByName(view.getCmbbxAdvertType().getValue().toString());
+            return adverttypeFacade.getTypeByName(view.getCmbbxAdvertType().getValue().toString());
         } else {
             return null;
         }
@@ -166,7 +182,7 @@ public class AdvertRegController {
 
     private Country selectedCountry() {
         if (!view.getCmbbxCountry().isEmpty()) {
-            return view.getCountryFacade().getCountryByName(view.getCmbbxCountry().getValue().toString());
+            return countryFacade.getCountryByName(view.getCmbbxCountry().getValue().toString());
         } else {
             return null;
         }
@@ -174,7 +190,7 @@ public class AdvertRegController {
 
     private City selectedCity() {
         if (!view.getCmbbxCity().isEmpty()) {
-            return view.getCityFacade().getCityByName(view.getCmbbxCity().getValue().toString());
+            return cityFacade.getCityByName(view.getCmbbxCity().getValue().toString());
         } else {
             return null;
         }
@@ -182,7 +198,7 @@ public class AdvertRegController {
 
     private Maincategory selectedMainCategory() {
         if (!view.getCmbbxCategory().isEmpty()) {
-            return view.getMaincategoryFacade().getCategoryByName(view.getCmbbxCategory().getValue().toString());
+            return maincategoryFacade.getCategoryByName(view.getCmbbxCategory().getValue().toString());
         } else {
             return null;
         }
@@ -190,7 +206,7 @@ public class AdvertRegController {
 
     private Subcategory selectedSubCategory() {
         if (!view.getCmbbxSubCategory().isEmpty()) {
-            return view.getSubcategoryFacade().getSubCateogryByName(view.getCmbbxSubCategory().getValue().toString());
+            return subcategoryFacade.getSubCateogryByName(view.getCmbbxSubCategory().getValue().toString());
         } else {
             return null;
         }
@@ -223,4 +239,33 @@ public class AdvertRegController {
     public MyMultiFileUpload getMfu() {
         return mfu;
     }
+
+    public void setMaincategoryFacade(MaincategoryFacade maincategoryFacade) {
+        this.maincategoryFacade = maincategoryFacade;
+    }
+
+    public void setSubcategoryFacade(SubcategoryFacade subcategoryFacade) {
+        this.subcategoryFacade = subcategoryFacade;
+    }
+
+    public void setAdverttypeFacade(AdverttypeFacade adverttypeFacade) {
+        this.adverttypeFacade = adverttypeFacade;
+    }
+
+    public void setAdvertisementFacade(AdvertisementFacade advertisementFacade) {
+        this.advertisementFacade = advertisementFacade;
+    }
+
+    public void setAdvertstateFacade(AdvertstateFacade advertstateFacade) {
+        this.advertstateFacade = advertstateFacade;
+    }
+
+    public void setCountryFacade(CountryFacade countryFacade) {
+        this.countryFacade = countryFacade;
+    }
+
+    public void setCityFacade(CityFacade cityFacade) {
+        this.cityFacade = cityFacade;
+    }
+    
 }

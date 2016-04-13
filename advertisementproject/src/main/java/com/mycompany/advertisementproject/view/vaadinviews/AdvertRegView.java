@@ -11,6 +11,7 @@ import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
 import static com.mycompany.advertisementproject.enumz.Views.USERPAGE;
 import com.mycompany.advertisementproject.control.AdvertRegController;
+import com.mycompany.advertisementproject.control.SelectedAdvertController;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.data.Property;
@@ -21,6 +22,8 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import java.io.File;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -80,8 +83,6 @@ public class AdvertRegView extends VerticalLayout implements View {
     @Inject
     private SubcategoryFacade subcategoryFacade;
     @Inject
-    private PictureFacade pictureFacade;
-    @Inject
     private AdverttypeFacade adverttypeFacade;
     @Inject
     private AdvertisementFacade advertisementFacade;
@@ -101,7 +102,7 @@ public class AdvertRegView extends VerticalLayout implements View {
     @PostConstruct
     public void initComponent() {
         if (availability) {
-            bundle = AppBundle.currentBundle("");
+            bundle = AppBundle.currentBundle();
             build();
         }
     }
@@ -119,6 +120,7 @@ public class AdvertRegView extends VerticalLayout implements View {
         setMargin(true);
         setSpacing(true);
         controller = new AdvertRegController(this);
+        setController();
     }
 
     private void addForm() {
@@ -259,6 +261,7 @@ public class AdvertRegView extends VerticalLayout implements View {
                     controller.modifyAdvert();
                 } catch (Exception e) {
                     Notification.show(failedModification);
+                    Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, e);
                 }
                 Notification.show(successModification);
                 getUI().getNavigator().navigateTo(USERPAGE.toString());
@@ -275,6 +278,7 @@ public class AdvertRegView extends VerticalLayout implements View {
                     controller.registerAdvert();
                 } catch (Exception e) {
                     Notification.show(failedUpload);
+                    Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, e);
                 }
                 Notification.show(successUpload);
                 getUI().getNavigator().navigateTo(USERPAGE.toString());
@@ -338,7 +342,16 @@ public class AdvertRegView extends VerticalLayout implements View {
         failedModification = bundle.getString("operationSuccess");
         successModification = bundle.getString("operationFailed");
     }
-
+    private void setController() {
+        controller.setAdvertisementFacade(advertisementFacade);
+        controller.setAdvertstateFacade(advertstateFacade);
+        controller.setAdverttypeFacade(adverttypeFacade);
+        controller.setCityFacade(cityFacade);
+        controller.setCountryFacade(countryFacade);
+        controller.setMaincategoryFacade(maincategoryFacade);
+        controller.setSubcategoryFacade(subcategoryFacade);
+    }
+    
     public ComboBox getCmbbxCategory() {
         return cmbbxCategory;
     }
@@ -373,38 +386,6 @@ public class AdvertRegView extends VerticalLayout implements View {
 
     public TextField getTxtFldPrice() {
         return txtFldPrice;
-    }
-
-    public MaincategoryFacade getMaincategoryFacade() {
-        return maincategoryFacade;
-    }
-
-    public PictureFacade getPictureFacade() {
-        return pictureFacade;
-    }
-
-    public AdverttypeFacade getAdverttypeFacade() {
-        return adverttypeFacade;
-    }
-
-    public AdvertisementFacade getAdvertisementFacade() {
-        return advertisementFacade;
-    }
-
-    public AdvertstateFacade getAdvertstateFacade() {
-        return advertstateFacade;
-    }
-
-    public CountryFacade getCountryFacade() {
-        return countryFacade;
-    }
-
-    public CityFacade getCityFacade() {
-        return cityFacade;
-    }
-
-    public SubcategoryFacade getSubcategoryFacade() {
-        return subcategoryFacade;
     }
 
     public String getDropHere() {

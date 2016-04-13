@@ -1,11 +1,11 @@
 package com.mycompany.advertisementproject.control;
 
-import com.mycompany.advertisementproject.view.layouts.AppLayout;
 import com.mycompany.advertisementproject.toolz.MailSender;
 import com.mycompany.advertisementproject.view.vaadinviews.SelectedAdvertView;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
 import com.mycompany.advertisementproject.model.entities.Letter;
 import com.mycompany.advertisementproject.model.entities.Picture;
+import com.mycompany.advertisementproject.model.facades.LetterFacade;
 import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.event.MouseEvents;
@@ -19,6 +19,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SelectedAdvertController {
+
+    private LetterFacade letterFacade;
 
     private List<Picture> pictures = new ArrayList<>();
     private File file;
@@ -43,19 +45,23 @@ public class SelectedAdvertController {
         letter.setAdvertisementId(adv.getId());
 
         adv.getAdvertiserId().getPostbox().addLetter(letter);
-        view.getLetterFacade().create(letter);
+        letterFacade.create(letter);
 
         MailSender ms = new MailSender();
         ms.setReceiver(adv.getAdvertiserId().getEmail());
         ms.setSender(view.getTxtFldEmail().getValue());
+
+        /*
+         * Test Sender & Receiver
+         */
         ms.setReceiver("balintczuppon@gmail.com");
-//            ms.setSender("balintczuppon@gmail.com");
+        ms.setSender("balintczuppon@gmail.com");
+
         ms.setSubject(view.getLetterSubject());
         ms.setText(letterText(adv));
         ms.send();
 
     }
-
 
     private String letterText(Advertisement a) {
         String htmlLink = "<a " + view.getPageLink() + view.getViewName() + ">" + view.getLinkText() + "</a></br>";
@@ -97,8 +103,8 @@ public class SelectedAdvertController {
 
     public void addOtherPictures(HorizontalLayout hlPictures) throws Exception {
         if (!pictures.isEmpty()) {
-            for (int i = 0; i < pictures.size(); i++) {
-                file = new File(pictures.get(i).getAccessPath());
+            for (Picture picture : pictures) {
+                file = new File(picture.getAccessPath());
                 final Embedded image = new Embedded();
                 image.setWidth(view.getImageWidth());
                 image.setHeight(view.getImageHeight());
@@ -121,5 +127,9 @@ public class SelectedAdvertController {
     public void validateEmail(String value) {
         EmailValidator validator = new EmailValidator(view.getValidatorMessage());
         validator.validate(value);
+    }
+
+    public void setLetterFacade(LetterFacade letterFacade) {
+        this.letterFacade = letterFacade;
     }
 }

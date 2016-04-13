@@ -45,7 +45,7 @@ public class RegistrationView extends VerticalLayout implements View {
 
     private RegistrationController controller;
 
-    private FormLayout fl;
+    private FormLayout formLayout;
 
     @Inject
     private AdvertiserFacade advertiserFacade;
@@ -59,12 +59,19 @@ public class RegistrationView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initComponent() {
-        bundle = AppBundle.currentBundle("");
-        setMargin(true);
+        bundle = AppBundle.currentBundle();
+        defaultSettings();
         addTitle();
         addForm();
         addButton();
         updateStrings();
+    }
+
+    private void defaultSettings() {
+        controller = new RegistrationController(this);
+        controller.setAdvertiserFacade(advertiserFacade);
+        controller.setPostboxFacade(postboxFacade);
+        setMargin(true);
     }
 
     private void addTitle() {
@@ -76,14 +83,14 @@ public class RegistrationView extends VerticalLayout implements View {
     }
 
     private void addForm() {
-        fl = new FormLayout();
-        fl.setWidthUndefined();
+        formLayout = new FormLayout();
+        formLayout.setWidthUndefined();
 
         createFields();
         addComponentsToContent();
 
-        addComponent(fl);
-        setComponentAlignment(fl, Alignment.MIDDLE_CENTER);
+        addComponent(formLayout);
+        setComponentAlignment(formLayout, Alignment.MIDDLE_CENTER);
     }
 
     private void createFields() {
@@ -97,15 +104,13 @@ public class RegistrationView extends VerticalLayout implements View {
     }
 
     private void addComponentsToContent() {
-        fl.addComponents(tfEmail, pfPassWord1, pfPassWord2, tfName, tfPhoneNumber, chkBxNewsLetter, chkBxTerms);
+        formLayout.addComponents(tfEmail, pfPassWord1, pfPassWord2, tfName, tfPhoneNumber, chkBxNewsLetter, chkBxTerms);
     }
 
     private void addButton() {
         btnRegistration = new Button();
         addComponent(btnRegistration);
         setComponentAlignment(btnRegistration, Alignment.MIDDLE_CENTER);
-
-        controller = new RegistrationController(this);
         btnRegistration.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -158,14 +163,6 @@ public class RegistrationView extends VerticalLayout implements View {
 
     public String emailValidatorMessage() {
         return bundle.getString("ValidatorMessage");
-    }
-
-    public AdvertiserFacade getAdvertiserFacade() {
-        return advertiserFacade;
-    }
-
-    public PostboxFacade getPostboxFacade() {
-        return postboxFacade;
     }
 
     public CheckBox getChkBxTerms() {

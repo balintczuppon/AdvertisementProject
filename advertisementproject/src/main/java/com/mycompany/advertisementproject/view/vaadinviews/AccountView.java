@@ -5,12 +5,8 @@ import com.mycompany.advertisementproject.control.AccountController;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
 import com.mycompany.advertisementproject.model.entities.Letter;
 import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
-import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
-import com.mycompany.advertisementproject.model.facades.AdverttypeFacade;
 import com.mycompany.advertisementproject.model.facades.LetterFacade;
-import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
 import com.mycompany.advertisementproject.model.facades.PictureFacade;
-import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.event.ItemClickEvent;
@@ -80,17 +76,9 @@ public class AccountView extends VerticalLayout implements View {
     private AccountController controller;
 
     @Inject
-    MaincategoryFacade maincategoryFacade;
-    @Inject
-    SubcategoryFacade subcategoryFacade;
-    @Inject
     PictureFacade pictureFacade;
     @Inject
-    AdverttypeFacade adverttypeFacade;
-    @Inject
     AdvertisementFacade advertisementFacade;
-    @Inject
-    AdvertstateFacade advertstateFacade;
     @Inject
     LetterFacade letterFacade;
 
@@ -102,7 +90,7 @@ public class AccountView extends VerticalLayout implements View {
     @PostConstruct
     public void initComponent() {
         if (availability) {
-            bundle = AppBundle.currentBundle("");
+            bundle = AppBundle.currentBundle();
             controller = new AccountController(this);
             build();
         }
@@ -110,6 +98,7 @@ public class AccountView extends VerticalLayout implements View {
 
     public void build() {
         try {
+            setController();
             updateStrings();
             buildTabs();
             buildView();
@@ -317,8 +306,10 @@ public class AccountView extends VerticalLayout implements View {
         letterTblSubject = bundle.getString("Subject");
     }
 
-    public AdvertisementFacade getAdvertisementFacade() {
-        return advertisementFacade;
+    private void setController() {
+        controller.setAdvertisementFacade(advertisementFacade);
+        controller.setLetterFacade(letterFacade);
+        controller.setPictureFacade(pictureFacade);
     }
 
     public Button getBtnDeleteAdvert() {
@@ -339,14 +330,6 @@ public class AccountView extends VerticalLayout implements View {
 
     public Table getTblIncLetters() {
         return tblIncLetters;
-    }
-
-    public PictureFacade getPictureFacade() {
-        return pictureFacade;
-    }
-
-    public LetterFacade getLetterFacade() {
-        return letterFacade;
     }
 
     public static void setAvailability(boolean availability) {

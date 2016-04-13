@@ -13,6 +13,13 @@ import com.mycompany.advertisementproject.model.entities.Country;
 import com.mycompany.advertisementproject.model.entities.Maincategory;
 import com.mycompany.advertisementproject.model.entities.Picture;
 import com.mycompany.advertisementproject.model.entities.Subcategory;
+import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
+import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
+import com.mycompany.advertisementproject.model.facades.AdverttypeFacade;
+import com.mycompany.advertisementproject.model.facades.CityFacade;
+import com.mycompany.advertisementproject.model.facades.CountryFacade;
+import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
+import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
 import com.mycompany.advertisementproject.toolz.MyAdvertPager;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinSession;
@@ -27,6 +34,14 @@ import java.util.List;
 
 public class AdvertListController {
 
+    private MaincategoryFacade maincategoryFacade;
+    private SubcategoryFacade subcategoryFacade;
+    private AdverttypeFacade adverttypeFacade;
+    private CountryFacade countryFacade;
+    private CityFacade cityFacade;
+    private AdvertisementFacade advertisementFacade;
+    private AdvertstateFacade advertstateFacade;
+    
     private List<Advertisement> adverts = new ArrayList<>();
     private final List<HorizontalLayout> advertlayouts = new ArrayList<>();
 
@@ -43,7 +58,7 @@ public class AdvertListController {
     public void fillCmbBxSubCategory(Object value) {
         view.getCmbBxSubCategory().removeAllItems();
         view.getCmbBxSubCategory().setEnabled(true);
-        for (Maincategory mcat : view.getMaincategoryFacade().findAll()) {
+        for (Maincategory mcat : maincategoryFacade.findAll()) {
             if (mcat.getName().equals(value)) {
                 view.getCmbBxSubCategory().addItems(mcat.getSubcategoryCollection());
             }
@@ -53,7 +68,7 @@ public class AdvertListController {
     public void fillCmbBxCity(Object value) {
         view.getCmbBxCity().removeAllItems();
         view.getCmbBxCity().setEnabled(true);
-        for (Country c : view.getCountryFacade().findAll()) {
+        for (Country c : countryFacade.findAll()) {
             if (c.getCountryName().equals(value)) {
                 view.getCmbBxCity().addItems(c.getCityCollection());
             }
@@ -67,10 +82,10 @@ public class AdvertListController {
 
     public void fillComboBoxes() {
         if (!filled) {
-            view.getCmbBxCategory().addItems(view.getMaincategoryFacade().findAll());
-            view.getCmbBxState().addItems(view.getAdvertstateFacade().findAll());
-            view.getCmbBxType().addItems(view.getAdverttypeFacade().findAll());
-            view.getCmbBxCountry().addItems(view.getCountryFacade().findAll());
+            view.getCmbBxCategory().addItems(maincategoryFacade.findAll());
+            view.getCmbBxState().addItems(advertstateFacade.findAll());
+            view.getCmbBxType().addItems(adverttypeFacade.findAll());
+            view.getCmbBxCountry().addItems(countryFacade.findAll());
             filled = true;
         }
     }
@@ -86,28 +101,28 @@ public class AdvertListController {
         int maxPrice = 0;
      
         if (!view.getCmbBxCategory().isEmpty()) {
-            mcategory = view.getMaincategoryFacade().getCategoryByName(view.getCmbBxCategory().getValue().toString());
+            mcategory = maincategoryFacade.getCategoryByName(view.getCmbBxCategory().getValue().toString());
         }
 
         if (!view.getCmbBxSubCategory().isEmpty()) {
-            subCategory = view.getSubcategoryFacade().getSubCateogryByName(view.getCmbBxSubCategory().getValue().toString());
+            subCategory = subcategoryFacade.getSubCateogryByName(view.getCmbBxSubCategory().getValue().toString());
         }
 
         if (!view.getCmbBxCity().isEmpty()) {
-            city = view.getCityFacade().getCityByName(view.getCmbBxCity().getValue().toString());
+            city = cityFacade.getCityByName(view.getCmbBxCity().getValue().toString());
         }
 
         if (!view.getCmbBxCountry().isEmpty()) {
-            country = view.getCountryFacade().getCountryByName(view.getCmbBxCountry().getValue().toString());
+            country = countryFacade.getCountryByName(view.getCmbBxCountry().getValue().toString());
         }
         
         if (!view.getCmbBxState().isEmpty()) {
-            state = view.getAdvertstateFacade().getStateByName(view.getCmbBxState().getValue().toString());
+            state = advertstateFacade.getStateByName(view.getCmbBxState().getValue().toString());
         }
         
         if (!view.getCmbBxType().isEmpty()) {
 
-            type = view.getAdverttypeFacade().getTypeByName(view.getCmbBxType().getValue().toString());
+            type = adverttypeFacade.getTypeByName(view.getCmbBxType().getValue().toString());
         }
 
         if (!view.getTxtFldMinPrice().isEmpty()) {
@@ -118,7 +133,7 @@ public class AdvertListController {
             maxPrice = Integer.valueOf(view.getTxtFldMaxPrice().getValue());
         }
 
-        adverts = view.getAdvertisementFacade().findAdvertsByFilters(
+        adverts = advertisementFacade.findAdvertsByFilters(
                 mcategory, subCategory, country, city, state, type, minPrice, maxPrice, filterText
         );
         loadAdverts();
@@ -130,7 +145,7 @@ public class AdvertListController {
     }
 
     public void fillAdverts() {
-        adverts = view.getAdvertisementFacade().findAll();
+        adverts = advertisementFacade.findAll();
     }
 
     public void loadAdverts() throws Exception {
@@ -174,7 +189,7 @@ public class AdvertListController {
     public void searchAdverts(String value) throws Exception {
         filterText = value;
         if (!filterText.isEmpty()) {
-            adverts = view.getAdvertisementFacade().findByText(filterText);
+            adverts = advertisementFacade.findByText(filterText);
             loadAdverts();
         } else {
             filterText = null;
@@ -201,4 +216,34 @@ public class AdvertListController {
         }
         loadAdverts();
     }
+
+    public void setMaincategoryFacade(MaincategoryFacade maincategoryFacade) {
+        this.maincategoryFacade = maincategoryFacade;
+    }
+
+    public void setSubcategoryFacade(SubcategoryFacade subcategoryFacade) {
+        this.subcategoryFacade = subcategoryFacade;
+    }
+
+    public void setAdverttypeFacade(AdverttypeFacade adverttypeFacade) {
+        this.adverttypeFacade = adverttypeFacade;
+    }
+
+    public void setCountryFacade(CountryFacade countryFacade) {
+        this.countryFacade = countryFacade;
+    }
+
+    public void setCityFacade(CityFacade cityFacade) {
+        this.cityFacade = cityFacade;
+    }
+
+    public void setAdvertisementFacade(AdvertisementFacade advertisementFacade) {
+        this.advertisementFacade = advertisementFacade;
+    }
+
+    public void setAdvertstateFacade(AdvertstateFacade advertstateFacade) {
+        this.advertstateFacade = advertstateFacade;
+    }
+
+
 }

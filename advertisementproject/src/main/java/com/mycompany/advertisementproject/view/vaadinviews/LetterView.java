@@ -87,7 +87,7 @@ public class LetterView extends VerticalLayout implements View {
     @PostConstruct
     public void initComponents() {
         if (availability) {
-            bundle = AppBundle.currentBundle("");
+            bundle = AppBundle.currentBundle();
             defaultSettings();
             build();
         }
@@ -95,6 +95,7 @@ public class LetterView extends VerticalLayout implements View {
 
     public void defaultSettings() {
         controller = new LetterController(this);
+        controller.setLetterFacade(letterFacade);
         vlLetter = new VerticalLayout();
         vlLetter.setMargin(true);
         vlLetter.setSpacing(true);
@@ -247,10 +248,6 @@ public class LetterView extends VerticalLayout implements View {
 
     public TextArea getTaLetterToShow() {
         return taLetterToShow;
-    }
-
-    public LetterFacade getLetterFacade() {
-        return letterFacade;
     }
 
     public String getResponsePrefix() {
