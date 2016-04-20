@@ -57,12 +57,19 @@ public class AccountController {
             String date = Global.DATEFORMAT.format(a.getRegistrationDate());
             view.getTblAdverts().addItem(new Object[]{a.getTitle(),
                 date,
-                Global.CURRENCY.format(a.getPrice()),
+                getPrice(a),
                 view.getBtnDeleteAdvert(),
                 view.getBtnModifyAdvert()
             }, i);
             i++;
         }
+    }
+
+    private String getPrice(Advertisement a) {
+        if (a.getPrice() != null) {
+            return Global.CURRENCY.format(a.getPrice());
+        }
+        return null;
     }
 
     public void deletePicture(Advertisement a) {
@@ -163,5 +170,5 @@ public class AccountController {
 
     public void setLetterFacade(LetterFacade letterFacade) {
         this.letterFacade = letterFacade;
-    }  
+    }
 }

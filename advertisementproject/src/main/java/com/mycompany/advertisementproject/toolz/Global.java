@@ -3,14 +3,15 @@ package com.mycompany.advertisementproject.toolz;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.UUID;
 
 public class Global {
 
     public static final int DEFAULT_AUTHORITY = 1;
-    
+
     public static final Locale Locale_HU = new Locale("hu", "HU");
     public static final Locale Locale_EN = new Locale("en", "GB");
-    
+
     public static final String DateFormat_HU = "yyyy.MM.dd";
     public static final String DateFormat_EN = "dd.MM.yyyy";
 
@@ -23,6 +24,11 @@ public class Global {
         java.util.Date utilDate = new java.util.Date();
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
         return sqlDate;
+    }
+
+    public static String generatedId() {
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        return uuid;
     }
 
     public static void setDATEFORMAT(SimpleDateFormat DATEFORMAT) {

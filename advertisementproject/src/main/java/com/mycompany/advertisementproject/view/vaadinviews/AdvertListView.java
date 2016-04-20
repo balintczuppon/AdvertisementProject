@@ -24,6 +24,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -254,7 +255,7 @@ public class AdvertListView extends VerticalLayout implements View {
             lblTitle.setValue(adv.getTitle());
             lblTitle.setWidth(titleLabelWidth);
         }
-        if (adv.getPrice() != 0) {
+        if (adv.getPrice() != null) {
             lblPrice.setValue(Global.CURRENCY.format(adv.getPrice()));
         }
         if (adv.getMainCategoryId() != null) {
@@ -471,7 +472,7 @@ public class AdvertListView extends VerticalLayout implements View {
         sortTypePriceDesc = bundle.getString("MostExpensive");
     }
 
-    private void setController(){
+    private void setController() {
         controller.setAdvertisementFacade(advertisementFacade);
         controller.setAdvertstateFacade(advertstateFacade);
         controller.setAdverttypeFacade(adverttypeFacade);
@@ -555,5 +556,5 @@ public class AdvertListView extends VerticalLayout implements View {
 
     public AdvertListController getController() {
         return controller;
-    }   
+    }
 }

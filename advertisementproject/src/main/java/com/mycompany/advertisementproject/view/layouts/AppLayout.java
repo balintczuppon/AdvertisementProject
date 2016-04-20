@@ -23,11 +23,14 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.JavaScript;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AppLayout extends VerticalLayout implements ViewDisplay {
 
@@ -154,7 +157,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         btnLogout.setCaption(bundle.getString("Logout"));
         btnAdminAccount.setCaption(bundle.getString("AdminAccount"));
         checkViews();
-        JavaScript.getCurrent().execute("window.location.reload();");
+        reloadWindow();
     }
 
     private void checkViews() {
@@ -360,5 +363,9 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
 
     @Override
     public void showView(View view) {
+    }
+
+    private void reloadWindow() {
+        JavaScript.getCurrent().execute("window.location.reload();");
     }
 }

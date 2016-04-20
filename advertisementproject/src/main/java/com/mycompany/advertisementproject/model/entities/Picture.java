@@ -6,6 +6,7 @@
 package com.mycompany.advertisementproject.model.entities;
 
 import java.io.Serializable;
+import java.util.UUID;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -33,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Picture.findById", query = "SELECT p FROM Picture p WHERE p.id = :id"),
     @NamedQuery(name = "Picture.findByAccessPath", query = "SELECT p FROM Picture p WHERE p.accessPath = :accessPath")})
 public class Picture implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -101,5 +103,5 @@ public class Picture implements Serializable {
     public String toString() {
         return "com.mycompany.advertisementproject.Enums.Picture[ id=" + id + " ]";
     }
-    
+
 }

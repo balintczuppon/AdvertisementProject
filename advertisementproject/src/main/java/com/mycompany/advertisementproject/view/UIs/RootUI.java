@@ -2,6 +2,7 @@ package com.mycompany.advertisementproject.view.UIs;
 
 import static com.mycompany.advertisementproject.enumz.Views.*;
 import com.mycompany.advertisementproject.view.layouts.AppLayout;
+import com.mycompany.advertisementproject.view.vaadinviews.ErrorView;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
@@ -32,10 +33,11 @@ public class RootUI extends UI {
 
         navigator = new Navigator(this, mainLayout);
         navigator.addProvider(viewProvider);
+        navigator.setErrorView(new ErrorView());
 
         setContent(new VerticalLayout(appLayout, mainLayout));
         
-        navigator.navigateTo(START.toString());
+//        navigator.navigateTo(START.toString());
     }
 
     public static RootUI getCurrent() {

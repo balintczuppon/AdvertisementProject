@@ -6,18 +6,18 @@ import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
 import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
 import com.mycompany.advertisementproject.model.facades.CityFacade;
 import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
-import com.mycompany.advertisementproject.model.facades.PictureFacade;
 import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
 import static com.mycompany.advertisementproject.enumz.Views.USERPAGE;
 import com.mycompany.advertisementproject.control.AdvertRegController;
-import com.mycompany.advertisementproject.control.SelectedAdvertController;
+import static com.mycompany.advertisementproject.enumz.SessionAttributes.ADVERTTOMODIFY;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.data.Property;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import java.io.File;
@@ -60,7 +60,6 @@ public class AdvertRegView extends VerticalLayout implements View {
     private Panel picturePanel;
 
     private Button btnRegister;
-    private Button removeBtn;
 
     private Label lblAdvertDetails;
     private Label labelPictureUpload;
@@ -73,10 +72,6 @@ public class AdvertRegView extends VerticalLayout implements View {
     private AdvertRegController controller;
 
     private FormLayout regFormLayout;
-
-    private HorizontalLayout innerPictureLayout;
-
-    private Embedded image;
 
     @Inject
     private MaincategoryFacade maincategoryFacade;
@@ -95,19 +90,19 @@ public class AdvertRegView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        getUI().focus();
         controller.checkSessionAttribute();
+        getUI().focus();
     }
 
     @PostConstruct
     public void initComponent() {
         if (availability) {
-            bundle = AppBundle.currentBundle();
             build();
         }
-    }
-
+    } 
+    
     public void build() {
+        bundle = AppBundle.currentBundle();
         defaultSettings();
         addPictureUpload();
         addForm();
@@ -189,33 +184,45 @@ public class AdvertRegView extends VerticalLayout implements View {
     }
 
     public void showImage(File file) {
-        image = new Embedded();
-        image.setHeight(imageHeight);
-        image.setWidth(imageWidth);
-        image.setSource(new FileResource(file));
-
-        innerPictureLayout = new HorizontalLayout();
-        innerPictureLayout.setSpacing(true);
-        innerPictureLayout.addComponent(image);
-
-        removeBtn = new Button(removeButtonText);
-        addRemoveButtonToPicture(file, image);
+        Embedded image = imageToShow(file);
+        HorizontalLayout innerPictureLayout = innerPicture(file);
+        Button removeBtn = new Button(removeButtonText);
         innerPictureLayout.addComponent(removeBtn);
-        innerPictureLayout.setComponentAlignment(removeBtn, Alignment.MIDDLE_LEFT);
-
+        addRemoveButtonToPicture(file, removeBtn, innerPictureLayout, image);
         pictureLayout.addComponent(innerPictureLayout);
     }
 
-    private void addRemoveButtonToPicture(final File file, final Embedded image) {
-        removeBtn.addClickListener(new Button.ClickListener() {
+    private void addRemoveButtonToPicture(
+            final File file,
+            final Button button,
+            final HorizontalLayout layout,
+            final Embedded image) {
+
+        button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
+                layout.removeComponent(image);
+                layout.removeComponent(button);
+                pictureLayout.removeComponent(layout);
                 controller.removeFile(file);
-                innerPictureLayout.removeComponent(image);
-                innerPictureLayout.removeComponent(removeBtn);
-                pictureLayout.removeComponent(innerPictureLayout);
             }
         });
+    }
+
+    private Embedded imageToShow(File file) {
+        Embedded imageToShow = new Embedded();
+        imageToShow.setHeight(imageHeight);
+        imageToShow.setWidth(imageWidth);
+        imageToShow.setSource(new FileResource(file));
+        return imageToShow;
+    }
+
+    private HorizontalLayout innerPicture(File file) {
+        HorizontalLayout innerPictureLayout = new HorizontalLayout();
+        innerPictureLayout.setSpacing(true);
+        innerPictureLayout.addComponent(imageToShow(file));
+        innerPictureLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        return innerPictureLayout;
     }
 
     private void addPictureUpload() {
@@ -259,12 +266,13 @@ public class AdvertRegView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.modifyAdvert();
+                    Notification.show(successModification);
                 } catch (Exception e) {
                     Notification.show(failedModification);
                     Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, e);
                 }
-                Notification.show(successModification);
                 getUI().getNavigator().navigateTo(USERPAGE.toString());
+                clearSessionAtribute();
             }
         }
         );
@@ -276,11 +284,11 @@ public class AdvertRegView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.registerAdvert();
+                    Notification.show(successUpload);
                 } catch (Exception e) {
                     Notification.show(failedUpload);
                     Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, e);
                 }
-                Notification.show(successUpload);
                 getUI().getNavigator().navigateTo(USERPAGE.toString());
             }
         });
@@ -342,6 +350,7 @@ public class AdvertRegView extends VerticalLayout implements View {
         failedModification = bundle.getString("operationSuccess");
         successModification = bundle.getString("operationFailed");
     }
+
     private void setController() {
         controller.setAdvertisementFacade(advertisementFacade);
         controller.setAdvertstateFacade(advertstateFacade);
@@ -351,7 +360,16 @@ public class AdvertRegView extends VerticalLayout implements View {
         controller.setMaincategoryFacade(maincategoryFacade);
         controller.setSubcategoryFacade(subcategoryFacade);
     }
-    
+
+    private void clearSessionAtribute() {
+//        try {
+//            VaadinSession.getCurrent().getLockInstance().lock();
+//            VaadinSession.getCurrent().setAttribute(ADVERTTOMODIFY.toString(), null);
+//        } finally {
+//            VaadinSession.getCurrent().getLockInstance().unlock();
+//        
+    }
+
     public ComboBox getCmbbxCategory() {
         return cmbbxCategory;
     }

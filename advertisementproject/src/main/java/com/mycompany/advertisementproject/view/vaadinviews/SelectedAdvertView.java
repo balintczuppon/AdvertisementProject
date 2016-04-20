@@ -183,9 +183,11 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     }
 
     private void addPrice() {
-        lblPrice = new Label(lblPriceCaption + advertisement.getPrice().toString() + Global.CURRENCY);
-        lblPrice.setWidthUndefined();
-        lblPrice.setStyleName(TITLE.toString());
+        if (advertisement.getPrice() != null) {
+            lblPrice = new Label(lblPriceCaption + advertisement.getPrice().toString() + Global.CURRENCY);
+            lblPrice.setWidthUndefined();
+            lblPrice.setStyleName(TITLE.toString());
+        }
     }
 
     private void addDescription() {
@@ -295,7 +297,9 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
             vlContent.addComponent(mainImage);
         }
         vlContent.addComponent(hlPictures);
-        vlContent.addComponent(lblPrice);
+        if (lblPrice != null) {
+            vlContent.addComponent(lblPrice);
+        }
         separeate();
         vlContent.addComponent(lblDescription);
         separeate();

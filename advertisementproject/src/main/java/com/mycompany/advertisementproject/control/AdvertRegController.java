@@ -2,6 +2,7 @@ package com.mycompany.advertisementproject.control;
 
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.ADVERTTOMODIFY;
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTUSER;
+import static com.mycompany.advertisementproject.enumz.Views.ERRORVIEW;
 import com.mycompany.advertisementproject.toolz.MyMultiFileUpload;
 import com.mycompany.advertisementproject.view.vaadinviews.AdvertRegView;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
@@ -21,7 +22,9 @@ import com.mycompany.advertisementproject.model.facades.CountryFacade;
 import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
 import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
 import com.mycompany.advertisementproject.toolz.Global;
+import com.mycompany.advertisementproject.view.vaadinviews.ErrorView;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.Component;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +41,12 @@ public class AdvertRegController {
     private AdvertstateFacade advertstateFacade;
     private CountryFacade countryFacade;
     private CityFacade cityFacade;
-    
-    private static final String TEMP_FILE_DIR = new File(System.getProperty("java.io.tmpdir")).getPath();
 
+    private static final String TEMP_FILE_DIR = "D:\\TempServer\\";
     private final AdvertRegView view;
 
     private final List<File> files = new ArrayList<>();
+    private final List<File> tempPictures = new ArrayList<>();
     private final List<Picture> pictureCollection = new ArrayList<>();
 
     private MyMultiFileUpload mfu;
@@ -81,7 +84,9 @@ public class AdvertRegController {
         advertisement.setCountryId(selectedCountry());
         advertisement.setMainCategoryId(selectedMainCategory());
         advertisement.setSubCategoryId(selectedSubCategory());
-        advertisement.setPrice(Integer.valueOf(view.getTxtFldPrice().getValue()));
+        if (!view.getTxtFldPrice().isEmpty()) {
+            advertisement.setPrice(Integer.valueOf(view.getTxtFldPrice().getValue()));
+        }
         advertisement.setRegistrationDate(Global.currentDate());
         advertisement.setTitle(view.getTxtFieldTitle().getValue());
 
@@ -104,7 +109,9 @@ public class AdvertRegController {
         advert_to_mod.setCountryId(selectedCountry());
         advert_to_mod.setMainCategoryId(selectedMainCategory());
         advert_to_mod.setSubCategoryId(selectedSubCategory());
-        advert_to_mod.setPrice(Integer.valueOf(view.getTxtFldPrice().getValue()));
+        if (!view.getTxtFldPrice().isEmpty()) {
+            advert_to_mod.setPrice(Integer.valueOf(view.getTxtFldPrice().getValue()));
+        }
         advert_to_mod.setRegistrationDate(Global.currentDate());
         advert_to_mod.setTitle(view.getTxtFieldTitle().getValue());
 
@@ -114,6 +121,7 @@ public class AdvertRegController {
             picture.setAdvertisementId(advert_to_mod);
             pictureCollection.add(picture);
         }
+        deleteUnUsedPictures();
 
         advert_to_mod.setPictureCollection(pictureCollection);
         advertisementFacade.edit(advert_to_mod);
@@ -122,7 +130,6 @@ public class AdvertRegController {
     public void linkDataToFields(Advertisement ad) {
         view.getTxtFieldTitle().setValue(ad.getTitle());
         view.getTxtAreaDescription().setValue(ad.getDescription());
-        view.getTxtFldPrice().setValue(String.valueOf(ad.getPrice()));
         view.getCmbbxCategory().select(ad.getMainCategoryId());
         fillCmbBxSubCategory(ad.getMainCategoryId());
         view.getCmbbxSubCategory().select(ad.getSubCategoryId());
@@ -131,6 +138,9 @@ public class AdvertRegController {
         view.getCmbbxCountry().select(ad.getCountryId());
         fillCmbBxCity(ad.getCountryId());
         view.getCmbbxCity().select(ad.getCityId());
+        if (ad.getPrice() != null) {
+            view.getTxtFldPrice().setValue(String.valueOf(ad.getPrice()));
+        }
         for (Picture p : ad.getPictureCollection()) {
             File file = new File(p.getAccessPath());
             files.add(file);
@@ -213,16 +223,20 @@ public class AdvertRegController {
     }
 
     public void removeFile(File file) {
-        file.delete();
         files.remove(file);
+        file.delete();
     }
 
     public void setUpLoadField() {
         mfu = new MyMultiFileUpload() {
+
             @Override
-            protected void handleFile(final File file, String fileName, String mimeType, long length) {
-                files.add(file);
-                view.showImage(file);
+            protected void handleFile(File file, String fileName, String mimeType, long length) {
+                File properFile = new File(TEMP_FILE_DIR + "/" + Global.generatedId() + file.getName());
+                file.renameTo(properFile);
+                files.add(properFile);
+                tempPictures.add(properFile);
+                view.showImage(properFile);
             }
 
             @Override
@@ -267,5 +281,13 @@ public class AdvertRegController {
     public void setCityFacade(CityFacade cityFacade) {
         this.cityFacade = cityFacade;
     }
-    
+
+    private void deleteUnUsedPictures() {
+        for (File f : tempPictures) {
+            if (!files.contains(f)) {
+                f.delete();
+            }
+        }
+    }
+
 }
