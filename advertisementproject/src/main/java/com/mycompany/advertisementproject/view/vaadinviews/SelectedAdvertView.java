@@ -7,6 +7,7 @@ import com.mycompany.advertisementproject.model.entities.Advertisement;
 import com.mycompany.advertisementproject.model.facades.LetterFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.mycompany.advertisementproject.toolz.Global;
+import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.navigator.View;
@@ -33,8 +34,6 @@ import javax.inject.Inject;
 
 @CDIView("SELECTED")
 public class SelectedAdvertView extends HorizontalLayout implements View {
-
-    private ResourceBundle bundle;
 
     private String advertPanelWidth;
     private String lblAdvertiserCaption;
@@ -102,10 +101,11 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
 
     @Inject
     private LetterFacade letterFacade;
+    private I18Helper i18Helper;
 
     @PostConstruct
     public void initComponent() {
-        bundle = AppBundle.currentBundle();
+        i18Helper = new I18Helper(AppBundle.currentBundle());
         buildView();
     }
 
@@ -184,7 +184,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
 
     private void addPrice() {
         if (advertisement.getPrice() != null) {
-            lblPrice = new Label(lblPriceCaption + advertisement.getPrice().toString() + Global.CURRENCY);
+            lblPrice = new Label(lblPriceCaption + ": " + Global.CURRENCY.format(advertisement.getPrice()));
             lblPrice.setWidthUndefined();
             lblPrice.setStyleName(TITLE.toString());
         }
@@ -318,37 +318,37 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     }
 
     public void updateStrings() {
-        advertPanelWidth = bundle.getString("Selected.AdvertPanelWidth");
-        lblAdvertiserCaption = bundle.getString("Advertiser");
-        lblAdvertiserPhoneCaption = bundle.getString("Attainability");
-        lblRegDateCaption = bundle.getString("UploadDate");
-        lblPriceCaption = bundle.getString("Price");
-        lblDescriptionWidth = bundle.getString("Selected.DescriptionLabelWidth");
-        lblConnectionCaption = bundle.getString("OtherDetails");
-        hlFieldsWidth = bundle.getString("Selected.FieldsLayoutWidth");
-        txtFldNameCaption = bundle.getString("TfName");
-        txtFldEmailCaption = bundle.getString("TfEmail");
-        txtFldPhoneCaption = bundle.getString("TfPhone");
-        txtAreaMessageWidth = bundle.getString("Selected.TaMessageWidth");
-        txtAreaMessagePrompt = bundle.getString("TaMessage");
-        btnSendMessageCaption = bundle.getString("Send");
-        googlemaplocal = bundle.getString("GoogleMapLocal");
-        googlemapzoom = bundle.getString("GoogleMapZoom");
-        commitMessage = bundle.getString("CommitMessage");
-        letterSubject = bundle.getString("Selected.LetterSubject");
-        imageWidth = bundle.getString("Selected.imageWidth");
-        imageHeight = bundle.getString("Selected.imageHeight");
-        mainImageHeight = bundle.getString("Selected.mainImageHeight");
-        mainImageWidth = bundle.getString("Selected.mainImageWidth");
-        validatorMessage = bundle.getString("Selected.vaildatorMessage");
-        pageLink = bundle.getString("Selected.Pagelink");
-        viewName = bundle.getString("Selected.ViewName");
-        linkText = bundle.getString("Selected.LinkText");
-        greetingText = bundle.getString("Selected.GreetingText");
-        messageText1 = bundle.getString("Selected.MessageText1");
-        messageText2 = bundle.getString("Selected.MessageText2");
-        goodbyeText = bundle.getString("Selected.GoodbyeText");
-        senderName = bundle.getString("Selected.SenderName");
+        advertPanelWidth = i18Helper.getMessage("Selected.AdvertPanelWidth");
+        lblAdvertiserCaption = i18Helper.getMessage("Advertiser");
+        lblAdvertiserPhoneCaption = i18Helper.getMessage("Attainability");
+        lblRegDateCaption = i18Helper.getMessage("UploadDate");
+        lblPriceCaption = i18Helper.getMessage("Price");
+        lblDescriptionWidth = i18Helper.getMessage("Selected.DescriptionLabelWidth");
+        lblConnectionCaption = i18Helper.getMessage("OtherDetails");
+        hlFieldsWidth = i18Helper.getMessage("Selected.FieldsLayoutWidth");
+        txtFldNameCaption = i18Helper.getMessage("TfName");
+        txtFldEmailCaption = i18Helper.getMessage("TfEmail");
+        txtFldPhoneCaption = i18Helper.getMessage("TfPhone");
+        txtAreaMessageWidth = i18Helper.getMessage("Selected.TaMessageWidth");
+        txtAreaMessagePrompt = i18Helper.getMessage("TaMessage");
+        btnSendMessageCaption = i18Helper.getMessage("Send");
+        googlemaplocal = i18Helper.getMessage("GoogleMapLocal");
+        googlemapzoom = i18Helper.getMessage("GoogleMapZoom");
+        commitMessage = i18Helper.getMessage("CommitMessage");
+        letterSubject = i18Helper.getMessage("Selected.LetterSubject");
+        imageWidth = i18Helper.getMessage("Selected.imageWidth");
+        imageHeight = i18Helper.getMessage("Selected.imageHeight");
+        mainImageHeight = i18Helper.getMessage("Selected.mainImageHeight");
+        mainImageWidth = i18Helper.getMessage("Selected.mainImageWidth");
+        validatorMessage = i18Helper.getMessage("Selected.vaildatorMessage");
+        pageLink = i18Helper.getMessage("Selected.Pagelink");
+        viewName = i18Helper.getMessage("Selected.ViewName");
+        linkText = i18Helper.getMessage("Selected.LinkText");
+        greetingText = i18Helper.getMessage("Selected.GreetingText");
+        messageText1 = i18Helper.getMessage("Selected.MessageText1");
+        messageText2 = i18Helper.getMessage("Selected.MessageText2");
+        goodbyeText = i18Helper.getMessage("Selected.GoodbyeText");
+        senderName = i18Helper.getMessage("Selected.SenderName");
     }
 
     public TextField getTxtFldName() {

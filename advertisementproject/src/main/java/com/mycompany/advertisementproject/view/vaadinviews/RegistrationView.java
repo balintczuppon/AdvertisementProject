@@ -6,6 +6,7 @@ import com.mycompany.advertisementproject.enumz.StyleNames;
 import com.mycompany.advertisementproject.model.facades.AdvertiserFacade;
 import com.mycompany.advertisementproject.model.facades.PostboxFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
+import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -26,8 +27,6 @@ import javax.inject.Inject;
 
 @CDIView("REGISTRATION")
 public class RegistrationView extends VerticalLayout implements View {
-
-    private ResourceBundle bundle;
 
     private TextField tfEmail;
     private TextField tfName;
@@ -51,6 +50,7 @@ public class RegistrationView extends VerticalLayout implements View {
     private AdvertiserFacade advertiserFacade;
     @Inject
     private PostboxFacade postboxFacade;
+    private I18Helper i18Helper;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -59,7 +59,7 @@ public class RegistrationView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initComponent() {
-        bundle = AppBundle.currentBundle();
+        i18Helper = new I18Helper(AppBundle.currentBundle());
         defaultSettings();
         addTitle();
         addForm();
@@ -130,15 +130,15 @@ public class RegistrationView extends VerticalLayout implements View {
     }
 
     public void updateStrings() {
-        lblTitle.setCaption(bundle.getString("Registration"));
-        tfEmail.setCaption(bundle.getString("TfEmail"));
-        tfName.setCaption(bundle.getString("TfName"));
-        tfPhoneNumber.setCaption(bundle.getString("TfPhone"));
-        pfPassWord1.setCaption(bundle.getString("PfPassword"));
-        pfPassWord2.setCaption(bundle.getString("PfPassword"));
-        chkBxNewsLetter.setCaption(bundle.getString("CbNewsLetter"));
-        chkBxTerms.setCaption(bundle.getString("CbTerms"));
-        btnRegistration.setCaption(bundle.getString("Registration"));
+        lblTitle.setCaption(i18Helper.getMessage("Registration"));
+        tfEmail.setCaption(i18Helper.getMessage("TfEmail"));
+        tfName.setCaption(i18Helper.getMessage("TfName"));
+        tfPhoneNumber.setCaption(i18Helper.getMessage("TfPhone"));
+        pfPassWord1.setCaption(i18Helper.getMessage("PfPassword"));
+        pfPassWord2.setCaption(i18Helper.getMessage("PfPassword"));
+        chkBxNewsLetter.setCaption(i18Helper.getMessage("CbNewsLetter"));
+        chkBxTerms.setCaption(i18Helper.getMessage("CbTerms"));
+        btnRegistration.setCaption(i18Helper.getMessage("Registration"));
     }
 
     public void goForward() {
@@ -146,23 +146,23 @@ public class RegistrationView extends VerticalLayout implements View {
     }
 
     public String emailUsedError() {
-        return bundle.getString("EmailUsedError");
+        return i18Helper.getMessage("EmailUsedError");
     }
 
     public String emptyFieldError() {
-        return bundle.getString("EmptyFieldError");
+        return i18Helper.getMessage("EmptyFieldError");
     }
 
     public String passwordError() {
-        return bundle.getString("PasswordMissMatchError");
+        return i18Helper.getMessage("PasswordMissMatchError");
     }
 
     public String conditionError() {
-        return bundle.getString("ConditionError");
+        return i18Helper.getMessage("ConditionError");
     }
 
     public String emailValidatorMessage() {
-        return bundle.getString("ValidatorMessage");
+        return i18Helper.getMessage("ValidatorMessage");
     }
 
     public CheckBox getChkBxTerms() {

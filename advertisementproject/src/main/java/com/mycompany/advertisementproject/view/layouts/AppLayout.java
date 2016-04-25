@@ -1,12 +1,12 @@
 package com.mycompany.advertisementproject.view.layouts;
 
-import static com.mycompany.advertisementproject.enumz.SessionAttributes.ADVERTTOMODIFY;
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTLOCALE;
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTUSER;
 import static com.mycompany.advertisementproject.enumz.StyleNames.*;
 import static com.mycompany.advertisementproject.enumz.Views.*;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.mycompany.advertisementproject.toolz.Global;
+import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.mycompany.advertisementproject.view.UIs.RootUI;
 import com.mycompany.advertisementproject.view.vaadinviews.AccountView;
 import com.mycompany.advertisementproject.view.vaadinviews.AdminView;
@@ -17,21 +17,17 @@ import com.mycompany.advertisementproject.view.vaadinviews.LogInView;
 import com.mycompany.advertisementproject.view.vaadinviews.RegistrationView;
 import com.mycompany.advertisementproject.view.vaadinviews.SelectedAdvertView;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.JavaScript;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class AppLayout extends VerticalLayout implements ViewDisplay {
 
@@ -45,7 +41,9 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
     private LetterView letterView;
     private SelectedAdvertView selectedView;
 
-    private ResourceBundle bundle;
+//    private ResourceBundle bundle;
+    
+    private I18Helper i18Helper;
 
     public static SimpleDateFormat formattedDate = Global.DATEFORMAT;
 
@@ -65,7 +63,8 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
     private String nodePath;
 
     public AppLayout() {
-        bundle = AppBundle.currentBundle();
+//        bundle = AppBundle.currentBundle();
+        i18Helper = new I18Helper(AppBundle.currentBundle());
         buildHeader();
         addListeners();
     }
@@ -89,7 +88,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
 
         HorizontalLayout headersplitter = new HorizontalLayout();
         headersplitter.addComponents(navigation, languages);
-        headersplitter.setWidth(bundle.getString("size_100"));
+        headersplitter.setWidth(i18Helper.getMessage("size_100"));
         headersplitter.setComponentAlignment(navigation, Alignment.TOP_RIGHT);
         headersplitter.setComponentAlignment(languages, Alignment.TOP_RIGHT);
 
@@ -103,7 +102,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
     }
 
     private void addHungarianButton() {
-        btnHun = new Button(bundle.getString("locale_hu"));
+        btnHun = new Button(i18Helper.getMessage("locale_hu"));
         btnHun.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -114,14 +113,14 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
                 } finally {
                     VaadinSession.getCurrent().getLockInstance().unlock();
                 }
-                bundle = AppBundle.currentBundle();
+                i18Helper = new I18Helper(AppBundle.currentBundle());
                 updateStrings();
             }
         });
     }
 
     private void addEnglishButton() {
-        btnEng = new Button(bundle.getString("locale_en"));
+        btnEng = new Button(i18Helper.getMessage("locale_en"));
         btnEng.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -132,31 +131,31 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
                 } finally {
                     VaadinSession.getCurrent().getLockInstance().unlock();
                 }
-                bundle = AppBundle.currentBundle();
+                i18Helper = new I18Helper(AppBundle.currentBundle());
                 updateStrings();
             }
         });
     }
 
     private void addNavButtons() {
-        btnAdverts = navButton(bundle.getString("Adverts"));
-        btnLogin = navButton(bundle.getString("Login"));
-        btnRegistration = navButton(bundle.getString("Registration"));
-        btnAdvertReg = navButton(bundle.getString("AdvertRegistration"));
-        btnMyAccout = navButton(bundle.getString("Account"));
-        btnLogout = navButton(bundle.getString("Logout"));
-        btnAdminAccount = navButton(bundle.getString("AdminAccount"));
+        btnAdverts = navButton(i18Helper.getMessage("Adverts"));
+        btnLogin = navButton(i18Helper.getMessage("Login"));
+        btnRegistration = navButton(i18Helper.getMessage("Registration"));
+        btnAdvertReg = navButton(i18Helper.getMessage("AdvertRegistration"));
+        btnMyAccout = navButton(i18Helper.getMessage("Account"));
+        btnLogout = navButton(i18Helper.getMessage("Logout"));
+        btnAdminAccount = navButton(i18Helper.getMessage("AdminAccount"));
         hidebuttons();
     }
 
     private void updateStrings() {
-        btnAdverts.setCaption(bundle.getString("Adverts"));
-        btnLogin.setCaption(bundle.getString("Login"));
-        btnRegistration.setCaption(bundle.getString("Registration"));
-        btnAdvertReg.setCaption(bundle.getString("AdvertRegistration"));
-        btnMyAccout.setCaption(bundle.getString("Account"));
-        btnLogout.setCaption(bundle.getString("Logout"));
-        btnAdminAccount.setCaption(bundle.getString("AdminAccount"));
+        btnAdverts.setCaption(i18Helper.getMessage("Adverts"));
+        btnLogin.setCaption(i18Helper.getMessage("Login"));
+        btnRegistration.setCaption(i18Helper.getMessage("Registration"));
+        btnAdvertReg.setCaption(i18Helper.getMessage("AdvertRegistration"));
+        btnMyAccout.setCaption(i18Helper.getMessage("Account"));
+        btnLogout.setCaption(i18Helper.getMessage("Logout"));
+        btnAdminAccount.setCaption(i18Helper.getMessage("AdminAccount"));
         checkViews();
         reloadWindow();
     }

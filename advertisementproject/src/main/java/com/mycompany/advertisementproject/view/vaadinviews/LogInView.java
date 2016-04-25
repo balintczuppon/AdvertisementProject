@@ -4,6 +4,7 @@ import com.mycompany.advertisementproject.enumz.StyleNames;
 import com.mycompany.advertisementproject.control.LoginController;
 import com.mycompany.advertisementproject.model.facades.AdvertiserFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
+import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -23,8 +24,6 @@ import javax.inject.Inject;
 @CDIView("LOGIN")
 public class LogInView extends VerticalLayout implements View {
 
-    private ResourceBundle bundle;
-
     private PasswordField pfPassWord;
     private TextField tfEmail;
     private Button btnLogin;
@@ -36,6 +35,8 @@ public class LogInView extends VerticalLayout implements View {
 
     @Inject
     private AdvertiserFacade advertiserFacade;
+    
+    private I18Helper i18Helper;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -44,7 +45,7 @@ public class LogInView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initContent() {
-        bundle = AppBundle.currentBundle();
+        i18Helper = new I18Helper(AppBundle.currentBundle());
         defaultSettings();
         addTitle();
         addForm();
@@ -105,13 +106,13 @@ public class LogInView extends VerticalLayout implements View {
     }
 
     public String errorText() {
-        return bundle.getString("LoginError");
+        return i18Helper.getMessage("LoginError");
     }
 
     public void updateStrings() {
-        lblTitle.setValue(bundle.getString("Login"));
-        tfEmail.setCaption(bundle.getString("TfEmail"));
-        pfPassWord.setCaption(bundle.getString("PfPassword"));
-        btnLogin.setCaption(bundle.getString("Login"));
+        lblTitle.setValue(i18Helper.getMessage("Login"));
+        tfEmail.setCaption(i18Helper.getMessage("TfEmail"));
+        pfPassWord.setCaption(i18Helper.getMessage("PfPassword"));
+        btnLogin.setCaption(i18Helper.getMessage("Login"));
     }
 }

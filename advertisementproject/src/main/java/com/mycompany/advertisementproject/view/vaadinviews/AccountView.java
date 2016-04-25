@@ -8,6 +8,7 @@ import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
 import com.mycompany.advertisementproject.model.facades.LetterFacade;
 import com.mycompany.advertisementproject.model.facades.PictureFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
+import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
@@ -26,8 +27,6 @@ import javax.inject.Inject;
 
 @CDIView("USERPAGE")
 public class AccountView extends VerticalLayout implements View {
-
-    private ResourceBundle bundle;
 
     private static boolean availability;
 
@@ -81,6 +80,7 @@ public class AccountView extends VerticalLayout implements View {
     AdvertisementFacade advertisementFacade;
     @Inject
     LetterFacade letterFacade;
+    private I18Helper i18Helper;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -90,7 +90,7 @@ public class AccountView extends VerticalLayout implements View {
     @PostConstruct
     public void initComponent() {
         if (availability) {
-            bundle = AppBundle.currentBundle();
+            i18Helper = new I18Helper(AppBundle.currentBundle());
             controller = new AccountController(this);
             build();
         }
@@ -283,27 +283,27 @@ public class AccountView extends VerticalLayout implements View {
     }
 
     public void updateStrings() {
-        advertTabText = bundle.getString("Adverts");
-        postboxTabText = bundle.getString("PostBox");
-        advertPanelWidth = bundle.getString("Account.AdvertPanelWidth");
-        postboxPanelWidth = bundle.getString("Account.PostBoxPanelWidth");
-        tableAdvertWidth = bundle.getString("Account.AdvertTableWidth");
-        advertTblTitle = bundle.getString("Title");
-        advertTblPrice = bundle.getString("Price");
-        advertTblDate = bundle.getString("Date");
-        advertTblDelete = bundle.getString("Delete");
-        advertTblModify = bundle.getString("Modify");
-        delButtonText = bundle.getString("Delete");
-        modButtonText = bundle.getString("Modify");
-        letterTabSheetWidth = bundle.getString("Account.LetterTabSheetWidth");
-        incoming = bundle.getString("Incoming");
-        outgoing = bundle.getString("Outgoing");
-        tableLetterWidth = bundle.getString("Account.IncomingTableWidth");
-        tableLetterWidth = bundle.getString("Account.OutGoingTableWidth");
-        letterTblDate = bundle.getString("Date");
-        letterTblMessage = bundle.getString("Message");
-        letterTblSender = bundle.getString("Sender");
-        letterTblSubject = bundle.getString("Subject");
+        advertTabText = i18Helper.getMessage("Adverts");
+        postboxTabText = i18Helper.getMessage("PostBox");
+        advertPanelWidth = i18Helper.getMessage("Account.AdvertPanelWidth");
+        postboxPanelWidth = i18Helper.getMessage("Account.PostBoxPanelWidth");
+        tableAdvertWidth = i18Helper.getMessage("Account.AdvertTableWidth");
+        advertTblTitle = i18Helper.getMessage("Title");
+        advertTblPrice = i18Helper.getMessage("Price");
+        advertTblDate = i18Helper.getMessage("Date");
+        advertTblDelete = i18Helper.getMessage("Delete");
+        advertTblModify = i18Helper.getMessage("Modify");
+        delButtonText = i18Helper.getMessage("Delete");
+        modButtonText = i18Helper.getMessage("Modify");
+        letterTabSheetWidth = i18Helper.getMessage("Account.LetterTabSheetWidth");
+        incoming = i18Helper.getMessage("Incoming");
+        outgoing = i18Helper.getMessage("Outgoing");
+        tableLetterWidth = i18Helper.getMessage("Account.IncomingTableWidth");
+        tableLetterWidth = i18Helper.getMessage("Account.OutGoingTableWidth");
+        letterTblDate = i18Helper.getMessage("Date");
+        letterTblMessage = i18Helper.getMessage("Message");
+        letterTblSender = i18Helper.getMessage("Sender");
+        letterTblSubject = i18Helper.getMessage("Subject");
     }
 
     private void setController() {

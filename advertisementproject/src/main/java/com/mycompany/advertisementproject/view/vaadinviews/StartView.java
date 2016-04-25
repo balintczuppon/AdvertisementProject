@@ -3,6 +3,7 @@ package com.mycompany.advertisementproject.view.vaadinviews;
 import com.mycompany.advertisementproject.enumz.Views;
 import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
+import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.mycompany.advertisementproject.view.UIs.RootUI;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -27,10 +28,11 @@ public class StartView extends VerticalLayout implements View {
     private Button btnForward;
     private TextField txtFldSearch;
     private AdvertListView advListView;
+    private I18Helper i18Helper;
 
     @PostConstruct
     public void initComponent() {
-        bundle = AppBundle.currentBundle();
+        i18Helper = new I18Helper(AppBundle.currentBundle());
         buildView();
         addListeners();
     }
@@ -45,8 +47,8 @@ public class StartView extends VerticalLayout implements View {
         hl.setSpacing(true);
         hl.setMargin(true);
         txtFldSearch = new TextField();
-        btnSearch = new Button(bundle.getString("Search"));
-        btnForward = new Button(bundle.getString("Start.Forward"));
+        btnSearch = new Button(i18Helper.getMessage("Search"));
+        btnForward = new Button(i18Helper.getMessage("Start.Forward"));
         hl.addComponent(txtFldSearch);
         hl.addComponent(btnSearch);
         hl.addComponent(btnForward);

@@ -12,6 +12,7 @@ import com.mycompany.advertisementproject.model.entities.Advertisement;
 import com.mycompany.advertisementproject.control.AdvertListController;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.mycompany.advertisementproject.toolz.Global;
+import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.data.Property;
 import com.vaadin.event.LayoutEvents;
@@ -37,7 +38,7 @@ import javax.inject.Inject;
 @CDIView("ADVERTS")
 public class AdvertListView extends VerticalLayout implements View {
 
-    private ResourceBundle bundle;
+    private I18Helper i18Helper;
 
     private String searchTextFieldWidth;
     private String SearchButtonValue;
@@ -128,7 +129,7 @@ public class AdvertListView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initComponent() {
-        bundle = AppBundle.currentBundle();
+        i18Helper = new I18Helper(AppBundle.currentBundle());
         build();
     }
 
@@ -348,14 +349,14 @@ public class AdvertListView extends VerticalLayout implements View {
         final VerticalLayout itemsArea = new VerticalLayout();
         controller.pageAdverts(advertList, itemsArea);
 
-        if (advertPanel == null) {
+//        if (advertPanel == null) {
             advertPanel = new Panel();
             advertPanel.setWidth(advertPanelWidth);
             advertPanel.setHeightUndefined();
             advertPanel.setContent(advertList);
             contentLayout.addComponent(advertPanel);
             addComponent(contentLayout);
-        }
+//        }
     }
 
     private void addListeners() throws Exception {
@@ -446,30 +447,30 @@ public class AdvertListView extends VerticalLayout implements View {
     }
 
     public void updateStrings() {
-        searchTextFieldWidth = bundle.getString("Adverts.SearchTxtFldWidth");
-        SearchButtonValue = bundle.getString("Search");
-        searchbarPanelWidth = bundle.getString("Adverts.SearchPanelWidth");
-        titleLabelWidth = bundle.getString("Adverts.TitleLabelWidth");
-        filterLabelValue = bundle.getString("AdvancedFilter");
-        filterPanelWidth = bundle.getString("Adverts.FilterPanelWidth");
-        advertPanelWidth = bundle.getString("Adverts.AdvertPanelWidth");
-        categoryCmbbxPrompt = bundle.getString("Category");
-        subCategoryCmbbxPrompt = bundle.getString("SubCategory");
-        typeCmbbxPromprt = bundle.getString("Type");
-        stateCmbbxPrompt = bundle.getString("State");
-        cityCmbbxPrompt = bundle.getString("City");
-        countryCmbbxPrompt = bundle.getString("Country");
-        minPriceTxtFldPrompt = bundle.getString("MinPrice");
-        maxPriceTxtFldPrompt = bundle.getString("MaxPrice");
-        filterButtonCaption = bundle.getString("Filter");
-        imageWidth = bundle.getString("imgWidth");
-        imageHeight = bundle.getString("imgHeight");
-        noResult = bundle.getString("noResult");
-        sortCmbbxPrompt = bundle.getString("Equalization");
-        sortTypeDateAsc = bundle.getString("Oldest");
-        sortTypeDateDesc = bundle.getString("Newest");
-        sortTypePriceAsc = bundle.getString("Cheapest");
-        sortTypePriceDesc = bundle.getString("MostExpensive");
+        searchTextFieldWidth = i18Helper.getMessage("Adverts.SearchTxtFldWidth");
+        SearchButtonValue = i18Helper.getMessage("Search");
+        searchbarPanelWidth = i18Helper.getMessage("Adverts.SearchPanelWidth");
+        titleLabelWidth = i18Helper.getMessage("Adverts.TitleLabelWidth");
+        filterLabelValue = i18Helper.getMessage("AdvancedFilter");
+        filterPanelWidth = i18Helper.getMessage("Adverts.FilterPanelWidth");
+        advertPanelWidth = i18Helper.getMessage("Adverts.AdvertPanelWidth");
+        categoryCmbbxPrompt = i18Helper.getMessage("Category");
+        subCategoryCmbbxPrompt = i18Helper.getMessage("SubCategory");
+        typeCmbbxPromprt = i18Helper.getMessage("Type");
+        stateCmbbxPrompt = i18Helper.getMessage("State");
+        cityCmbbxPrompt = i18Helper.getMessage("City");
+        countryCmbbxPrompt = i18Helper.getMessage("Country");
+        minPriceTxtFldPrompt = i18Helper.getMessage("MinPrice");
+        maxPriceTxtFldPrompt = i18Helper.getMessage("MaxPrice");
+        filterButtonCaption = i18Helper.getMessage("Filter");
+        imageWidth = i18Helper.getMessage("imgWidth");
+        imageHeight = i18Helper.getMessage("imgHeight");
+        noResult = i18Helper.getMessage("noResult");
+        sortCmbbxPrompt = i18Helper.getMessage("Equalization");
+        sortTypeDateAsc = i18Helper.getMessage("Oldest");
+        sortTypeDateDesc = i18Helper.getMessage("Newest");
+        sortTypePriceAsc = i18Helper.getMessage("Cheapest");
+        sortTypePriceDesc = i18Helper.getMessage("MostExpensive");
     }
 
     private void setController() {

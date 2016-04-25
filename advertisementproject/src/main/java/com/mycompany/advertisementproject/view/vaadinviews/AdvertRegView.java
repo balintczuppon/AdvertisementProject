@@ -10,6 +10,7 @@ import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
 import static com.mycompany.advertisementproject.enumz.Views.USERPAGE;
 import com.mycompany.advertisementproject.control.AdvertChangeController;
 import com.mycompany.advertisementproject.toolz.AppBundle;
+import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.data.Property;
 import com.vaadin.navigator.View;
@@ -26,8 +27,6 @@ import javax.inject.Inject;
 
 @CDIView("ADVERTREG")
 public class AdvertRegView extends VerticalLayout implements View {
-
-    private ResourceBundle bundle;
 
     private static boolean availability = false;
 
@@ -83,6 +82,8 @@ public class AdvertRegView extends VerticalLayout implements View {
     private CountryFacade countryFacade;
     @Inject
     private CityFacade cityFacade;
+    
+    private I18Helper i18Helper;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -98,7 +99,7 @@ public class AdvertRegView extends VerticalLayout implements View {
 
     public void build() {
         try {
-            bundle = AppBundle.currentBundle();
+            i18Helper = new I18Helper(AppBundle.currentBundle());
             defaultSettings();
             addPictureUpload();
             addForm();
@@ -233,9 +234,9 @@ public class AdvertRegView extends VerticalLayout implements View {
     private void addPictureUpload() {
         try {
             picturePanel = new Panel();
-            
+
             controller.setUpLoadField();
-            
+
             pictureLayout = new VerticalLayout();
             pictureLayout.setSizeFull();
             pictureLayout.setSpacing(true);
@@ -243,12 +244,12 @@ public class AdvertRegView extends VerticalLayout implements View {
             labelPictureUpload = new Label();
             pictureLayout.addComponent(labelPictureUpload);
             pictureLayout.addComponent(new Label("<hr />", ContentMode.HTML));
-            
+
             pictureLayout.addComponent(controller.getMfu());
-            
+
             pictureLayout.setDefaultComponentAlignment(Alignment.TOP_CENTER);
             picturePanel.setContent(pictureLayout);
-            
+
             addComponent(picturePanel);
             setComponentAlignment(picturePanel, Alignment.TOP_CENTER);
         } catch (Exception ex) {
@@ -264,8 +265,8 @@ public class AdvertRegView extends VerticalLayout implements View {
                     controller.registerAdvert();
                     Notification.show(successUpload);
                 } catch (Exception e) {
-                    Notification.show(failedUpload);
                     Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, e);
+                    Notification.show(failedUpload);
                 }
                 getUI().getNavigator().navigateTo(USERPAGE.toString());
             }
@@ -309,32 +310,32 @@ public class AdvertRegView extends VerticalLayout implements View {
     }
 
     public void updateStrings() {
-        txtFieldTitle.setInputPrompt(bundle.getString("AdvertTitle"));
-        txtFieldTitle.setWidth(bundle.getString("AdvertReg.TxtFldTitleWidth"));
-        txtAreaDescription.setInputPrompt(bundle.getString("AdvertDescription"));
-        txtAreaDescription.setWidth(bundle.getString("AdvertReg.taDesctriptionWidth"));
-        txtAreaDescription.setHeight(bundle.getString("AdvertReg.taDesctriptionHeight"));
-        cmbbxCategory.setInputPrompt(bundle.getString("Category"));
-        cmbbxSubCategory.setInputPrompt(bundle.getString("SubCategory"));
-        cmbbxAdvertType.setInputPrompt(bundle.getString("Type"));
-        cmbbxAdvertState.setInputPrompt(bundle.getString("State"));
-        cmbbxCity.setInputPrompt(bundle.getString("City"));
-        cmbbxCountry.setInputPrompt(bundle.getString("Country"));
-        txtFldPrice.setInputPrompt(bundle.getString("Price"));
-        adverRegPanel.setWidth(bundle.getString("AdvertReg.advertPanelWidth"));
-        lblAdvertDetails.setValue(bundle.getString("AdvertDetails"));
-        imageWidth = bundle.getString("AdvertReg.imageWidth");
-        imageHeight = bundle.getString("AdvertReg.imageHeight");
-        removeButtonText = bundle.getString("Remove(X)");
-        labelPictureUpload.setValue(bundle.getString("UploadPicture"));
-        picturePanel.setWidth(bundle.getString("AdvertReg.PicturePanelWidth"));
-        dropHere = bundle.getString("DropHere");
-        failedUpload = bundle.getString("UpLoadFail");
-        modify = bundle.getString("Modify");
-        register = bundle.getString("Register");
-        successUpload = bundle.getString("UpLoadSuccess");
-        failedModification = bundle.getString("operationSuccess");
-        successModification = bundle.getString("operationFailed");
+        txtFieldTitle.setInputPrompt(i18Helper.getMessage("AdvertTitle"));
+        txtFieldTitle.setWidth(i18Helper.getMessage("AdvertReg.TxtFldTitleWidth"));
+        txtAreaDescription.setInputPrompt(i18Helper.getMessage("AdvertDescription"));
+        txtAreaDescription.setWidth(i18Helper.getMessage("AdvertReg.taDesctriptionWidth"));
+        txtAreaDescription.setHeight(i18Helper.getMessage("AdvertReg.taDesctriptionHeight"));
+        cmbbxCategory.setInputPrompt(i18Helper.getMessage("Category"));
+        cmbbxSubCategory.setInputPrompt(i18Helper.getMessage("SubCategory"));
+        cmbbxAdvertType.setInputPrompt(i18Helper.getMessage("Type"));
+        cmbbxAdvertState.setInputPrompt(i18Helper.getMessage("State"));
+        cmbbxCity.setInputPrompt(i18Helper.getMessage("City"));
+        cmbbxCountry.setInputPrompt(i18Helper.getMessage("Country"));
+        txtFldPrice.setInputPrompt(i18Helper.getMessage("Price"));
+        adverRegPanel.setWidth(i18Helper.getMessage("AdvertReg.advertPanelWidth"));
+        lblAdvertDetails.setValue(i18Helper.getMessage("AdvertDetails"));
+        imageWidth = i18Helper.getMessage("AdvertReg.imageWidth");
+        imageHeight = i18Helper.getMessage("AdvertReg.imageHeight");
+        removeButtonText = i18Helper.getMessage("Remove(X)");
+        labelPictureUpload.setValue(i18Helper.getMessage("UploadPicture"));
+        picturePanel.setWidth(i18Helper.getMessage("AdvertReg.PicturePanelWidth"));
+        dropHere = i18Helper.getMessage("DropHere");
+        failedUpload = i18Helper.getMessage("UpLoadFail");
+        modify = i18Helper.getMessage("Modify");
+        register = i18Helper.getMessage("Register");
+        successUpload = i18Helper.getMessage("UpLoadSuccess");
+        failedModification = i18Helper.getMessage("operationFailed");
+        successModification = i18Helper.getMessage("operationSuccess");
         btnRegister.setCaption(register);
     }
 

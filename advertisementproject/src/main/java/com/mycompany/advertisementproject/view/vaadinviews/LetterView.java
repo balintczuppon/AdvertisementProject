@@ -4,6 +4,7 @@ import com.mycompany.advertisementproject.control.LetterController;
 import com.mycompany.advertisementproject.model.entities.Letter;
 import com.mycompany.advertisementproject.model.facades.LetterFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
+import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -23,8 +24,6 @@ import javax.inject.Inject;
 
 @CDIView("LETTER")
 public class LetterView extends VerticalLayout implements View {
-
-    private ResourceBundle bundle;
 
     private static boolean availability = false;
 
@@ -72,6 +71,7 @@ public class LetterView extends VerticalLayout implements View {
 
     @Inject
     private LetterFacade letterFacade;
+    private I18Helper i18Helper;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -87,7 +87,7 @@ public class LetterView extends VerticalLayout implements View {
     @PostConstruct
     public void initComponents() {
         if (availability) {
-            bundle = AppBundle.currentBundle();
+            i18Helper = new I18Helper(AppBundle.currentBundle());
             defaultSettings();
             build();
         }
@@ -220,26 +220,26 @@ public class LetterView extends VerticalLayout implements View {
     }
 
     public void updateStrings() {
-        panelWidth = bundle.getString("Letter.PanelWidth");
-        lblEnquirerCaption = bundle.getString("TfSender");
-        lblTitleCaption = bundle.getString("TfSubject");
-        lblTextCaption = bundle.getString("TfText");
-        taLetterToShowWidth = bundle.getString("Letter.TaLetterToShowWidth");
-        btnAnswerMailCaption = bundle.getString("Answer");
-        btnDeleteMailCaption = bundle.getString("Delete");
-        btnBackCaption = bundle.getString("Back");
-        taLetterToWritePrompt = bundle.getString("TaMessage");
-        taLetterToWriteWidth = bundle.getString("Letter.TaLetterToWriteWidth");
-        taLetterToWriteHeight = bundle.getString("Letter.TaLetterToWriteHeight");
-        responsePrefix = bundle.getString("responsePrefix");
-        pageLink = bundle.getString("Letter.PageLink");
-        linkText = bundle.getString("Letter.LinkText");
-        greetingText = bundle.getString("Letter.GreetingText");
-        messageText1 = bundle.getString("Letter.MessageText1");
-        messageText2 = bundle.getString("Letter.MessageText2");
-        goodbyeText = bundle.getString("Letter.GoodbyeText");
-        senderName = bundle.getString("Letter.Sendername");
-        viewName = bundle.getString("Letter.ViewName");
+        panelWidth = i18Helper.getMessage("Letter.PanelWidth");
+        lblEnquirerCaption = i18Helper.getMessage("TfSender");
+        lblTitleCaption = i18Helper.getMessage("TfSubject");
+        lblTextCaption = i18Helper.getMessage("TfText");
+        taLetterToShowWidth = i18Helper.getMessage("Letter.TaLetterToShowWidth");
+        btnAnswerMailCaption = i18Helper.getMessage("Answer");
+        btnDeleteMailCaption = i18Helper.getMessage("Delete");
+        btnBackCaption = i18Helper.getMessage("Back");
+        taLetterToWritePrompt = i18Helper.getMessage("TaMessage");
+        taLetterToWriteWidth = i18Helper.getMessage("Letter.TaLetterToWriteWidth");
+        taLetterToWriteHeight = i18Helper.getMessage("Letter.TaLetterToWriteHeight");
+        responsePrefix = i18Helper.getMessage("responsePrefix");
+        pageLink = i18Helper.getMessage("Letter.PageLink");
+        linkText = i18Helper.getMessage("Letter.LinkText");
+        greetingText = i18Helper.getMessage("Letter.GreetingText");
+        messageText1 = i18Helper.getMessage("Letter.MessageText1");
+        messageText2 = i18Helper.getMessage("Letter.MessageText2");
+        goodbyeText = i18Helper.getMessage("Letter.GoodbyeText");
+        senderName = i18Helper.getMessage("Letter.Sendername");
+        viewName = i18Helper.getMessage("Letter.ViewName");
     }
 
     public TextArea getTaLetterToWrite() {
@@ -285,7 +285,7 @@ public class LetterView extends VerticalLayout implements View {
     public String getSenderName() {
         return senderName;
     }
-    
+
     public static void setAvailability(boolean availability) {
         LetterView.availability = availability;
     }

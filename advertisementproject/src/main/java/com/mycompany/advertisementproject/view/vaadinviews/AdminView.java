@@ -9,6 +9,7 @@ import com.mycompany.advertisementproject.model.facades.CountryFacade;
 import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
 import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
+import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.data.Property;
 import com.vaadin.navigator.View;
@@ -30,8 +31,6 @@ import javax.inject.Inject;
 
 @CDIView("ADMINPAGE")
 public class AdminView extends VerticalLayout implements View {
-
-    private ResourceBundle bundle;
 
     private AdminController controller;
 
@@ -101,6 +100,7 @@ public class AdminView extends VerticalLayout implements View {
     private AdverttypeFacade typeFacade;
 
     private static boolean availability = false;
+    private I18Helper i18Helper;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -110,9 +110,9 @@ public class AdminView extends VerticalLayout implements View {
     @PostConstruct
     public void initComponent() {
         if (availability) {
-            bundle = AppBundle.currentBundle();
+            i18Helper = new I18Helper(AppBundle.currentBundle());
             buildView();
-        } else{
+        } else {
 //            getUI().getNavigator().navigateTo(ERRORVIEW.toString());
         }
     }
@@ -228,7 +228,7 @@ public class AdminView extends VerticalLayout implements View {
 
     private TabSheet basicTabSheet() {
         TabSheet tSheet = new TabSheet();
-        
+
         tabsheetLayoutLeft = formattedHLayout();
         tabsheetLayoutRight = formattedHLayout();
 
@@ -242,7 +242,7 @@ public class AdminView extends VerticalLayout implements View {
         accordionLayout.setDefaultComponentAlignment(Alignment.TOP_CENTER);
         accordionLayout.setSpacing(true);
         accordionLayout.setMargin(true);
-        
+
         return tSheet;
     }
 
@@ -710,17 +710,17 @@ public class AdminView extends VerticalLayout implements View {
     }
 
     public void updateStrings() throws Exception {
-        countryCaption = bundle.getString("Country");
-        cityCaption = bundle.getString("City");
-        categoryCaption = bundle.getString("Category");
-        subCateogryCaption = bundle.getString("SubCategory");
-        stateCaption = bundle.getString("State");
-        typeCaption = bundle.getString("Type");
-        expansion = bundle.getString("Expansion");
-        create = bundle.getString("Create");
-        modify = bundle.getString("Modify");
-        delete = bundle.getString("Delete");
-        operationSuccess = bundle.getString("operationSuccess");
-        operationFailed = bundle.getString("operationFailed");
+        countryCaption = i18Helper.getMessage("Country");
+        cityCaption = i18Helper.getMessage("City");
+        categoryCaption = i18Helper.getMessage("Category");
+        subCateogryCaption = i18Helper.getMessage("SubCategory");
+        stateCaption = i18Helper.getMessage("State");
+        typeCaption = i18Helper.getMessage("Type");
+        expansion = i18Helper.getMessage("Expansion");
+        create = i18Helper.getMessage("Create");
+        modify = i18Helper.getMessage("Modify");
+        delete = i18Helper.getMessage("Delete");
+        operationSuccess = i18Helper.getMessage("operationSuccess");
+        operationFailed = i18Helper.getMessage("operationFailed");
     }
 }

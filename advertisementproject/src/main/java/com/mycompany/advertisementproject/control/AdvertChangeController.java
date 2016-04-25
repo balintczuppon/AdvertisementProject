@@ -48,13 +48,14 @@ public class AdvertChangeController {
     private boolean filled = false;
 
     private Advertiser current_advertiser;
-    private Advertisement advert_to_mod;
+    private final Advertisement advert_to_mod;
 
     public AdvertChangeController(AdvertRegView view) {
         this.view = view;
+        advert_to_mod = (Advertisement) VaadinSession.getCurrent().getAttribute(ADVERTTOMODIFY.toString());
     }
 
-    public void registerAdvert() throws Exception{
+    public void registerAdvert() throws Exception {
         current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
         Advertisement advertisement = new Advertisement();
         advertisement.setAdvertiserId(current_advertiser);
@@ -77,8 +78,7 @@ public class AdvertChangeController {
         advertisementFacade.create(advertisement);
     }
 
-    public void modifyAdvert() throws Exception{
-        advert_to_mod = (Advertisement) VaadinSession.getCurrent().getAttribute(ADVERTTOMODIFY.toString());
+    public void modifyAdvert() throws Exception {
         advert_to_mod.setAdvertStateId(selectedState());
         advert_to_mod.setAdvertTypeId(selectedType());
         advert_to_mod.setDescription(view.getTxtAreaDescription().getValue());
@@ -99,7 +99,7 @@ public class AdvertChangeController {
         advertisementFacade.edit(advert_to_mod);
     }
 
-    public void linkDataToFields() throws Exception{
+    public void linkDataToFields() throws Exception {
         view.getTxtFieldTitle().setValue(advert_to_mod.getTitle());
         view.getTxtAreaDescription().setValue(advert_to_mod.getDescription());
         view.getCmbbxCategory().select(advert_to_mod.getMainCategoryId());
@@ -130,7 +130,7 @@ public class AdvertChangeController {
         }
     }
 
-    public void fillCmbBxSubCategory(Object value)  throws Exception {
+    public void fillCmbBxSubCategory(Object value) throws Exception {
         view.getCmbbxSubCategory().removeAllItems();
         view.getCmbbxSubCategory().setEnabled(true);
         if (value != null && !((Maincategory) (value)).getSubcategoryCollection().isEmpty()) {
@@ -138,7 +138,7 @@ public class AdvertChangeController {
         }
     }
 
-    public void fillCmbBxCity(Object value) throws Exception  {
+    public void fillCmbBxCity(Object value) throws Exception {
         view.getCmbbxCity().removeAllItems();
         view.getCmbbxCity().setEnabled(true);
         if (value != null && !((Country) value).getCityCollection().isEmpty()) {
@@ -146,7 +146,7 @@ public class AdvertChangeController {
         }
     }
 
-    private Advertstate selectedState()  throws Exception {
+    private Advertstate selectedState() throws Exception {
         if (!view.getCmbbxAdvertState().isEmpty()) {
             return advertstateFacade.getStateByName(view.getCmbbxAdvertState().getValue().toString());
         } else {
@@ -154,7 +154,7 @@ public class AdvertChangeController {
         }
     }
 
-    private Adverttype selectedType()  throws Exception {
+    private Adverttype selectedType() throws Exception {
         if (!view.getCmbbxAdvertType().isEmpty()) {
             return adverttypeFacade.getTypeByName(view.getCmbbxAdvertType().getValue().toString());
         } else {
@@ -162,7 +162,7 @@ public class AdvertChangeController {
         }
     }
 
-    private Country selectedCountry()  throws Exception {
+    private Country selectedCountry() throws Exception {
         if (!view.getCmbbxCountry().isEmpty()) {
             return countryFacade.getCountryByName(view.getCmbbxCountry().getValue().toString());
         } else {
@@ -170,7 +170,7 @@ public class AdvertChangeController {
         }
     }
 
-    private City selectedCity()  throws Exception {
+    private City selectedCity() throws Exception {
         if (!view.getCmbbxCity().isEmpty()) {
             return cityFacade.getCityByName(view.getCmbbxCity().getValue().toString());
         } else {
@@ -178,7 +178,7 @@ public class AdvertChangeController {
         }
     }
 
-    private Maincategory selectedMainCategory() throws Exception  {
+    private Maincategory selectedMainCategory() throws Exception {
         if (!view.getCmbbxCategory().isEmpty()) {
             return maincategoryFacade.getCategoryByName(view.getCmbbxCategory().getValue().toString());
         } else {
@@ -186,7 +186,7 @@ public class AdvertChangeController {
         }
     }
 
-    private Subcategory selectedSubCategory() throws Exception  {
+    private Subcategory selectedSubCategory() throws Exception {
         if (!view.getCmbbxSubCategory().isEmpty()) {
             return subcategoryFacade.getSubCateogryByName(view.getCmbbxSubCategory().getValue().toString());
         } else {
@@ -194,12 +194,12 @@ public class AdvertChangeController {
         }
     }
 
-    public void removeFile(File file) throws Exception  {
+    public void removeFile(File file) throws Exception {
         files.remove(file);
         file.delete();
     }
 
-    public void setUpLoadField()  throws Exception {
+    public void setUpLoadField() throws Exception {
         mfu = new MyMultiFileUpload() {
 
             @Override
@@ -222,7 +222,7 @@ public class AdvertChangeController {
         mfu.setCaption(view.getDropHere());
     }
 
-    public void deleteUnUsedPictures()  throws Exception {
+    public void deleteUnUsedPictures() throws Exception {
         for (File f : tempPictures) {
             if (!files.contains(f)) {
                 f.delete();
@@ -230,7 +230,7 @@ public class AdvertChangeController {
         }
     }
 
-    public void addPictureToAdvert(Advertisement advertisement) throws Exception  {
+    public void addPictureToAdvert(Advertisement advertisement) throws Exception {
         for (File f : files) {
             picture = new Picture();
             picture.setAccessPath(f.getAbsolutePath());
