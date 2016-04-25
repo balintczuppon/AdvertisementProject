@@ -7,17 +7,14 @@ import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
 import com.mycompany.advertisementproject.model.facades.CityFacade;
 import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
 import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
-import com.mycompany.advertisementproject.model.entities.Advertisement;
 import static com.mycompany.advertisementproject.enumz.Views.USERPAGE;
-import com.mycompany.advertisementproject.control.AdvertRegController;
-import static com.mycompany.advertisementproject.enumz.SessionAttributes.ADVERTTOMODIFY;
+import com.mycompany.advertisementproject.control.AdvertChangeController;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.data.Property;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileResource;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import java.io.File;
@@ -34,17 +31,16 @@ public class AdvertRegView extends VerticalLayout implements View {
 
     private static boolean availability = false;
 
-    private String modify;
+    protected String modify;
     private String register;
     private String failedUpload;
     private String successUpload;
-    private String failedModification;
-    private String successModification;
+    protected String failedModification;
+    protected String successModification;
     private String dropHere;
     private String removeButtonText;
     private String imageHeight;
     private String imageWidth;
-    private String btnText;
 
     private ComboBox cmbbxCategory;
     private ComboBox cmbbxSubCategory;
@@ -59,7 +55,7 @@ public class AdvertRegView extends VerticalLayout implements View {
     private Panel adverRegPanel;
     private Panel picturePanel;
 
-    private Button btnRegister;
+    protected Button btnRegister;
 
     private Label lblAdvertDetails;
     private Label labelPictureUpload;
@@ -69,7 +65,7 @@ public class AdvertRegView extends VerticalLayout implements View {
 
     private TextArea txtAreaDescription;
 
-    private AdvertRegController controller;
+    protected AdvertChangeController controller;
 
     private FormLayout regFormLayout;
 
@@ -90,7 +86,6 @@ public class AdvertRegView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        controller.checkSessionAttribute();
         getUI().focus();
     }
 
@@ -99,22 +94,26 @@ public class AdvertRegView extends VerticalLayout implements View {
         if (availability) {
             build();
         }
-    } 
-    
+    }
+
     public void build() {
-        bundle = AppBundle.currentBundle();
-        defaultSettings();
-        addPictureUpload();
-        addForm();
-        updateStrings();
-        controller.fillComboBoxes();
+        try {
+            bundle = AppBundle.currentBundle();
+            defaultSettings();
+            addPictureUpload();
+            addForm();
+            updateStrings();
+            controller.fillComboBoxes();
+        } catch (Exception ex) {
+            Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void defaultSettings() {
         setSizeFull();
         setMargin(true);
         setSpacing(true);
-        controller = new AdvertRegController(this);
+        controller = new AdvertChangeController(this);
         setController();
     }
 
@@ -151,6 +150,8 @@ public class AdvertRegView extends VerticalLayout implements View {
         cmbbxCity = new ComboBox();
         cmbbxCity.setEnabled(false);
         btnRegister = new Button();
+        btnRegister.setCaption(register);
+        addRegButtonListener();
     }
 
     private void addFieldsToLayoout() {
@@ -201,10 +202,14 @@ public class AdvertRegView extends VerticalLayout implements View {
         button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                layout.removeComponent(image);
-                layout.removeComponent(button);
-                pictureLayout.removeComponent(layout);
-                controller.removeFile(file);
+                try {
+                    layout.removeComponent(image);
+                    layout.removeComponent(button);
+                    pictureLayout.removeComponent(layout);
+                    controller.removeFile(file);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -226,59 +231,32 @@ public class AdvertRegView extends VerticalLayout implements View {
     }
 
     private void addPictureUpload() {
-        picturePanel = new Panel();
-
-        controller.setUpLoadField();
-
-        pictureLayout = new VerticalLayout();
-        pictureLayout.setSizeFull();
-        pictureLayout.setSpacing(true);
-        pictureLayout.setMargin(true);
-        labelPictureUpload = new Label();
-        pictureLayout.addComponent(labelPictureUpload);
-        pictureLayout.addComponent(new Label("<hr />", ContentMode.HTML));
-
-        pictureLayout.addComponent(controller.getMfu());
-
-        pictureLayout.setDefaultComponentAlignment(Alignment.TOP_CENTER);
-        picturePanel.setContent(pictureLayout);
-
-        addComponent(picturePanel);
-        setComponentAlignment(picturePanel, Alignment.TOP_CENTER);
-    }
-
-    public void prepareForModification(Advertisement ad) {
-        btnText = modify;
-        btnRegister.setCaption(btnText);
-        controller.linkDataToFields(ad);
-        addModListener();
-    }
-
-    public void prepareForRegistration() {
-        btnText = register;
-        btnRegister.setCaption(btnText);
-        addRegListener();
-    }
-
-    private void addModListener() {
-        btnRegister.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                try {
-                    controller.modifyAdvert();
-                    Notification.show(successModification);
-                } catch (Exception e) {
-                    Notification.show(failedModification);
-                    Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, e);
-                }
-                getUI().getNavigator().navigateTo(USERPAGE.toString());
-                clearSessionAtribute();
-            }
+        try {
+            picturePanel = new Panel();
+            
+            controller.setUpLoadField();
+            
+            pictureLayout = new VerticalLayout();
+            pictureLayout.setSizeFull();
+            pictureLayout.setSpacing(true);
+            pictureLayout.setMargin(true);
+            labelPictureUpload = new Label();
+            pictureLayout.addComponent(labelPictureUpload);
+            pictureLayout.addComponent(new Label("<hr />", ContentMode.HTML));
+            
+            pictureLayout.addComponent(controller.getMfu());
+            
+            pictureLayout.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+            picturePanel.setContent(pictureLayout);
+            
+            addComponent(picturePanel);
+            setComponentAlignment(picturePanel, Alignment.TOP_CENTER);
+        } catch (Exception ex) {
+            Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, ex);
         }
-        );
     }
 
-    private void addRegListener() {
+    public void addRegButtonListener() {
         btnRegister.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -300,7 +278,11 @@ public class AdvertRegView extends VerticalLayout implements View {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (cmbbxCategory.getValue() != null) {
-                    controller.fillCmbBxSubCategory(cmbbxCategory.getValue());
+                    try {
+                        controller.fillCmbBxSubCategory(cmbbxCategory.getValue());
+                    } catch (Exception ex) {
+                        Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 } else {
                     cmbbxSubCategory.setEnabled(false);
                 }
@@ -314,7 +296,11 @@ public class AdvertRegView extends VerticalLayout implements View {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (cmbbxCountry.getValue() != null) {
-                    controller.fillCmbBxCity(cmbbxCountry.getValue());
+                    try {
+                        controller.fillCmbBxCity(cmbbxCountry.getValue());
+                    } catch (Exception ex) {
+                        Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 } else {
                     cmbbxCity.setEnabled(false);
                 }
@@ -349,6 +335,7 @@ public class AdvertRegView extends VerticalLayout implements View {
         successUpload = bundle.getString("UpLoadSuccess");
         failedModification = bundle.getString("operationSuccess");
         successModification = bundle.getString("operationFailed");
+        btnRegister.setCaption(register);
     }
 
     private void setController() {
@@ -359,15 +346,6 @@ public class AdvertRegView extends VerticalLayout implements View {
         controller.setCountryFacade(countryFacade);
         controller.setMaincategoryFacade(maincategoryFacade);
         controller.setSubcategoryFacade(subcategoryFacade);
-    }
-
-    private void clearSessionAtribute() {
-//        try {
-//            VaadinSession.getCurrent().getLockInstance().lock();
-//            VaadinSession.getCurrent().setAttribute(ADVERTTOMODIFY.toString(), null);
-//        } finally {
-//            VaadinSession.getCurrent().getLockInstance().unlock();
-//        
     }
 
     public ComboBox getCmbbxCategory() {

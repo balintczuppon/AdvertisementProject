@@ -15,6 +15,8 @@ public class Global {
     public static final String DateFormat_HU = "yyyy.MM.dd";
     public static final String DateFormat_EN = "dd.MM.yyyy";
 
+    public static final String TEMP_SERVER = "D:\\TempServer\\";
+
     public static SimpleDateFormat DATEFORMAT;
     public static NumberFormat CURRENCY;
 

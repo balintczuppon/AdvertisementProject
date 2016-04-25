@@ -17,6 +17,7 @@ import com.mycompany.advertisementproject.view.vaadinviews.LogInView;
 import com.mycompany.advertisementproject.view.vaadinviews.RegistrationView;
 import com.mycompany.advertisementproject.view.vaadinviews.SelectedAdvertView;
 import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
@@ -308,12 +309,6 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                try {
-                    VaadinSession.getCurrent().getLockInstance().lock();
-                    VaadinSession.getCurrent().setAttribute(ADVERTTOMODIFY.toString(), null);
-                } finally {
-                    VaadinSession.getCurrent().getLockInstance().unlock();
-                }
                 nodePath = ADVERTREG.toString();
                 jump(nodePath);
                 advRegView = (AdvertRegView) RootUI.getCurrent().getViewProvider().getView("ADVERTREG");

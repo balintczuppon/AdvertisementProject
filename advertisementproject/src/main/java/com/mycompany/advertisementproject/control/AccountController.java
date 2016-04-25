@@ -3,6 +3,7 @@ package com.mycompany.advertisementproject.control;
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.ADVERTTOMODIFY;
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTUSER;
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.LETTERTOSHOW;
+import static com.mycompany.advertisementproject.enumz.Views.ADVERTMOD;
 import static com.mycompany.advertisementproject.enumz.Views.ADVERTREG;
 import static com.mycompany.advertisementproject.enumz.Views.LETTER;
 import com.mycompany.advertisementproject.view.vaadinviews.AccountView;
@@ -91,7 +92,7 @@ public class AccountController {
         } finally {
             VaadinSession.getCurrent().getLockInstance().unlock();
         }
-        view.getUI().getNavigator().navigateTo(ADVERTREG.toString());
+        view.getUI().getNavigator().navigateTo(ADVERTMOD.toString());
     }
 
     public void fillLetters() throws Exception {

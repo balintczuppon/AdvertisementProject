@@ -113,7 +113,7 @@ public class AdminView extends VerticalLayout implements View {
             bundle = AppBundle.currentBundle();
             buildView();
         } else{
-            getUI().getNavigator().navigateTo(ERRORVIEW.toString());
+//            getUI().getNavigator().navigateTo(ERRORVIEW.toString());
         }
     }
 
