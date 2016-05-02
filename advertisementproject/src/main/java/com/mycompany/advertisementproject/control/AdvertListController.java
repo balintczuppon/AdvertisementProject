@@ -26,6 +26,7 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import java.io.File;
 import java.util.ArrayList;
@@ -34,14 +35,14 @@ import java.util.List;
 
 public class AdvertListController {
 
-    private MaincategoryFacade maincategoryFacade;
-    private SubcategoryFacade subcategoryFacade;
-    private AdverttypeFacade adverttypeFacade;
-    private CountryFacade countryFacade;
-    private CityFacade cityFacade;
-    private AdvertisementFacade advertisementFacade;
-    private AdvertstateFacade advertstateFacade;
-    
+    private MaincategoryFacade maincategoryFacade = new MaincategoryFacade();
+    private SubcategoryFacade subcategoryFacade = new SubcategoryFacade();
+    private AdverttypeFacade adverttypeFacade = new AdverttypeFacade();
+    private CountryFacade countryFacade = new CountryFacade();
+    private CityFacade cityFacade = new CityFacade();
+    private AdvertisementFacade advertisementFacade = new AdvertisementFacade();
+    private AdvertstateFacade advertstateFacade = new AdvertstateFacade();
+
     private List<Advertisement> adverts = new ArrayList<>();
     private final List<HorizontalLayout> advertlayouts = new ArrayList<>();
 
@@ -58,20 +59,16 @@ public class AdvertListController {
     public void fillCmbBxSubCategory(Object value) {
         view.getCmbBxSubCategory().removeAllItems();
         view.getCmbBxSubCategory().setEnabled(true);
-        for (Maincategory mcat : maincategoryFacade.findAll()) {
-            if (mcat.getName().equals(value)) {
-                view.getCmbBxSubCategory().addItems(mcat.getSubcategoryCollection());
-            }
+        if (value != null && !((Maincategory) (value)).getSubcategoryCollection().isEmpty()) {
+            view.getCmbBxSubCategory().addItems(((Maincategory) (value)).getSubcategoryCollection());
         }
     }
 
     public void fillCmbBxCity(Object value) {
         view.getCmbBxCity().removeAllItems();
         view.getCmbBxCity().setEnabled(true);
-        for (Country c : countryFacade.findAll()) {
-            if (c.getCountryName().equals(value)) {
-                view.getCmbBxCity().addItems(c.getCityCollection());
-            }
+        if (value != null && !((Country) value).getCityCollection().isEmpty()) {
+            view.getCmbBxCity().addItems(((Country) value).getCityCollection());
         }
     }
 
@@ -99,7 +96,7 @@ public class AdvertListController {
         Adverttype type = null;
         int minPrice = 0;
         int maxPrice = 0;
-     
+
         if (!view.getCmbBxCategory().isEmpty()) {
             mcategory = maincategoryFacade.getCategoryByName(view.getCmbBxCategory().getValue().toString());
         }
@@ -115,11 +112,11 @@ public class AdvertListController {
         if (!view.getCmbBxCountry().isEmpty()) {
             country = countryFacade.getCountryByName(view.getCmbBxCountry().getValue().toString());
         }
-        
+
         if (!view.getCmbBxState().isEmpty()) {
             state = advertstateFacade.getStateByName(view.getCmbBxState().getValue().toString());
         }
-        
+
         if (!view.getCmbBxType().isEmpty()) {
 
             type = adverttypeFacade.getTypeByName(view.getCmbBxType().getValue().toString());
@@ -193,6 +190,7 @@ public class AdvertListController {
             loadAdverts();
         } else {
             filterText = null;
+            fillAdverts();
             loadAdverts();
         }
     }
@@ -244,6 +242,5 @@ public class AdvertListController {
     public void setAdvertstateFacade(AdvertstateFacade advertstateFacade) {
         this.advertstateFacade = advertstateFacade;
     }
-
 
 }

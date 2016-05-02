@@ -130,7 +130,7 @@ public class RegistrationView extends VerticalLayout implements View {
     }
 
     public void updateStrings() {
-        lblTitle.setCaption(i18Helper.getMessage("Registration"));
+        lblTitle.setValue(i18Helper.getMessage("Registration"));
         tfEmail.setCaption(i18Helper.getMessage("TfEmail"));
         tfName.setCaption(i18Helper.getMessage("TfName"));
         tfPhoneNumber.setCaption(i18Helper.getMessage("TfPhone"));

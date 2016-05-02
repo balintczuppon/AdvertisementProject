@@ -38,4 +38,7 @@ public class AdvertModView extends AdvertRegView {
             }
         });
     }
+
+    
+    
 }

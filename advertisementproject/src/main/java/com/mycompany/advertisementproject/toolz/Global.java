@@ -8,6 +8,8 @@ import java.util.UUID;
 public class Global {
 
     public static final int DEFAULT_AUTHORITY = 1;
+    
+    public static final int GBP = 400;
 
     public static final Locale Locale_HU = new Locale("hu", "HU");
     public static final Locale Locale_EN = new Locale("en", "GB");

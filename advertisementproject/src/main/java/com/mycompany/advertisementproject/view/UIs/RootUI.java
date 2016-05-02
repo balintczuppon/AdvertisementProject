@@ -32,12 +32,12 @@ public class RootUI extends UI {
         VerticalLayout mainLayout = new VerticalLayout();
 
         navigator = new Navigator(this, mainLayout);
+
         navigator.addProvider(viewProvider);
         navigator.setErrorView(new ErrorView());
 
         setContent(new VerticalLayout(appLayout, mainLayout));
-        
-//        navigator.navigateTo(START.toString());
+        navigator.navigateTo(START.toString());
     }
 
     public static RootUI getCurrent() {
@@ -51,6 +51,4 @@ public class RootUI extends UI {
     public CDIViewProvider getViewProvider() {
         return viewProvider;
     }
-    
-    
 }

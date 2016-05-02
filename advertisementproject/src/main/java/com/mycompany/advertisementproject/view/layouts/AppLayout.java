@@ -7,42 +7,24 @@ import static com.mycompany.advertisementproject.enumz.Views.*;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.mycompany.advertisementproject.toolz.Global;
 import com.mycompany.advertisementproject.toolz.I18Helper;
-import com.mycompany.advertisementproject.view.UIs.RootUI;
-import com.mycompany.advertisementproject.view.vaadinviews.AccountView;
-import com.mycompany.advertisementproject.view.vaadinviews.AdminView;
-import com.mycompany.advertisementproject.view.vaadinviews.AdvertListView;
-import com.mycompany.advertisementproject.view.vaadinviews.AdvertRegView;
-import com.mycompany.advertisementproject.view.vaadinviews.LetterView;
-import com.mycompany.advertisementproject.view.vaadinviews.LogInView;
-import com.mycompany.advertisementproject.view.vaadinviews.RegistrationView;
-import com.mycompany.advertisementproject.view.vaadinviews.SelectedAdvertView;
+import com.mycompany.advertisementproject.view.vaadinviews.*;
 import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 public class AppLayout extends VerticalLayout implements ViewDisplay {
 
-    private LogInView loginView;
-    private RegistrationView regView;
-    private AccountView accView;
-    private AdminView adminView;
-    private AdvertListView advListView;
-    private AdvertRegView advRegView;
-
-    private LetterView letterView;
-    private SelectedAdvertView selectedView;
-
-//    private ResourceBundle bundle;
-    
     private I18Helper i18Helper;
 
     public static SimpleDateFormat formattedDate = Global.DATEFORMAT;
@@ -63,7 +45,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
     private String nodePath;
 
     public AppLayout() {
-//        bundle = AppBundle.currentBundle();
+        super();
         i18Helper = new I18Helper(AppBundle.currentBundle());
         buildHeader();
         addListeners();
@@ -80,10 +62,12 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
     }
 
     private void addNavigation() {
-
         HorizontalLayout navigation = new HorizontalLayout();
+        navigation.addComponents(btnAdverts, btnLogin,
+                btnRegistration, btnAdvertReg,
+                btnMyAccout, btnAdminAccount, btnLogout);
+
         HorizontalLayout languages = new HorizontalLayout();
-        navigation.addComponents(btnAdverts, btnLogin, btnRegistration, btnAdvertReg, btnMyAccout, btnAdminAccount, btnLogout);
         languages.addComponents(btnHun, btnEng);
 
         HorizontalLayout headersplitter = new HorizontalLayout();
@@ -137,63 +121,6 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         });
     }
 
-    private void addNavButtons() {
-        btnAdverts = navButton(i18Helper.getMessage("Adverts"));
-        btnLogin = navButton(i18Helper.getMessage("Login"));
-        btnRegistration = navButton(i18Helper.getMessage("Registration"));
-        btnAdvertReg = navButton(i18Helper.getMessage("AdvertRegistration"));
-        btnMyAccout = navButton(i18Helper.getMessage("Account"));
-        btnLogout = navButton(i18Helper.getMessage("Logout"));
-        btnAdminAccount = navButton(i18Helper.getMessage("AdminAccount"));
-        hidebuttons();
-    }
-
-    private void updateStrings() {
-        btnAdverts.setCaption(i18Helper.getMessage("Adverts"));
-        btnLogin.setCaption(i18Helper.getMessage("Login"));
-        btnRegistration.setCaption(i18Helper.getMessage("Registration"));
-        btnAdvertReg.setCaption(i18Helper.getMessage("AdvertRegistration"));
-        btnMyAccout.setCaption(i18Helper.getMessage("Account"));
-        btnLogout.setCaption(i18Helper.getMessage("Logout"));
-        btnAdminAccount.setCaption(i18Helper.getMessage("AdminAccount"));
-        checkViews();
-        reloadWindow();
-    }
-
-    private void checkViews() {
-        if (loginView != null) {
-            loginView.updateStrings();
-        }
-        if (regView != null) {
-            regView.updateStrings();
-        }
-        if (accView != null) {
-            accView.removeAllComponents();
-            accView.build();
-        }
-        if (adminView != null) {
-            adminView.removeAllComponents();
-            adminView.buildView();
-        }
-        if (advListView != null) {
-            advListView.removeAllComponents();
-            advListView.build();
-        }
-        if (advRegView != null) {
-            advRegView.updateStrings();
-        }
-//        selectedView = (SelectedAdvertView) RootUI.getCurrent().getViewProvider().getView("SELECTED");
-//        if (selectedView != null) {
-//            selectedView.removeAllComponents();
-//            selectedView.build();
-//        }
-//        letterView = (LetterView) RootUI.getCurrent().getViewProvider().getView("LETTER");
-//        if (letterView != null) {
-//            letterView.removeAllComponents();
-//            letterView.build();
-//        }
-    }
-
     private void hidebuttons() {
         btnAdvertReg.setVisible(false);
         btnMyAccout.setVisible(false);
@@ -229,7 +156,8 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
 
         try {
             VaadinSession.getCurrent().getLockInstance().lock();
-            VaadinSession.getCurrent().setAttribute(CURRENTUSER.toString(), null);
+            VaadinSession.getCurrent().setAttribute(
+                    CURRENTUSER.toString(), null);
         } finally {
             VaadinSession.getCurrent().getLockInstance().unlock();
         }
@@ -244,12 +172,8 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
     }
 
     public static void adminLogin() {
+        userLogin();
         btnAdminAccount.setVisible(true);
-        btnLogin.setVisible(false);
-        btnRegistration.setVisible(false);
-        btnAdvertReg.setVisible(true);
-        btnMyAccout.setVisible(true);
-        btnLogout.setVisible(true);
     }
 
     private Button navButton(String caption) {
@@ -274,7 +198,6 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
             public void buttonClick(Button.ClickEvent event) {
                 nodePath = ADVERTS.toString();
                 jump(nodePath);
-                advListView = (AdvertListView) RootUI.getCurrent().getViewProvider().getView("ADVERTS");
             }
         });
     }
@@ -286,7 +209,6 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
             public void buttonClick(Button.ClickEvent event) {
                 nodePath = LOGIN.toString();
                 jump(nodePath);
-                loginView = (LogInView) RootUI.getCurrent().getViewProvider().getView("LOGIN");
             }
         });
     }
@@ -298,7 +220,6 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
             public void buttonClick(Button.ClickEvent event) {
                 nodePath = REGISTRATION.toString();
                 jump(nodePath);
-                regView = (RegistrationView) RootUI.getCurrent().getViewProvider().getView("REGISTRATION");
             }
         });
     }
@@ -310,7 +231,6 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
             public void buttonClick(Button.ClickEvent event) {
                 nodePath = ADVERTREG.toString();
                 jump(nodePath);
-                advRegView = (AdvertRegView) RootUI.getCurrent().getViewProvider().getView("ADVERTREG");
             }
         });
     }
@@ -322,7 +242,6 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
             public void buttonClick(Button.ClickEvent event) {
                 nodePath = USERPAGE.toString();
                 jump(nodePath);
-                accView = (AccountView) RootUI.getCurrent().getViewProvider().getView("USERPAGE");
             }
         });
 
@@ -346,9 +265,30 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
             public void buttonClick(Button.ClickEvent event) {
                 nodePath = ADMINPAGE.toString();
                 jump(nodePath);
-                adminView = (AdminView) RootUI.getCurrent().getViewProvider().getView("ADMINPAGE");
             }
         });
+    }
+
+    private void addNavButtons() {
+        btnAdverts = navButton(i18Helper.getMessage("Adverts"));
+        btnLogin = navButton(i18Helper.getMessage("Login"));
+        btnRegistration = navButton(i18Helper.getMessage("Registration"));
+        btnAdvertReg = navButton(i18Helper.getMessage("AdvertRegistration"));
+        btnMyAccout = navButton(i18Helper.getMessage("Account"));
+        btnLogout = navButton(i18Helper.getMessage("Logout"));
+        btnAdminAccount = navButton(i18Helper.getMessage("AdminAccount"));
+        hidebuttons();
+    }
+
+    private void updateStrings() {
+        btnAdverts.setCaption(i18Helper.getMessage("Adverts"));
+        btnLogin.setCaption(i18Helper.getMessage("Login"));
+        btnRegistration.setCaption(i18Helper.getMessage("Registration"));
+        btnAdvertReg.setCaption(i18Helper.getMessage("AdvertRegistration"));
+        btnMyAccout.setCaption(i18Helper.getMessage("Account"));
+        btnLogout.setCaption(i18Helper.getMessage("Logout"));
+        btnAdminAccount.setCaption(i18Helper.getMessage("AdminAccount"));
+        reloadWindow();
     }
 
     private void jump(String nodePath) {

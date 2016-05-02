@@ -22,8 +22,10 @@ import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
 import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
 import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.Component;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.vaadin.easyuploads.FileBuffer;
 
@@ -40,9 +42,9 @@ public class AdvertChangeController {
     private final AdvertRegView view;
 
     private final List<File> files = new ArrayList<>();
-    private final List<File> tempPictures = new ArrayList<>();
+    private final List<File> originalFiles = new ArrayList<>();
     private final List<Picture> pictureCollection = new ArrayList<>();
-
+    
     private MyMultiFileUpload mfu;
     private Picture picture;
     private boolean filled = false;
@@ -116,6 +118,7 @@ public class AdvertChangeController {
         for (Picture p : advert_to_mod.getPictureCollection()) {
             File file = new File(p.getAccessPath());
             files.add(file);
+            originalFiles.add(file);
             view.showImage(file);
         }
     }
@@ -196,7 +199,10 @@ public class AdvertChangeController {
 
     public void removeFile(File file) throws Exception {
         files.remove(file);
-        file.delete();
+
+        if (advert_to_mod == null) {
+            file.delete();
+        }
     }
 
     public void setUpLoadField() throws Exception {
@@ -207,7 +213,6 @@ public class AdvertChangeController {
                 File properFile = new File(Global.TEMP_SERVER + "/" + Global.generatedId() + file.getName());
                 file.renameTo(properFile);
                 files.add(properFile);
-                tempPictures.add(properFile);
                 view.showImage(properFile);
             }
 
@@ -223,9 +228,9 @@ public class AdvertChangeController {
     }
 
     public void deleteUnUsedPictures() throws Exception {
-        for (File f : tempPictures) {
-            if (!files.contains(f)) {
-                f.delete();
+        for (File file : originalFiles) {
+            if (!files.contains(file)) {
+                file.delete();
             }
         }
     }

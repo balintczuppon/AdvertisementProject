@@ -13,16 +13,12 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 @CDIView("START")
 public class StartView extends VerticalLayout implements View {
-
-    private ResourceBundle bundle;
 
     private Button btnSearch;
     private Button btnForward;

@@ -17,7 +17,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -57,7 +56,6 @@ public class LogInView extends VerticalLayout implements View {
         logincontroller = new LoginController(this);
         logincontroller.setAdvertiserFacade(advertiserFacade);
         setMargin(true);
-        setImmediate(true);
     }
 
     private void addTitle() {
