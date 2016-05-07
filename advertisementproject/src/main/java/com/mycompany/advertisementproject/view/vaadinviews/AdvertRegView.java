@@ -9,6 +9,7 @@ import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
 import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
 import static com.mycompany.advertisementproject.enumz.Views.USERPAGE;
 import com.mycompany.advertisementproject.control.AdvertChangeController;
+import com.mycompany.advertisementproject.model.facades.MapFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.vaadin.cdi.CDIView;
@@ -61,6 +62,8 @@ public class AdvertRegView extends VerticalLayout implements View {
 
     private TextField txtFieldTitle;
     private TextField txtFldPrice;
+    private TextField txtFldCordX;
+    private TextField txtFldCordY;
 
     private TextArea txtAreaDescription;
 
@@ -82,7 +85,9 @@ public class AdvertRegView extends VerticalLayout implements View {
     private CountryFacade countryFacade;
     @Inject
     private CityFacade cityFacade;
-    
+    @Inject
+    private MapFacade mapFacade;
+
     private I18Helper i18Helper;
 
     @Override
@@ -146,6 +151,8 @@ public class AdvertRegView extends VerticalLayout implements View {
         cmbbxAdvertType = new ComboBox();
         cmbbxAdvertState = new ComboBox();
         txtFldPrice = new TextField();
+        txtFldCordX = new TextField();
+        txtFldCordY = new TextField();
         cmbbxCountry = new ComboBox();
         addCmbBxCountryListener();
         cmbbxCity = new ComboBox();
@@ -165,6 +172,8 @@ public class AdvertRegView extends VerticalLayout implements View {
         regFormLayout.addComponent(txtFldPrice);
         regFormLayout.addComponent(cmbbxCountry);
         regFormLayout.addComponent(cmbbxCity);
+        regFormLayout.addComponent(txtFldCordX);
+        regFormLayout.addComponent(txtFldCordY);
         regFormLayout.setSizeFull();
     }
 
@@ -336,6 +345,8 @@ public class AdvertRegView extends VerticalLayout implements View {
         successUpload = i18Helper.getMessage("UpLoadSuccess");
         failedModification = i18Helper.getMessage("operationFailed");
         successModification = i18Helper.getMessage("operationSuccess");
+        txtFldCordX.setInputPrompt(i18Helper.getMessage("googleMapX"));
+        txtFldCordY.setInputPrompt(i18Helper.getMessage("googleMapY"));
         btnRegister.setCaption(register);
     }
 
@@ -347,6 +358,7 @@ public class AdvertRegView extends VerticalLayout implements View {
         controller.setCountryFacade(countryFacade);
         controller.setMaincategoryFacade(maincategoryFacade);
         controller.setSubcategoryFacade(subcategoryFacade);
+        controller.setMapFacade(mapFacade);
     }
 
     public ComboBox getCmbbxCategory() {
@@ -375,6 +387,14 @@ public class AdvertRegView extends VerticalLayout implements View {
 
     public TextField getTxtFieldTitle() {
         return txtFieldTitle;
+    }
+
+    public TextField getTxtFldCordX() {
+        return txtFldCordX;
+    }
+
+    public TextField getTxtFldCordY() {
+        return txtFldCordY;
     }
 
     public TextArea getTxtAreaDescription() {

@@ -40,9 +40,9 @@ public class Map implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Column(name = "cordx")
-    private Integer cordx;
+    private Float cordx;
     @Column(name = "cordy")
-    private Integer cordy;
+    private Float cordy;
     @OneToMany(mappedBy = "mapId")
     private Collection<Advertisement> advertisementCollection;
 
@@ -61,19 +61,19 @@ public class Map implements Serializable {
         this.id = id;
     }
 
-    public Integer getCordx() {
+    public Float getCordx() {
         return cordx;
     }
 
-    public void setCordx(Integer cordx) {
+    public void setCordx(Float cordx) {
         this.cordx = cordx;
     }
 
-    public Integer getCordy() {
+    public Float getCordy() {
         return cordy;
     }
 
-    public void setCordy(Integer cordy) {
+    public void setCordy(Float cordy) {
         this.cordy = cordy;
     }
 

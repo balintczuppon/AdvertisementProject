@@ -35,13 +35,13 @@ import java.util.List;
 
 public class AdvertListController {
 
-    private MaincategoryFacade maincategoryFacade = new MaincategoryFacade();
-    private SubcategoryFacade subcategoryFacade = new SubcategoryFacade();
-    private AdverttypeFacade adverttypeFacade = new AdverttypeFacade();
-    private CountryFacade countryFacade = new CountryFacade();
-    private CityFacade cityFacade = new CityFacade();
-    private AdvertisementFacade advertisementFacade = new AdvertisementFacade();
-    private AdvertstateFacade advertstateFacade = new AdvertstateFacade();
+    private MaincategoryFacade maincategoryFacade;
+    private SubcategoryFacade subcategoryFacade;
+    private AdverttypeFacade adverttypeFacade;
+    private CountryFacade countryFacade;
+    private CityFacade cityFacade;
+    private AdvertisementFacade advertisementFacade;
+    private AdvertstateFacade advertstateFacade;
 
     private List<Advertisement> adverts = new ArrayList<>();
     private final List<HorizontalLayout> advertlayouts = new ArrayList<>();

@@ -107,20 +107,20 @@ public class AdvertListView extends VerticalLayout implements View {
 
     private Embedded image;
 
-//    @Inject
-//    private MaincategoryFacade maincategoryFacade;
-//    @Inject
-//    private SubcategoryFacade subcategoryFacade;
-//    @Inject
-//    private AdverttypeFacade adverttypeFacade;
-//    @Inject
-//    private CountryFacade countryFacade;
-//    @Inject
-//    private CityFacade cityFacade;
-//    @Inject
-//    private AdvertisementFacade advertisementFacade;
-//    @Inject
-//    private AdvertstateFacade advertstateFacade;
+    @Inject
+    private MaincategoryFacade maincategoryFacade;
+    @Inject
+    private SubcategoryFacade subcategoryFacade;
+    @Inject
+    private AdverttypeFacade adverttypeFacade;
+    @Inject
+    private CountryFacade countryFacade;
+    @Inject
+    private CityFacade cityFacade;
+    @Inject
+    private AdvertisementFacade advertisementFacade;
+    @Inject
+    private AdvertstateFacade advertstateFacade;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -474,13 +474,13 @@ public class AdvertListView extends VerticalLayout implements View {
     }
 
     private void setController() {
-//        controller.setAdvertisementFacade(advertisementFacade);
-//        controller.setAdvertstateFacade(advertstateFacade);
-//        controller.setAdverttypeFacade(adverttypeFacade);
-//        controller.setCityFacade(cityFacade);
-//        controller.setCountryFacade(countryFacade);
-//        controller.setMaincategoryFacade(maincategoryFacade);
-//        controller.setSubcategoryFacade(subcategoryFacade);
+        controller.setAdvertisementFacade(advertisementFacade);
+        controller.setAdvertstateFacade(advertstateFacade);
+        controller.setAdverttypeFacade(adverttypeFacade);
+        controller.setCityFacade(cityFacade);
+        controller.setCountryFacade(countryFacade);
+        controller.setMaincategoryFacade(maincategoryFacade);
+        controller.setSubcategoryFacade(subcategoryFacade);
     }
 
     public ComboBox getCmbBxSortType() {

@@ -11,6 +11,7 @@ import com.mycompany.advertisementproject.model.entities.Adverttype;
 import com.mycompany.advertisementproject.model.entities.City;
 import com.mycompany.advertisementproject.model.entities.Country;
 import com.mycompany.advertisementproject.model.entities.Maincategory;
+import com.mycompany.advertisementproject.model.entities.Map;
 import com.mycompany.advertisementproject.model.entities.Picture;
 import com.mycompany.advertisementproject.model.entities.Subcategory;
 import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
@@ -19,13 +20,12 @@ import com.mycompany.advertisementproject.model.facades.AdverttypeFacade;
 import com.mycompany.advertisementproject.model.facades.CityFacade;
 import com.mycompany.advertisementproject.model.facades.CountryFacade;
 import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
+import com.mycompany.advertisementproject.model.facades.MapFacade;
 import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
 import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.Component;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import org.vaadin.easyuploads.FileBuffer;
 
@@ -38,13 +38,14 @@ public class AdvertChangeController {
     private AdvertstateFacade advertstateFacade;
     private CountryFacade countryFacade;
     private CityFacade cityFacade;
+    private MapFacade mapFacade;
 
     private final AdvertRegView view;
 
     private final List<File> files = new ArrayList<>();
     private final List<File> originalFiles = new ArrayList<>();
     private final List<Picture> pictureCollection = new ArrayList<>();
-    
+
     private MyMultiFileUpload mfu;
     private Picture picture;
     private boolean filled = false;
@@ -61,42 +62,14 @@ public class AdvertChangeController {
         current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
         Advertisement advertisement = new Advertisement();
         advertisement.setAdvertiserId(current_advertiser);
-        advertisement.setAdvertStateId(selectedState());
-        advertisement.setAdvertTypeId(selectedType());
-        advertisement.setDescription(view.getTxtAreaDescription().getValue());
-        advertisement.setCityId(selectedCity());
-        advertisement.setCountryId(selectedCountry());
-        advertisement.setMainCategoryId(selectedMainCategory());
-        advertisement.setSubCategoryId(selectedSubCategory());
-        if (!view.getTxtFldPrice().isEmpty()) {
-            advertisement.setPrice(Integer.valueOf(view.getTxtFldPrice().getValue()));
-        }
-        advertisement.setRegistrationDate(Global.currentDate());
-        advertisement.setTitle(view.getTxtFieldTitle().getValue());
-
-        addPictureToAdvert(advertisement);
-
+        setAdvertisement(advertisement);
         advertisement.setPictureCollection(pictureCollection);
         advertisementFacade.create(advertisement);
     }
 
     public void modifyAdvert() throws Exception {
-        advert_to_mod.setAdvertStateId(selectedState());
-        advert_to_mod.setAdvertTypeId(selectedType());
-        advert_to_mod.setDescription(view.getTxtAreaDescription().getValue());
-        advert_to_mod.setCityId(selectedCity());
-        advert_to_mod.setCountryId(selectedCountry());
-        advert_to_mod.setMainCategoryId(selectedMainCategory());
-        advert_to_mod.setSubCategoryId(selectedSubCategory());
-        if (!view.getTxtFldPrice().isEmpty()) {
-            advert_to_mod.setPrice(Integer.valueOf(view.getTxtFldPrice().getValue()));
-        }
-        advert_to_mod.setRegistrationDate(Global.currentDate());
-        advert_to_mod.setTitle(view.getTxtFieldTitle().getValue());
-
-        addPictureToAdvert(advert_to_mod);
+        setAdvertisement(advert_to_mod);
         deleteUnUsedPictures();
-
         advert_to_mod.setPictureCollection(pictureCollection);
         advertisementFacade.edit(advert_to_mod);
     }
@@ -112,9 +85,10 @@ public class AdvertChangeController {
         view.getCmbbxCountry().select(advert_to_mod.getCountryId());
         fillCmbBxCity(advert_to_mod.getCountryId());
         view.getCmbbxCity().select(advert_to_mod.getCityId());
-        if (advert_to_mod.getPrice() != null) {
-            view.getTxtFldPrice().setValue(String.valueOf(advert_to_mod.getPrice()));
-        }
+        view.getTxtFldPrice().setValue(getPrice(advert_to_mod));
+        view.getTxtFldCordX().setValue(getCordX());
+        view.getTxtFldCordY().setValue(getCordY());
+
         for (Picture p : advert_to_mod.getPictureCollection()) {
             File file = new File(p.getAccessPath());
             files.add(file);
@@ -244,6 +218,61 @@ public class AdvertChangeController {
         }
     }
 
+    private void addMapToAdvert(Advertisement advertisement) {
+        Map map = new Map();
+        map.setCordx(Float.valueOf(view.getTxtFldCordX().getValue()));
+        map.setCordy(Float.valueOf(view.getTxtFldCordY().getValue()));
+        mapFacade.create(map);
+        advertisement.setMapId(map);
+    }
+
+    private String getCordX() {
+        if (advert_to_mod.getMapId() != null) {
+            return advert_to_mod.getMapId().getCordx().toString();
+        } else {
+            return "";
+        }
+    }
+
+    private String getCordY() {
+        if (advert_to_mod.getMapId() != null) {
+            return advert_to_mod.getMapId().getCordy().toString();
+        } else {
+            return "";
+        }
+    }
+
+    private String getPrice(Advertisement advertisement) {
+        if (advertisement.getPrice() != null) {
+            return String.valueOf(advertisement.getPrice());
+        } else {
+            return "";
+        }
+    }
+
+    private Integer checkPrice() {
+        if (!view.getTxtFldPrice().isEmpty()) {
+            return Integer.valueOf(view.getTxtFldPrice().getValue());
+        } else {
+            return null;
+        }
+    }
+
+    private void setAdvertisement(Advertisement advertisement) throws Exception {
+        advertisement.setAdvertStateId(selectedState());
+        advertisement.setAdvertTypeId(selectedType());
+        advertisement.setDescription(view.getTxtAreaDescription().getValue());
+        advertisement.setCityId(selectedCity());
+        advertisement.setCountryId(selectedCountry());
+        advertisement.setMainCategoryId(selectedMainCategory());
+        advertisement.setSubCategoryId(selectedSubCategory());
+        advertisement.setPrice(checkPrice());
+        advertisement.setRegistrationDate(Global.currentDate());
+        advertisement.setTitle(view.getTxtFieldTitle().getValue());
+        addMapToAdvert(advertisement);
+        addPictureToAdvert(advertisement);
+    }
+
     public MyMultiFileUpload getMfu() {
         return mfu;
     }
@@ -274,5 +303,9 @@ public class AdvertChangeController {
 
     public void setCityFacade(CityFacade cityFacade) {
         this.cityFacade = cityFacade;
+    }
+
+    public void setMapFacade(MapFacade mapFacade) {
+        this.mapFacade = mapFacade;
     }
 }
