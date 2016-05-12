@@ -51,11 +51,10 @@ public class AccountController {
     public void populateAdverts() {
         int i = 1;
         for (final Advertisement a : adverts) {
+            String date = Global.DATEFORMAT.format(a.getRegistrationDate());
             view.createAdvertButtons();
             view.addListenerToBtnDelete(a);
             view.addListenerToBtnModify(a);
-
-            String date = Global.DATEFORMAT.format(a.getRegistrationDate());
             view.getTblAdverts().addItem(new Object[]{a.getTitle(),
                 date,
                 getPrice(a),

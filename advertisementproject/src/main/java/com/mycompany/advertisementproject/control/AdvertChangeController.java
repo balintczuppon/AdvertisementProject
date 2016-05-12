@@ -173,7 +173,6 @@ public class AdvertChangeController {
 
     public void removeFile(File file) throws Exception {
         files.remove(file);
-
         if (advert_to_mod == null) {
             file.delete();
         }
@@ -219,11 +218,13 @@ public class AdvertChangeController {
     }
 
     private void addMapToAdvert(Advertisement advertisement) {
-        Map map = new Map();
-        map.setCordx(Float.valueOf(view.getTxtFldCordX().getValue()));
-        map.setCordy(Float.valueOf(view.getTxtFldCordY().getValue()));
-        mapFacade.create(map);
-        advertisement.setMapId(map);
+        if (!view.getTxtFldCordX().isEmpty() && !view.getTxtFldCordY().isEmpty()) {
+            Map map = new Map();
+            map.setCordx(Float.valueOf(view.getTxtFldCordX().getValue()));
+            map.setCordy(Float.valueOf(view.getTxtFldCordY().getValue()));
+            mapFacade.create(map);
+            advertisement.setMapId(map);
+        }
     }
 
     private String getCordX() {

@@ -23,10 +23,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextArea;
+import com.vaadin.ui.RichTextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -83,7 +82,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     private TextField txtFldEmail;
     private TextField txtFldCustomerPhoneNumber;
 
-    private TextArea txtAreaMessage;
+    private RichTextArea txtAreaMessage;
 
     private Advertisement advertisement;
 
@@ -243,10 +242,10 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     }
 
     private void addMessageArea() {
-        txtAreaMessage = new TextArea();
+        txtAreaMessage = new RichTextArea();
         txtAreaMessage.setWidth(txtAreaMessageWidth);
         txtAreaMessage.setHeightUndefined();
-        txtAreaMessage.setInputPrompt(txtAreaMessagePrompt);
+        txtAreaMessage.setValue(txtAreaMessagePrompt);
     }
 
     private void addSendButton() {
@@ -297,9 +296,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
             vlContent.addComponent(mainImage);
         }
         vlContent.addComponent(hlPictures);
-        if (lblPrice != null) {
-            vlContent.addComponent(lblPrice);
-        }
+        vlContent.addComponent(lblPrice);
         separeate();
         vlContent.addComponent(lblDescription);
         separeate();
@@ -363,7 +360,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         return txtFldCustomerPhoneNumber;
     }
 
-    public TextArea getTxtAreaMessage() {
+    public RichTextArea getTxtAreaMessage() {
         return txtAreaMessage;
     }
 

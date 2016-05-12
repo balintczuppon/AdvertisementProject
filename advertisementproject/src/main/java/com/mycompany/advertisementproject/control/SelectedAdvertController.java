@@ -32,7 +32,11 @@ public class SelectedAdvertController {
     }
 
     public void sendMail(Advertisement adv) throws Exception {
+        createLetter(adv);
+        sendLetter(adv);
+    }
 
+    private void createLetter(Advertisement adv) throws Exception{
         Letter letter = new Letter();
         letter.setMailtext(view.getTxtAreaMessage().getValue());
         letter.setMailtitle(adv.getTitle());
@@ -43,10 +47,11 @@ public class SelectedAdvertController {
         letter.setSender(Boolean.FALSE);
         letter.setPostBoxId(adv.getAdvertiserId().getPostbox());
         letter.setAdvertisementId(adv.getId());
-
         adv.getAdvertiserId().getPostbox().addLetter(letter);
         letterFacade.create(letter);
+    }
 
+    private void sendLetter(Advertisement adv) throws Exception{
         MailSender ms = new MailSender();
         ms.setReceiver(adv.getAdvertiserId().getEmail());
         ms.setSender(view.getTxtFldEmail().getValue());
@@ -60,10 +65,9 @@ public class SelectedAdvertController {
         ms.setSubject(view.getLetterSubject());
         ms.setText(letterText(adv));
         ms.send();
-
     }
 
-    private String letterText(Advertisement a) {
+    private String letterText(Advertisement a) throws Exception{
         String htmlLink = "<a " + view.getPageLink() + view.getViewName() + ">" + view.getLinkText() + "</a></br>";
         String text
                 = "<p>"
@@ -124,7 +128,7 @@ public class SelectedAdvertController {
         }
     }
 
-    public void validateEmail(String value) {
+    public void validateEmail(String value) throws Exception{
         EmailValidator validator = new EmailValidator(view.getValidatorMessage());
         validator.validate(value);
     }
