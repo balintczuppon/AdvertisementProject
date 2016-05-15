@@ -25,22 +25,32 @@ import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
 import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.server.VaadinSession;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import org.vaadin.easyuploads.FileBuffer;
 
-public class AdvertChangeController {
+public class AdvertChangeController implements Serializable {
 
+    @Inject
     private MaincategoryFacade maincategoryFacade;
+    @Inject
     private SubcategoryFacade subcategoryFacade;
+    @Inject
     private AdverttypeFacade adverttypeFacade;
+    @Inject
     protected AdvertisementFacade advertisementFacade;
+    @Inject
     private AdvertstateFacade advertstateFacade;
+    @Inject
     private CountryFacade countryFacade;
+    @Inject
     private CityFacade cityFacade;
+    @Inject
     private MapFacade mapFacade;
 
-    private final AdvertRegView view;
+    private AdvertRegView view;
 
     private final List<File> files = new ArrayList<>();
     private final List<File> originalFiles = new ArrayList<>();
@@ -53,8 +63,7 @@ public class AdvertChangeController {
     private Advertiser current_advertiser;
     private final Advertisement advert_to_mod;
 
-    public AdvertChangeController(AdvertRegView view) {
-        this.view = view;
+    public AdvertChangeController() {
         advert_to_mod = (Advertisement) VaadinSession.getCurrent().getAttribute(ADVERTTOMODIFY.toString());
     }
 
@@ -278,35 +287,8 @@ public class AdvertChangeController {
         return mfu;
     }
 
-    public void setMaincategoryFacade(MaincategoryFacade maincategoryFacade) {
-        this.maincategoryFacade = maincategoryFacade;
+    public void setView(AdvertRegView view) {
+        this.view = view;
     }
 
-    public void setSubcategoryFacade(SubcategoryFacade subcategoryFacade) {
-        this.subcategoryFacade = subcategoryFacade;
-    }
-
-    public void setAdverttypeFacade(AdverttypeFacade adverttypeFacade) {
-        this.adverttypeFacade = adverttypeFacade;
-    }
-
-    public void setAdvertisementFacade(AdvertisementFacade advertisementFacade) {
-        this.advertisementFacade = advertisementFacade;
-    }
-
-    public void setAdvertstateFacade(AdvertstateFacade advertstateFacade) {
-        this.advertstateFacade = advertstateFacade;
-    }
-
-    public void setCountryFacade(CountryFacade countryFacade) {
-        this.countryFacade = countryFacade;
-    }
-
-    public void setCityFacade(CityFacade cityFacade) {
-        this.cityFacade = cityFacade;
-    }
-
-    public void setMapFacade(MapFacade mapFacade) {
-        this.mapFacade = mapFacade;
-    }
 }

@@ -28,6 +28,9 @@ import javax.inject.Inject;
 @CDIView("USERPAGE")
 public class AccountView extends VerticalLayout implements View {
 
+    @Inject
+    private AccountController controller;
+
     private static boolean availability;
 
     private String advertTabText;
@@ -72,14 +75,6 @@ public class AccountView extends VerticalLayout implements View {
     private Panel advertPanel;
     private Panel postBoxPanel;
 
-    private AccountController controller;
-
-    @Inject
-    PictureFacade pictureFacade;
-    @Inject
-    AdvertisementFacade advertisementFacade;
-    @Inject
-    LetterFacade letterFacade;
     private I18Helper i18Helper;
 
     @Override
@@ -91,14 +86,13 @@ public class AccountView extends VerticalLayout implements View {
     public void initComponent() {
         if (availability) {
             i18Helper = new I18Helper(AppBundle.currentBundle());
-            controller = new AccountController(this);
+            controller.setView(this);
             build();
         }
     }
 
     public void build() {
         try {
-            setController();
             updateStrings();
             buildTabs();
             buildView();
@@ -304,12 +298,6 @@ public class AccountView extends VerticalLayout implements View {
         letterTblMessage = i18Helper.getMessage("Message");
         letterTblSender = i18Helper.getMessage("Sender");
         letterTblSubject = i18Helper.getMessage("Subject");
-    }
-
-    private void setController() {
-        controller.setAdvertisementFacade(advertisementFacade);
-        controller.setLetterFacade(letterFacade);
-        controller.setPictureFacade(pictureFacade);
     }
 
     public Button getBtnDeleteAdvert() {

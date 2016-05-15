@@ -13,23 +13,22 @@ import com.vaadin.server.FileResource;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.inject.Inject;
 
-public class SelectedAdvertController {
+public class SelectedAdvertController implements Serializable{
 
+    @Inject
     private LetterFacade letterFacade;
 
     private List<Picture> pictures = new ArrayList<>();
     private File file;
 
     private SelectedAdvertView view;
-
-    public SelectedAdvertController(SelectedAdvertView selectedAdvert) {
-        view = selectedAdvert;
-    }
 
     public void sendMail(Advertisement adv) throws Exception {
         createLetter(adv);
@@ -133,7 +132,7 @@ public class SelectedAdvertController {
         validator.validate(value);
     }
 
-    public void setLetterFacade(LetterFacade letterFacade) {
-        this.letterFacade = letterFacade;
+    public void setView(SelectedAdvertView view) {
+        this.view = view;
     }
 }

@@ -13,14 +13,22 @@ import com.mycompany.advertisementproject.model.facades.CountryFacade;
 import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
 import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
 import com.vaadin.ui.ComboBox;
+import java.io.Serializable;
+import javax.inject.Inject;
 
-public class AdminController {
+public class AdminController implements Serializable {
 
+    @Inject
     private CountryFacade countryFacade;
+    @Inject
     private CityFacade cityFacade;
+    @Inject
     private MaincategoryFacade categoryFacade;
+    @Inject
     private SubcategoryFacade subcategoryFacade;
+    @Inject
     private AdvertstateFacade stateFacade;
+    @Inject
     private AdverttypeFacade typeFacade;
 
     public void createCountry(String name) throws Exception {
@@ -162,29 +170,5 @@ public class AdminController {
     public void popluateTypeFields(ComboBox comboBox) {
         comboBox.removeAllItems();
         comboBox.addItems(typeFacade.findAll());
-    }
-
-    public void setCountryFacade(CountryFacade countryFacade) {
-        this.countryFacade = countryFacade;
-    }
-
-    public void setCityFacade(CityFacade cityFacade) {
-        this.cityFacade = cityFacade;
-    }
-
-    public void setCategoryFacade(MaincategoryFacade categoryFacade) {
-        this.categoryFacade = categoryFacade;
-    }
-
-    public void setSubcategoryFacade(SubcategoryFacade subcategoryFacade) {
-        this.subcategoryFacade = subcategoryFacade;
-    }
-
-    public void setStateFacade(AdvertstateFacade stateFacade) {
-        this.stateFacade = stateFacade;
-    }
-
-    public void setTypeFacade(AdverttypeFacade typeFacade) {
-        this.typeFacade = typeFacade;
     }
 }

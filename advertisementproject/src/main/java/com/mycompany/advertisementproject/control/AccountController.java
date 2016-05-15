@@ -19,18 +19,23 @@ import com.mycompany.advertisementproject.view.vaadinviews.AdvertRegView;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.inject.Inject;
 
-public class AccountController {
+public class AccountController implements Serializable {
 
+    @Inject
     private AdvertisementFacade advertisementFacade;
+    @Inject
     private PictureFacade pictureFacade;
+    @Inject
     private LetterFacade letterFacade;
 
-    private final AccountView view;
+    private AccountView view;
 
     private List<Advertisement> adverts = new ArrayList<>();
     private List<Letter> letters = new ArrayList<>();
@@ -38,10 +43,6 @@ public class AccountController {
 
     private int k;
     private int j;
-
-    public AccountController(AccountView view) {
-        this.view = view;
-    }
 
     public void fillAdverts() throws Exception {
         current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
@@ -160,15 +161,7 @@ public class AccountController {
         view.getUI().getNavigator().navigateTo(LETTER.toString());
     }
 
-    public void setAdvertisementFacade(AdvertisementFacade advertisementFacade) {
-        this.advertisementFacade = advertisementFacade;
-    }
-
-    public void setPictureFacade(PictureFacade pictureFacade) {
-        this.pictureFacade = pictureFacade;
-    }
-
-    public void setLetterFacade(LetterFacade letterFacade) {
-        this.letterFacade = letterFacade;
+    public void setView(AccountView view) {
+        this.view = view;
     }
 }

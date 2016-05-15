@@ -8,18 +8,18 @@ import com.mycompany.advertisementproject.model.facades.AdvertiserFacade;
 import com.mycompany.advertisementproject.model.facades.PostboxFacade;
 import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.data.validator.EmailValidator;
+import java.io.Serializable;
+import javax.inject.Inject;
 
-public class RegistrationController {
+public class RegistrationController implements Serializable {
 
+    @Inject
     private AdvertiserFacade advertiserFacade;
+    @Inject
     private PostboxFacade postboxFacade;
 
-    private final RegistrationView view;
+    private RegistrationView view;
     private Advertiser advertiserToCheck;
-
-    public RegistrationController(RegistrationView registrationView) {
-        this.view = registrationView;
-    }
 
     public void registration() throws Exception {
         checkUserExists();
@@ -45,7 +45,7 @@ public class RegistrationController {
             postbox.setId(id);
 
             postboxFacade.create(postbox);
-            
+
             view.goForward();
         } catch (Exception e) {
             throw new Exception();
@@ -97,11 +97,8 @@ public class RegistrationController {
         checkTermsChecked();
     }
 
-    public void setAdvertiserFacade(AdvertiserFacade advertiserFacade) {
-        this.advertiserFacade = advertiserFacade;
+    public void setView(RegistrationView view) {
+        this.view = view;
     }
 
-    public void setPostboxFacade(PostboxFacade postboxFacade) {
-        this.postboxFacade = postboxFacade;
-    }
 }

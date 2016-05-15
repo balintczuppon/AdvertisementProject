@@ -1,13 +1,5 @@
 package com.mycompany.advertisementproject.view.vaadinviews;
 
-import com.mycompany.advertisementproject.model.facades.AdverttypeFacade;
-import com.mycompany.advertisementproject.model.facades.CountryFacade;
-import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
-import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
-import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
-import com.mycompany.advertisementproject.model.facades.CityFacade;
-import com.mycompany.advertisementproject.model.facades.PictureFacade;
-import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
 import com.mycompany.advertisementproject.control.AdvertListController;
 import com.mycompany.advertisementproject.toolz.AppBundle;
@@ -25,11 +17,9 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -37,6 +27,9 @@ import javax.inject.Inject;
 
 @CDIView("ADVERTS")
 public class AdvertListView extends VerticalLayout implements View {
+
+    @Inject
+    private AdvertListController controller;
 
     private I18Helper i18Helper;
 
@@ -103,24 +96,7 @@ public class AdvertListView extends VerticalLayout implements View {
     private Button btnFilter;
     private Button btnSearch;
 
-    private AdvertListController controller;
-
     private Embedded image;
-
-    @Inject
-    private MaincategoryFacade maincategoryFacade;
-    @Inject
-    private SubcategoryFacade subcategoryFacade;
-    @Inject
-    private AdverttypeFacade adverttypeFacade;
-    @Inject
-    private CountryFacade countryFacade;
-    @Inject
-    private CityFacade cityFacade;
-    @Inject
-    private AdvertisementFacade advertisementFacade;
-    @Inject
-    private AdvertstateFacade advertstateFacade;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -135,8 +111,7 @@ public class AdvertListView extends VerticalLayout implements View {
 
     public void build() {
         try {
-            controller = new AdvertListController(this);
-            setController();
+            controller.setView(this);
             updateStrings();
             setSizeFull();
             setMargin(true);
@@ -361,7 +336,7 @@ public class AdvertListView extends VerticalLayout implements View {
 
     private void addListeners() throws Exception {
         addSearchButtonListener();
-        addFilterButtonListener();;
+        addFilterButtonListener();
         addCountyComboListener();
         addCategoryComboListener();
         addSortTypeComboListener();
@@ -472,17 +447,7 @@ public class AdvertListView extends VerticalLayout implements View {
         sortTypePriceAsc = i18Helper.getMessage("Cheapest");
         sortTypePriceDesc = i18Helper.getMessage("MostExpensive");
     }
-
-    private void setController() {
-        controller.setAdvertisementFacade(advertisementFacade);
-        controller.setAdvertstateFacade(advertstateFacade);
-        controller.setAdverttypeFacade(adverttypeFacade);
-        controller.setCityFacade(cityFacade);
-        controller.setCountryFacade(countryFacade);
-        controller.setMaincategoryFacade(maincategoryFacade);
-        controller.setSubcategoryFacade(subcategoryFacade);
-    }
-
+    
     public ComboBox getCmbBxSortType() {
         return cmbBxSortType;
     }

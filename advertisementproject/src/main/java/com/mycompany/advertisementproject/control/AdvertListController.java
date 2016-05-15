@@ -5,42 +5,37 @@ import static com.mycompany.advertisementproject.enumz.Views.SELECTED;
 import static com.mycompany.advertisementproject.enumz.SortAttributes.*;
 import com.mycompany.advertisementproject.toolz.AdvertComparator;
 import com.mycompany.advertisementproject.view.vaadinviews.AdvertListView;
-import com.mycompany.advertisementproject.model.entities.Advertisement;
-import com.mycompany.advertisementproject.model.entities.Advertstate;
-import com.mycompany.advertisementproject.model.entities.Adverttype;
-import com.mycompany.advertisementproject.model.entities.City;
-import com.mycompany.advertisementproject.model.entities.Country;
-import com.mycompany.advertisementproject.model.entities.Maincategory;
-import com.mycompany.advertisementproject.model.entities.Picture;
-import com.mycompany.advertisementproject.model.entities.Subcategory;
-import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
-import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
-import com.mycompany.advertisementproject.model.facades.AdverttypeFacade;
-import com.mycompany.advertisementproject.model.facades.CityFacade;
-import com.mycompany.advertisementproject.model.facades.CountryFacade;
-import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
-import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
+import com.mycompany.advertisementproject.model.entities.*;
+import com.mycompany.advertisementproject.model.facades.*;
 import com.mycompany.advertisementproject.toolz.MyAdvertPager;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.inject.Inject;
 
-public class AdvertListController {
+public class AdvertListController implements Serializable{
 
+    @Inject
     private MaincategoryFacade maincategoryFacade;
+    @Inject
     private SubcategoryFacade subcategoryFacade;
+    @Inject
     private AdverttypeFacade adverttypeFacade;
+    @Inject
     private CountryFacade countryFacade;
+    @Inject
     private CityFacade cityFacade;
+    @Inject
     private AdvertisementFacade advertisementFacade;
+    @Inject
     private AdvertstateFacade advertstateFacade;
 
     private List<Advertisement> adverts = new ArrayList<>();
@@ -50,11 +45,7 @@ public class AdvertListController {
 
     private boolean filled = false;
 
-    private final AdvertListView view;
-
-    public AdvertListController(AdvertListView view) {
-        this.view = view;
-    }
+    private AdvertListView view;
 
     public void fillCmbBxSubCategory(Object value) {
         view.getCmbBxSubCategory().removeAllItems();
@@ -213,34 +204,9 @@ public class AdvertListController {
             sortAdverts(adverts, PRICE.toString(), Boolean.FALSE);
         }
         loadAdverts();
-    }
+    }  
 
-    public void setMaincategoryFacade(MaincategoryFacade maincategoryFacade) {
-        this.maincategoryFacade = maincategoryFacade;
+    public void setView(AdvertListView view) {
+        this.view = view;
     }
-
-    public void setSubcategoryFacade(SubcategoryFacade subcategoryFacade) {
-        this.subcategoryFacade = subcategoryFacade;
-    }
-
-    public void setAdverttypeFacade(AdverttypeFacade adverttypeFacade) {
-        this.adverttypeFacade = adverttypeFacade;
-    }
-
-    public void setCountryFacade(CountryFacade countryFacade) {
-        this.countryFacade = countryFacade;
-    }
-
-    public void setCityFacade(CityFacade cityFacade) {
-        this.cityFacade = cityFacade;
-    }
-
-    public void setAdvertisementFacade(AdvertisementFacade advertisementFacade) {
-        this.advertisementFacade = advertisementFacade;
-    }
-
-    public void setAdvertstateFacade(AdvertstateFacade advertstateFacade) {
-        this.advertstateFacade = advertstateFacade;
-    }
-
 }

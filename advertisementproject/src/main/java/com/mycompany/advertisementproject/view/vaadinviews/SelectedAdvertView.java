@@ -34,6 +34,9 @@ import javax.inject.Inject;
 @CDIView("SELECTED")
 public class SelectedAdvertView extends HorizontalLayout implements View {
 
+    @Inject
+    private SelectedAdvertController controller;
+
     private String advertPanelWidth;
     private String lblAdvertiserCaption;
     private String lblAdvertiserPhoneCaption;
@@ -86,8 +89,6 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
 
     private Advertisement advertisement;
 
-    private SelectedAdvertController controller;
-
     private VerticalLayout vlContent;
 
     private GoogleMap googleMap;
@@ -98,8 +99,6 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
 
     private Button btnSendMessage;
 
-    @Inject
-    private LetterFacade letterFacade;
     private I18Helper i18Helper;
 
     @PostConstruct
@@ -115,8 +114,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
 
     private void buildView() {
         advertisement = (Advertisement) VaadinSession.getCurrent().getAttribute(SELECTEDADVERT.toString());
-        controller = new SelectedAdvertController(this);
-        controller.setLetterFacade(letterFacade);
+        controller.setView(this);
         build();
     }
 

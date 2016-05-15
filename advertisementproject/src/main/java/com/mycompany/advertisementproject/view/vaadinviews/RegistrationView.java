@@ -28,6 +28,9 @@ import javax.inject.Inject;
 @CDIView("REGISTRATION")
 public class RegistrationView extends VerticalLayout implements View {
 
+    @Inject
+    private RegistrationController controller;
+
     private TextField tfEmail;
     private TextField tfName;
     private TextField tfPhoneNumber;
@@ -42,14 +45,8 @@ public class RegistrationView extends VerticalLayout implements View {
 
     private Button btnRegistration;
 
-    private RegistrationController controller;
-
     private FormLayout formLayout;
-
-    @Inject
-    private AdvertiserFacade advertiserFacade;
-    @Inject
-    private PostboxFacade postboxFacade;
+    
     private I18Helper i18Helper;
 
     @Override
@@ -68,9 +65,7 @@ public class RegistrationView extends VerticalLayout implements View {
     }
 
     private void defaultSettings() {
-        controller = new RegistrationController(this);
-        controller.setAdvertiserFacade(advertiserFacade);
-        controller.setPostboxFacade(postboxFacade);
+        controller.setView(this);
         setMargin(true);
     }
 

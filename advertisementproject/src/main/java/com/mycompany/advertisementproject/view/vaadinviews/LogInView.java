@@ -23,18 +23,16 @@ import javax.inject.Inject;
 @CDIView("LOGIN")
 public class LogInView extends VerticalLayout implements View {
 
+    @Inject
+    private LoginController logincontroller;
+
     private PasswordField pfPassWord;
     private TextField tfEmail;
     private Button btnLogin;
     private Label lblTitle;
 
-    private LoginController logincontroller;
-
     private FormLayout formLayout;
 
-    @Inject
-    private AdvertiserFacade advertiserFacade;
-    
     private I18Helper i18Helper;
 
     @Override
@@ -53,8 +51,7 @@ public class LogInView extends VerticalLayout implements View {
     }
 
     private void defaultSettings() {
-        logincontroller = new LoginController(this);
-        logincontroller.setAdvertiserFacade(advertiserFacade);
+        logincontroller.setView(this);
         setMargin(true);
     }
 

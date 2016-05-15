@@ -32,6 +32,7 @@ import javax.inject.Inject;
 @CDIView("ADMINPAGE")
 public class AdminView extends VerticalLayout implements View {
 
+    @Inject
     private AdminController controller;
 
     private Accordion accordion;
@@ -86,19 +87,6 @@ public class AdminView extends VerticalLayout implements View {
     private String operationSuccess;
     private String operationFailed;
 
-    @Inject
-    private CountryFacade countryFacade;
-    @Inject
-    private CityFacade cityFacade;
-    @Inject
-    private MaincategoryFacade categoryFacade;
-    @Inject
-    private SubcategoryFacade subcategoryFacade;
-    @Inject
-    private AdvertstateFacade stateFacade;
-    @Inject
-    private AdverttypeFacade typeFacade;
-
     private static boolean availability = false;
     private I18Helper i18Helper;
 
@@ -123,23 +111,12 @@ public class AdminView extends VerticalLayout implements View {
 
     public void buildView() {
         try {
-            setController();
             updateStrings();
             setViewParameters();
             buildAccoordion();
         } catch (Exception ex) {
             Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    private void setController() {
-        controller = new AdminController();
-        controller.setCountryFacade(countryFacade);
-        controller.setCityFacade(cityFacade);
-        controller.setCategoryFacade(categoryFacade);
-        controller.setSubcategoryFacade(subcategoryFacade);
-        controller.setStateFacade(stateFacade);
-        controller.setTypeFacade(typeFacade);
     }
 
     private void setViewParameters() {

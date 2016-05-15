@@ -5,20 +5,19 @@ import com.mycompany.advertisementproject.view.vaadinviews.LogInView;
 import com.mycompany.advertisementproject.model.entities.Advertiser;
 import com.mycompany.advertisementproject.model.facades.AdvertiserFacade;
 import com.mycompany.advertisementproject.toolz.Authorizator;
+import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJBException;
+import javax.inject.Inject;
 
-public class LoginController {
+public class LoginController implements Serializable {
 
+    @Inject
     private AdvertiserFacade advertiserFacade;
 
-    private final LogInView view;
+    private LogInView view;
     private Encryptor encryptor;
-
-    public LoginController(LogInView loginView) {
-        this.view = loginView;
-    }
 
     public void authentication(String user, String password) throws Exception {
         Advertiser current_advertiser = null;
@@ -43,8 +42,8 @@ public class LoginController {
         new Authorizator(view).authorize(a);
     }
 
-    public void setAdvertiserFacade(AdvertiserFacade advertiserFacade) {
-        this.advertiserFacade = advertiserFacade;
+    public void setView(LogInView view) {
+        this.view = view;
     }
 
 }

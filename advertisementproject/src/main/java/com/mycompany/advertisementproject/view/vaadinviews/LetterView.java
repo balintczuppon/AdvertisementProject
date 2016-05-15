@@ -25,6 +25,9 @@ import javax.inject.Inject;
 @CDIView("LETTER")
 public class LetterView extends VerticalLayout implements View {
 
+    @Inject
+    private LetterController controller;
+
     private static boolean availability = false;
 
     private String panelWidth;
@@ -61,16 +64,12 @@ public class LetterView extends VerticalLayout implements View {
     private TextArea taLetterToWrite;
     private TextArea taLetterToShow;
 
-    private LetterController controller;
-
     private HorizontalLayout hl;
 
     private VerticalLayout vlLetter;
 
     private Panel panel;
 
-    @Inject
-    private LetterFacade letterFacade;
     private I18Helper i18Helper;
 
     @Override
@@ -94,8 +93,7 @@ public class LetterView extends VerticalLayout implements View {
     }
 
     public void defaultSettings() {
-        controller = new LetterController(this);
-        controller.setLetterFacade(letterFacade);
+        controller.setView(this);
         vlLetter = new VerticalLayout();
         vlLetter.setMargin(true);
         vlLetter.setSpacing(true);

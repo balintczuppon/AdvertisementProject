@@ -29,6 +29,9 @@ import javax.inject.Inject;
 @CDIView("ADVERTREG")
 public class AdvertRegView extends VerticalLayout implements View {
 
+    @Inject
+    protected AdvertChangeController controller;
+
     private static boolean availability = false;
 
     protected String modify;
@@ -67,26 +70,7 @@ public class AdvertRegView extends VerticalLayout implements View {
 
     private TextArea txtAreaDescription;
 
-    protected AdvertChangeController controller;
-
     private FormLayout regFormLayout;
-
-    @Inject
-    private MaincategoryFacade maincategoryFacade;
-    @Inject
-    private SubcategoryFacade subcategoryFacade;
-    @Inject
-    private AdverttypeFacade adverttypeFacade;
-    @Inject
-    private AdvertisementFacade advertisementFacade;
-    @Inject
-    private AdvertstateFacade advertstateFacade;
-    @Inject
-    private CountryFacade countryFacade;
-    @Inject
-    private CityFacade cityFacade;
-    @Inject
-    private MapFacade mapFacade;
 
     private I18Helper i18Helper;
 
@@ -119,8 +103,7 @@ public class AdvertRegView extends VerticalLayout implements View {
         setSizeFull();
         setMargin(true);
         setSpacing(true);
-        controller = new AdvertChangeController(this);
-        setController();
+        controller.setView(this);
     }
 
     private void addForm() {
@@ -348,17 +331,6 @@ public class AdvertRegView extends VerticalLayout implements View {
         txtFldCordX.setInputPrompt(i18Helper.getMessage("googleMapX"));
         txtFldCordY.setInputPrompt(i18Helper.getMessage("googleMapY"));
         btnRegister.setCaption(register);
-    }
-
-    private void setController() {
-        controller.setAdvertisementFacade(advertisementFacade);
-        controller.setAdvertstateFacade(advertstateFacade);
-        controller.setAdverttypeFacade(adverttypeFacade);
-        controller.setCityFacade(cityFacade);
-        controller.setCountryFacade(countryFacade);
-        controller.setMaincategoryFacade(maincategoryFacade);
-        controller.setSubcategoryFacade(subcategoryFacade);
-        controller.setMapFacade(mapFacade);
     }
 
     public ComboBox getCmbbxCategory() {

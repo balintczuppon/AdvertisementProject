@@ -11,20 +11,19 @@ import com.mycompany.advertisementproject.model.facades.LetterFacade;
 import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinSession;
+import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.inject.Inject;
 
-public class LetterController {
+public class LetterController implements Serializable {
 
+    @Inject
     private LetterFacade letterFacade;
 
     private LetterView view;
 
     private int letterID = 0;
-
-    public LetterController(LetterView view) {
-        this.view = view;
-    }
 
     public void checkSessionAttribute() throws Exception {
         if (letterID == 0) {
@@ -78,13 +77,13 @@ public class LetterController {
         MailSender ms = new MailSender();
         ms.setReceiver(letter.getSendermail());
         ms.setSender(current_advertiser.getEmail());
-        
+
         /*
          Test Sender & Receiver
-        */
+         */
         ms.setReceiver("balintczuppon@gmail.com");
         ms.setSender("balintczuppon@gmail.com");
-        
+
         ms.setSubject(view.getResponsePrefix() + letter.getMailtitle());
         ms.setText(letterText());
         ms.send();
@@ -116,7 +115,7 @@ public class LetterController {
         return text;
     }
 
-    public void setLetterFacade(LetterFacade letterFacade) {
-        this.letterFacade = letterFacade;
+    public void setView(LetterView view) {
+        this.view = view;
     }
 }
