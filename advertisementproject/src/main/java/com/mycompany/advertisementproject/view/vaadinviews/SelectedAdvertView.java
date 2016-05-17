@@ -23,7 +23,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.RichTextArea;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import java.util.logging.Level;
@@ -85,7 +85,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     private TextField txtFldEmail;
     private TextField txtFldCustomerPhoneNumber;
 
-    private RichTextArea txtAreaMessage;
+    private TextArea txtAreaMessage;
 
     private Advertisement advertisement;
 
@@ -240,7 +240,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     }
 
     private void addMessageArea() {
-        txtAreaMessage = new RichTextArea();
+        txtAreaMessage = new TextArea();
         txtAreaMessage.setWidth(txtAreaMessageWidth);
         txtAreaMessage.setHeightUndefined();
         txtAreaMessage.setValue(txtAreaMessagePrompt);
@@ -358,7 +358,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         return txtFldCustomerPhoneNumber;
     }
 
-    public RichTextArea getTxtAreaMessage() {
+    public TextArea getTxtAreaMessage() {
         return txtAreaMessage;
     }
 

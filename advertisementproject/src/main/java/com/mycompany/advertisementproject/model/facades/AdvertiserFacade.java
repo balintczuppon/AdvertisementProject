@@ -6,7 +6,6 @@
 package com.mycompany.advertisementproject.model.facades;
 
 import com.mycompany.advertisementproject.model.entities.Advertiser;
-import com.mycompany.advertisementproject.model.entities.Postbox;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

@@ -31,8 +31,8 @@ public class LetterFacade extends AbstractFacade<Letter> {
     }
 
     public List<Letter> getMyLetters(Advertiser current_advertiser) {
-        return em.createQuery("SELECT l FROM Letter l WHERE l.postBoxId = :postbox")
-                .setParameter("postbox", current_advertiser.getPostbox())
+        return em.createQuery("SELECT l FROM Letter l WHERE l.advertiserId = :advertiser")
+                .setParameter("advertiser", current_advertiser)
                 .getResultList();
     }
 

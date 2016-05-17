@@ -26,6 +26,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
 
+/**
+ *
+ * @author balin
+ */
 public class AccountController implements Serializable {
 
     @Inject
@@ -44,11 +48,18 @@ public class AccountController implements Serializable {
     private int k;
     private int j;
 
+    /**
+     *
+     * @throws Exception
+     */
     public void fillAdverts() throws Exception {
         current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
         adverts = advertisementFacade.getMyAdvertisements(current_advertiser);
     }
 
+    /**
+     *
+     */
     public void populateAdverts() {
         int i = 1;
         for (final Advertisement a : adverts) {
@@ -73,6 +84,10 @@ public class AccountController implements Serializable {
         return null;
     }
 
+    /**
+     *
+     * @param a
+     */
     public void deletePicture(Advertisement a) {
         try {
             for (Picture p : a.getPictureCollection()) {
@@ -85,6 +100,10 @@ public class AccountController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param a
+     */
     public void modifyAdvert(Advertisement a) {
         try {
             VaadinSession.getCurrent().getLockInstance().lock();
@@ -95,11 +114,18 @@ public class AccountController implements Serializable {
         view.getUI().getNavigator().navigateTo(ADVERTMOD.toString());
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     public void fillLetters() throws Exception {
         current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
         letters = letterFacade.getMyLetters(current_advertiser);
     }
 
+    /**
+     *
+     */
     public void popluateLetters() {
         k = 1;
         j = 1;
@@ -139,7 +165,12 @@ public class AccountController implements Serializable {
 //        }
 //        return text;
 //    }
-    public void selectInComingLetter(ItemClickEvent event) {
+
+    /**
+     *
+     * @param event
+     */
+        public void selectInComingLetter(ItemClickEvent event) {
         Object object = event.getItem().getItemProperty("").getValue();
         try {
             VaadinSession.getCurrent().getLockInstance().lock();
@@ -150,6 +181,10 @@ public class AccountController implements Serializable {
         view.getUI().getNavigator().navigateTo(LETTER.toString());
     }
 
+    /**
+     *
+     * @param event
+     */
     public void selectOutGoingLetter(ItemClickEvent event) {
         Object object = event.getItem().getItemProperty("").getValue();
         try {

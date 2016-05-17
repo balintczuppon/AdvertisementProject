@@ -17,6 +17,7 @@ import com.vaadin.data.Property;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileResource;
+import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import java.io.File;
@@ -73,6 +74,7 @@ public class AdvertRegView extends VerticalLayout implements View {
     private FormLayout regFormLayout;
 
     private I18Helper i18Helper;
+    private String numberFormatError;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -251,16 +253,22 @@ public class AdvertRegView extends VerticalLayout implements View {
 
     public void addRegButtonListener() {
         btnRegister.addClickListener(new Button.ClickListener() {
+            private String numberFormatError;
+
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.registerAdvert();
                     Notification.show(successUpload);
+                    getUI().getNavigator().navigateTo(USERPAGE.toString());
+                } catch (NumberFormatException e) {
+                    txtFldPrice.setComponentError(new UserError(numberFormatError));
+                    txtFldCordX.setComponentError(new UserError(numberFormatError));
+                    txtFldCordY.setComponentError(new UserError(numberFormatError));
                 } catch (Exception e) {
                     Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, e);
                     Notification.show(failedUpload);
                 }
-                getUI().getNavigator().navigateTo(USERPAGE.toString());
             }
         });
     }
@@ -330,6 +338,7 @@ public class AdvertRegView extends VerticalLayout implements View {
         successModification = i18Helper.getMessage("operationSuccess");
         txtFldCordX.setInputPrompt(i18Helper.getMessage("googleMapX"));
         txtFldCordY.setInputPrompt(i18Helper.getMessage("googleMapY"));
+        numberFormatError = i18Helper.getMessage("NumberFormatError");
         btnRegister.setCaption(register);
     }
 

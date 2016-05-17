@@ -20,6 +20,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
 
+/**
+ *
+ * @author balin
+ */
 public class SelectedAdvertController implements Serializable{
 
     @Inject
@@ -30,6 +34,11 @@ public class SelectedAdvertController implements Serializable{
 
     private SelectedAdvertView view;
 
+    /**
+     *
+     * @param adv
+     * @throws Exception
+     */
     public void sendMail(Advertisement adv) throws Exception {
         createLetter(adv);
         sendLetter(adv);
@@ -44,9 +53,9 @@ public class SelectedAdvertController implements Serializable{
         letter.setSenderphone(view.getTxtFldCustomerPhoneNumber().getValue());
         letter.setSendDate(Global.currentDate());
         letter.setSender(Boolean.FALSE);
-        letter.setPostBoxId(adv.getAdvertiserId().getPostbox());
+        letter.setAdvertiserId(adv.getAdvertiserId());
         letter.setAdvertisementId(adv.getId());
-        adv.getAdvertiserId().getPostbox().addLetter(letter);
+        adv.getAdvertiserId().addLetter(letter);
         letterFacade.create(letter);
     }
 
@@ -67,7 +76,7 @@ public class SelectedAdvertController implements Serializable{
     }
 
     private String letterText(Advertisement a) throws Exception{
-        String htmlLink = "<a " + view.getPageLink() + view.getViewName() + ">" + view.getLinkText() + "</a></br>";
+        String htmlLink = "<a href=" + view.getPageLink() + view.getViewName() + " >" + view.getLinkText() + "</a></br>";
         String text
                 = "<p>"
                 + view.getGreetingText() + "<br><br>"
@@ -77,9 +86,14 @@ public class SelectedAdvertController implements Serializable{
                 + view.getGoodbyeText() + "<br>"
                 + view.getSenderName()
                 + "</p>";
+        System.out.println(htmlLink);
         return text;
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     public void addMainPicture() throws Exception {
         pictures = (List<Picture>) view.getAdvertisement().getPictureCollection();
         if (!pictures.isEmpty()) {
@@ -104,6 +118,11 @@ public class SelectedAdvertController implements Serializable{
         }
     }
 
+    /**
+     *
+     * @param hlPictures
+     * @throws Exception
+     */
     public void addOtherPictures(HorizontalLayout hlPictures) throws Exception {
         if (!pictures.isEmpty()) {
             for (Picture picture : pictures) {
@@ -127,11 +146,20 @@ public class SelectedAdvertController implements Serializable{
         }
     }
 
+    /**
+     *
+     * @param value
+     * @throws Exception
+     */
     public void validateEmail(String value) throws Exception{
         EmailValidator validator = new EmailValidator(view.getValidatorMessage());
         validator.validate(value);
     }
 
+    /**
+     *
+     * @param view
+     */
     public void setView(SelectedAdvertView view) {
         this.view = view;
     }

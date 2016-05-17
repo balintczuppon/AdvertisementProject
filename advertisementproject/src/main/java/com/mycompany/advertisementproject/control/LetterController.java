@@ -16,6 +16,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
 
+/**
+ *
+ * @author balin
+ */
 public class LetterController implements Serializable {
 
     @Inject
@@ -25,6 +29,10 @@ public class LetterController implements Serializable {
 
     private int letterID = 0;
 
+    /**
+     *
+     * @throws Exception
+     */
     public void checkSessionAttribute() throws Exception {
         if (letterID == 0) {
             try {
@@ -47,6 +55,10 @@ public class LetterController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     public void getParameter(ViewChangeListener.ViewChangeEvent event) {
         String parameter = event.getParameters().split("/")[0];
         if (!parameter.isEmpty()) {
@@ -54,6 +66,11 @@ public class LetterController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param letter
+     * @throws Exception
+     */
     public void response(Letter letter) throws Exception {
         Advertiser current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
 
@@ -65,10 +82,10 @@ public class LetterController implements Serializable {
         responseLetter.setSenderphone(current_advertiser.getPhonenumber());
         responseLetter.setSender(Boolean.TRUE);
         responseLetter.setSendDate(Global.currentDate());
-        responseLetter.setPostBoxId(current_advertiser.getPostbox());
+        responseLetter.setAdvertiserId(current_advertiser);
         responseLetter.setAdvertisementId(letter.getAdvertisementId());
 
-        current_advertiser.getPostbox().addLetter(responseLetter);
+        current_advertiser.addLetter(responseLetter);
 
         letterFacade.create(responseLetter);
 
@@ -89,11 +106,19 @@ public class LetterController implements Serializable {
         ms.send();
     }
 
+    /**
+     *
+     * @param letter
+     * @throws Exception
+     */
     public void deleteLetter(Letter letter) throws Exception {
         letterFacade.remove(letter);
         view.getUI().getNavigator().navigateTo(Views.USERPAGE.toString());
     }
 
+    /**
+     *
+     */
     public void jumpBack() {
         view.getUI().getNavigator().navigateTo(Views.USERPAGE.toString());
     }
@@ -115,6 +140,10 @@ public class LetterController implements Serializable {
         return text;
     }
 
+    /**
+     *
+     * @param view
+     */
     public void setView(LetterView view) {
         this.view = view;
     }

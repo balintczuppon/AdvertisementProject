@@ -31,6 +31,10 @@ import java.util.List;
 import javax.inject.Inject;
 import org.vaadin.easyuploads.FileBuffer;
 
+/**
+ *
+ * @author balin
+ */
 public class AdvertChangeController implements Serializable {
 
     @Inject
@@ -39,6 +43,10 @@ public class AdvertChangeController implements Serializable {
     private SubcategoryFacade subcategoryFacade;
     @Inject
     private AdverttypeFacade adverttypeFacade;
+
+    /**
+     *
+     */
     @Inject
     protected AdvertisementFacade advertisementFacade;
     @Inject
@@ -63,10 +71,17 @@ public class AdvertChangeController implements Serializable {
     private Advertiser current_advertiser;
     private final Advertisement advert_to_mod;
 
+    /**
+     *
+     */
     public AdvertChangeController() {
         advert_to_mod = (Advertisement) VaadinSession.getCurrent().getAttribute(ADVERTTOMODIFY.toString());
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     public void registerAdvert() throws Exception {
         current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
         Advertisement advertisement = new Advertisement();
@@ -76,6 +91,10 @@ public class AdvertChangeController implements Serializable {
         advertisementFacade.create(advertisement);
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     public void modifyAdvert() throws Exception {
         setAdvertisement(advert_to_mod);
         deleteUnUsedPictures();
@@ -83,6 +102,10 @@ public class AdvertChangeController implements Serializable {
         advertisementFacade.edit(advert_to_mod);
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     public void linkDataToFields() throws Exception {
         view.getTxtFieldTitle().setValue(advert_to_mod.getTitle());
         view.getTxtAreaDescription().setValue(advert_to_mod.getDescription());
@@ -106,6 +129,10 @@ public class AdvertChangeController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     public void fillComboBoxes() throws Exception {
         if (!filled) {
             view.getCmbbxCategory().addItems(maincategoryFacade.findAll());
@@ -116,6 +143,11 @@ public class AdvertChangeController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param value
+     * @throws Exception
+     */
     public void fillCmbBxSubCategory(Object value) throws Exception {
         view.getCmbbxSubCategory().removeAllItems();
         view.getCmbbxSubCategory().setEnabled(true);
@@ -124,6 +156,11 @@ public class AdvertChangeController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param value
+     * @throws Exception
+     */
     public void fillCmbBxCity(Object value) throws Exception {
         view.getCmbbxCity().removeAllItems();
         view.getCmbbxCity().setEnabled(true);
@@ -180,6 +217,11 @@ public class AdvertChangeController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param file
+     * @throws Exception
+     */
     public void removeFile(File file) throws Exception {
         files.remove(file);
         if (advert_to_mod == null) {
@@ -187,6 +229,10 @@ public class AdvertChangeController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     public void setUpLoadField() throws Exception {
         mfu = new MyMultiFileUpload() {
 
@@ -209,6 +255,10 @@ public class AdvertChangeController implements Serializable {
         mfu.setCaption(view.getDropHere());
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     public void deleteUnUsedPictures() throws Exception {
         for (File file : originalFiles) {
             if (!files.contains(file)) {
@@ -217,6 +267,11 @@ public class AdvertChangeController implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param advertisement
+     * @throws Exception
+     */
     public void addPictureToAdvert(Advertisement advertisement) throws Exception {
         for (File f : files) {
             picture = new Picture();
@@ -283,12 +338,22 @@ public class AdvertChangeController implements Serializable {
         addPictureToAdvert(advertisement);
     }
 
+    /**
+     *
+     * @return
+     */
     public MyMultiFileUpload getMfu() {
         return mfu;
     }
 
+    /**
+     *
+     * @param view
+     */
     public void setView(AdvertRegView view) {
         this.view = view;
     }
 
+
+   
 }

@@ -21,6 +21,10 @@ import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 
+/**
+ *
+ * @author balin
+ */
 public class AdvertListController implements Serializable{
 
     @Inject
@@ -47,6 +51,10 @@ public class AdvertListController implements Serializable{
 
     private AdvertListView view;
 
+    /**
+     *
+     * @param value
+     */
     public void fillCmbBxSubCategory(Object value) {
         view.getCmbBxSubCategory().removeAllItems();
         view.getCmbBxSubCategory().setEnabled(true);
@@ -55,6 +63,10 @@ public class AdvertListController implements Serializable{
         }
     }
 
+    /**
+     *
+     * @param value
+     */
     public void fillCmbBxCity(Object value) {
         view.getCmbBxCity().removeAllItems();
         view.getCmbBxCity().setEnabled(true);
@@ -63,11 +75,19 @@ public class AdvertListController implements Serializable{
         }
     }
 
+    /**
+     *
+     * @param advertList
+     * @param itemsArea
+     */
     public void pageAdverts(VerticalLayout advertList, VerticalLayout itemsArea) {
         MyAdvertPager advertPager = new MyAdvertPager();
         advertPager.pageAdverts(advertList, itemsArea, advertlayouts);
     }
 
+    /**
+     *
+     */
     public void fillComboBoxes() {
         if (!filled) {
             view.getCmbBxCategory().addItems(maincategoryFacade.findAll());
@@ -78,6 +98,10 @@ public class AdvertListController implements Serializable{
         }
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     public void filterAdverts() throws Exception {
         Maincategory mcategory = null;
         Subcategory subCategory = null;
@@ -132,10 +156,17 @@ public class AdvertListController implements Serializable{
         view.getAdvertPanel().setContent(lblNoResult);
     }
 
+    /**
+     *
+     */
     public void fillAdverts() {
         adverts = advertisementFacade.findAll();
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     public void loadAdverts() throws Exception {
         advertlayouts.clear();
         for (Advertisement a : adverts) {
@@ -149,6 +180,10 @@ public class AdvertListController implements Serializable{
         }
     }
 
+    /**
+     *
+     * @param adv
+     */
     public void selectedAdvert(Advertisement adv) {
         try {
             VaadinSession.getCurrent().getLockInstance().lock();
@@ -159,6 +194,11 @@ public class AdvertListController implements Serializable{
         view.getUI().getNavigator().navigateTo(SELECTED.toString());
     }
 
+    /**
+     *
+     * @param image
+     * @param adv
+     */
     public void addPictureToAdvert(Embedded image, Advertisement adv) {
         try {
             List<Picture> pictures = (List<Picture>) adv.getPictureCollection();
@@ -174,6 +214,11 @@ public class AdvertListController implements Serializable{
         }
     }
 
+    /**
+     *
+     * @param value
+     * @throws Exception
+     */
     public void searchAdverts(String value) throws Exception {
         filterText = value;
         if (!filterText.isEmpty()) {
@@ -190,6 +235,11 @@ public class AdvertListController implements Serializable{
         Collections.sort(list, new AdvertComparator(sortAttribute, ascending));
     }
 
+    /**
+     *
+     * @param value
+     * @throws Exception
+     */
     public void sort(Object value) throws Exception {
         if (String.valueOf(value).equals(view.getSortTypeDateAsc())) {
             sortAdverts(adverts, DATE.toString(), Boolean.TRUE);
@@ -206,6 +256,10 @@ public class AdvertListController implements Serializable{
         loadAdverts();
     }  
 
+    /**
+     *
+     * @param view
+     */
     public void setView(AdvertListView view) {
         this.view = view;
     }

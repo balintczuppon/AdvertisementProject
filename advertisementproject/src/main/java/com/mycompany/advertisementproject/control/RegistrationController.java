@@ -3,24 +3,28 @@ package com.mycompany.advertisementproject.control;
 import com.mycompany.advertisementproject.toolz.Encryptor;
 import com.mycompany.advertisementproject.view.vaadinviews.RegistrationView;
 import com.mycompany.advertisementproject.model.entities.Advertiser;
-import com.mycompany.advertisementproject.model.entities.Postbox;
 import com.mycompany.advertisementproject.model.facades.AdvertiserFacade;
-import com.mycompany.advertisementproject.model.facades.PostboxFacade;
 import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.data.validator.EmailValidator;
 import java.io.Serializable;
 import javax.inject.Inject;
 
+/**
+ *
+ * @author balin
+ */
 public class RegistrationController implements Serializable {
 
     @Inject
     private AdvertiserFacade advertiserFacade;
-    @Inject
-    private PostboxFacade postboxFacade;
 
     private RegistrationView view;
     private Advertiser advertiserToCheck;
 
+    /**
+     *
+     * @throws Exception
+     */
     public void registration() throws Exception {
         checkUserExists();
         checkDetails();
@@ -31,7 +35,6 @@ public class RegistrationController implements Serializable {
         Encryptor encryptor = new Encryptor();
 
         try {
-            Postbox postbox = new Postbox();
             Advertiser advertiser = new Advertiser();
             advertiser.setEmail(view.getTfEmail().getValue().trim());
             advertiser.setPassword(encryptor.hashPassword(view.getPfPassWord1().getValue().trim()));
@@ -39,19 +42,17 @@ public class RegistrationController implements Serializable {
             advertiser.setPhonenumber(view.getTfPhoneNumber().getValue().trim());
             advertiser.setNewsletter(view.getChkBxNewsLetter().getValue());
             advertiser.setAuthority(Global.DEFAULT_AUTHORITY);
-
             advertiserFacade.create(advertiser);
-            int id = advertiser.getId();
-            postbox.setId(id);
-
-            postboxFacade.create(postbox);
-
             view.goForward();
         } catch (Exception e) {
             throw new Exception();
         }
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     public void checkUser() throws Exception {
         advertiserToCheck = (Advertiser) advertiserFacade.getAdvertiserByMail(view.getTfEmail().getValue());
     }
@@ -97,6 +98,10 @@ public class RegistrationController implements Serializable {
         checkTermsChecked();
     }
 
+    /**
+     *
+     * @param view
+     */
     public void setView(RegistrationView view) {
         this.view = view;
     }

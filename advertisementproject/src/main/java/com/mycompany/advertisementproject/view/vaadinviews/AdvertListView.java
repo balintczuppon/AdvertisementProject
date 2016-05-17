@@ -10,6 +10,7 @@ import com.vaadin.data.Property;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -97,6 +98,7 @@ public class AdvertListView extends VerticalLayout implements View {
     private Button btnSearch;
 
     private Embedded image;
+    private String numberFormatError;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -363,6 +365,9 @@ public class AdvertListView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.filterAdverts();
+                } catch (NumberFormatException e) {
+                        txtFldMinPrice.setComponentError(new UserError(numberFormatError));
+                        txtFldMaxPrice.setComponentError(new UserError(numberFormatError));      
                 } catch (Exception ex) {
                     Logger.getLogger(AdvertListView.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -446,8 +451,9 @@ public class AdvertListView extends VerticalLayout implements View {
         sortTypeDateDesc = i18Helper.getMessage("Newest");
         sortTypePriceAsc = i18Helper.getMessage("Cheapest");
         sortTypePriceDesc = i18Helper.getMessage("MostExpensive");
+        numberFormatError = i18Helper.getMessage("NumberFormatError");
     }
-    
+
     public ComboBox getCmbBxSortType() {
         return cmbBxSortType;
     }

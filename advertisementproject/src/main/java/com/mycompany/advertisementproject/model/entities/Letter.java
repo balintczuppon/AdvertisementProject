@@ -67,9 +67,9 @@ public class Letter implements Serializable {
     private String mailtext;
     @Column(name = "sender")
     private Boolean sender;
-    @JoinColumn(name = "postBoxId", referencedColumnName = "id")
+    @JoinColumn(name = "advertiserId", referencedColumnName = "id")
     @ManyToOne
-    private Postbox postBoxId;
+    private Advertiser advertiserId;
     @Column(name = "senddate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date sendDate;
@@ -145,12 +145,12 @@ public class Letter implements Serializable {
         this.sender = sender;
     }
 
-    public Postbox getPostBoxId() {
-        return postBoxId;
+    public Advertiser getAdvertiserId() {
+        return advertiserId;
     }
 
-    public void setPostBoxId(Postbox postBoxId) {
-        this.postBoxId = postBoxId;
+    public void setAdvertiserId(Advertiser advertiserId) {
+        this.advertiserId = advertiserId;
     }
 
     public Date getSendDate() {
