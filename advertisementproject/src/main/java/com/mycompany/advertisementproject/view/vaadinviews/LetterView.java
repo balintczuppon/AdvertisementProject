@@ -16,7 +16,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -230,7 +229,7 @@ public class LetterView extends VerticalLayout implements View {
         taLetterToWriteWidth = i18Helper.getMessage("Letter.TaLetterToWriteWidth");
         taLetterToWriteHeight = i18Helper.getMessage("Letter.TaLetterToWriteHeight");
         responsePrefix = i18Helper.getMessage("responsePrefix");
-        pageLink = i18Helper.getMessage("Letter.PageLink");
+        pageLink = i18Helper.getMessage("PageLink");
         linkText = i18Helper.getMessage("Letter.LinkText");
         greetingText = i18Helper.getMessage("Letter.GreetingText");
         messageText1 = i18Helper.getMessage("Letter.MessageText1");

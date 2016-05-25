@@ -32,6 +32,7 @@ public class Authorizator {
         } finally {
             VaadinSession.getCurrent().getLockInstance().unlock();
         }
+        System.out.println(a.getName());
     }
 
     private void maintainAvailability(Advertiser a) {

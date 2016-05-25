@@ -31,10 +31,6 @@ import java.util.List;
 import javax.inject.Inject;
 import org.vaadin.easyuploads.FileBuffer;
 
-/**
- *
- * @author balin
- */
 public class AdvertChangeController implements Serializable {
 
     @Inject

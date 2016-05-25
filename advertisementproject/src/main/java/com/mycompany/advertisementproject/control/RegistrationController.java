@@ -4,6 +4,7 @@ import com.mycompany.advertisementproject.toolz.Encryptor;
 import com.mycompany.advertisementproject.view.vaadinviews.RegistrationView;
 import com.mycompany.advertisementproject.model.entities.Advertiser;
 import com.mycompany.advertisementproject.model.facades.AdvertiserFacade;
+import com.mycompany.advertisementproject.toolz.EmailVerificator;
 import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.data.validator.EmailValidator;
 import java.io.Serializable;
@@ -18,8 +19,14 @@ public class RegistrationController implements Serializable {
     @Inject
     private AdvertiserFacade advertiserFacade;
 
-    private RegistrationView view;
+//    private Advertiser advertiser;
+      
     private Advertiser advertiserToCheck;
+    
+    private RegistrationView view;
+    
+    private String verificationID;
+   
 
     /**
      *
@@ -33,6 +40,7 @@ public class RegistrationController implements Serializable {
 
     private void registerNewUser() throws Exception {
         Encryptor encryptor = new Encryptor();
+        verificationID = Global.generatedId();
 
         try {
             Advertiser advertiser = new Advertiser();
@@ -42,8 +50,11 @@ public class RegistrationController implements Serializable {
             advertiser.setPhonenumber(view.getTfPhoneNumber().getValue().trim());
             advertiser.setNewsletter(view.getChkBxNewsLetter().getValue());
             advertiser.setAuthority(Global.DEFAULT_AUTHORITY);
+            advertiser.setVerificationID(verificationID);
+            advertiser.setIsVerificated(false);
             advertiserFacade.create(advertiser);
             view.goForward();
+            new EmailVerificator().sendVerification(verificationID,view.getTfEmail().getValue().trim());
         } catch (Exception e) {
             throw new Exception();
         }

@@ -80,4 +80,10 @@ public class MailSender {
     public void setText(String text) {
         this.text = text;
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+
 }

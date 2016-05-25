@@ -9,6 +9,7 @@ import com.mycompany.advertisementproject.model.entities.Advertiser;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  *
@@ -25,8 +26,21 @@ public class AdvertiserFacade extends AbstractFacade<Advertiser> {
         return em;
     }
 
+    public Integer countUsers(String user){
+        return (Integer) em.createQuery(
+                "SELECT Count(*) FROM Advertiser a WHERE a.email = :email"
+        ).setParameter("email",user).getSingleResult();
+    }
+    
     public Object getAdvertiserByMail(String user){
         return em.createNamedQuery("Advertiser.findByEmail").setParameter("email",user).getSingleResult();
+    }
+    
+    
+    public void setEmailVerifyed(String VerificationId){
+        em.createQuery("UPDATE Advertiser a set a.isVerificated = TRUE"
+                + " WHERE a.verificationID = :verificationId")
+                .setParameter("verificationId",VerificationId);
     }
     
     public AdvertiserFacade() {

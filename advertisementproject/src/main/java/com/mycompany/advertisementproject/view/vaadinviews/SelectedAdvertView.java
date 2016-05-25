@@ -336,7 +336,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         mainImageHeight = i18Helper.getMessage("Selected.mainImageHeight");
         mainImageWidth = i18Helper.getMessage("Selected.mainImageWidth");
         validatorMessage = i18Helper.getMessage("Selected.vaildatorMessage");
-        pageLink = i18Helper.getMessage("Selected.Pagelink");
+        pageLink = i18Helper.getMessage("Pagelink");
         viewName = i18Helper.getMessage("Selected.ViewName");
         linkText = i18Helper.getMessage("Selected.LinkText");
         greetingText = i18Helper.getMessage("Selected.GreetingText");

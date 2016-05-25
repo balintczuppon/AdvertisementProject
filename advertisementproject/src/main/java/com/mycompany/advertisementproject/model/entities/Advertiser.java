@@ -57,103 +57,123 @@ public class Advertiser implements Serializable {
     @Size(max = 12)
     @Column(name = "phonenumber")
     private String phonenumber;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 30)
     @Column(name = "email")
     private String email;
+    @Size(max = 120)
+    @Column(name = "verificationID")
+    private String verificationID;
+    @Column(name = "isVerificated")
+    private Boolean isVerificated;
     @Column(name = "newsletter")
     private Boolean newsletter;
     @OneToMany
     private Collection<Letter> letterCollection;
-    
+
     public Advertiser() {
     }
-    
+
     public Advertiser(Integer id) {
         this.id = id;
     }
-    
+
     public Integer getId() {
         return id;
     }
-    
+
     public void setId(Integer id) {
         this.id = id;
     }
-    
+
     public Integer getAuthority() {
         return authority;
     }
-    
+
     public void setAuthority(Integer authority) {
         this.authority = authority;
     }
-    
+
     public String getPassword() {
         return password;
     }
-    
+
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public String getPhonenumber() {
         return phonenumber;
     }
-    
+
     public void setPhonenumber(String phonenumber) {
         this.phonenumber = phonenumber;
     }
-    
+
     public String getEmail() {
         return email;
     }
-    
+
     public void setEmail(String email) {
         this.email = email;
     }
-    
+
     public Boolean getNewsletter() {
         return newsletter;
     }
-    
+
     public void setNewsletter(Boolean newsletter) {
         this.newsletter = newsletter;
     }
-    
+
     public Collection<Letter> getLetterCollection() {
         return letterCollection;
     }
-    
+
     public void setLetterCollection(Collection<Letter> letterCollection) {
         this.letterCollection = letterCollection;
     }
-    
+
     public void addLetter(Letter e) {
         letterCollection.add(e);
         e.setAdvertiserId(this);
     }
-    
+
     public void removeLetter(Letter e) {
         letterCollection.remove(e);
         e.setAdvertiserId(null);
     }
-    
+
+    public String getVerificationID() {
+        return verificationID;
+    }
+
+    public void setVerificationID(String verificationID) {
+        this.verificationID = verificationID;
+    }
+
+    public Boolean getIsVerificated() {
+        return isVerificated;
+    }
+
+    public void setIsVerificated(Boolean isVerificated) {
+        this.isVerificated = isVerificated;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
-    
+
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
@@ -166,10 +186,10 @@ public class Advertiser implements Serializable {
         }
         return true;
     }
-    
+
     @Override
     public String toString() {
         return "com.mycompany.advertisementproject.entities.Advertiser[ id=" + id + " ]";
     }
-    
+
 }

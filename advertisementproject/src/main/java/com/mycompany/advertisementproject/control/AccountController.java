@@ -26,10 +26,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
 
-/**
- *
- * @author balin
- */
 public class AccountController implements Serializable {
 
     @Inject
