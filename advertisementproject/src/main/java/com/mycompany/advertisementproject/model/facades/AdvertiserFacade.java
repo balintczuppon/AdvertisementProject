@@ -11,10 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-/**
- *
- * @author balin
- */
+
 @Stateless
 public class AdvertiserFacade extends AbstractFacade<Advertiser> {
 
@@ -26,9 +23,9 @@ public class AdvertiserFacade extends AbstractFacade<Advertiser> {
         return em;
     }
 
-    public Integer countUsers(String user){
-        return (Integer) em.createQuery(
-                "SELECT Count(*) FROM Advertiser a WHERE a.email = :email"
+    public Long countUsers(String user){
+        return (Long) em.createQuery(
+                "SELECT Count(a.id) FROM Advertiser a WHERE a.email = :email"
         ).setParameter("email",user).getSingleResult();
     }
     
@@ -37,10 +34,10 @@ public class AdvertiserFacade extends AbstractFacade<Advertiser> {
     }
     
     
-    public void setEmailVerifyed(String VerificationId){
+    public void verifyUser(String VerificationId){
         em.createQuery("UPDATE Advertiser a set a.isVerificated = TRUE"
                 + " WHERE a.verificationID = :verificationId")
-                .setParameter("verificationId",VerificationId);
+                .setParameter("verificationId",VerificationId).executeUpdate();
     }
     
     public AdvertiserFacade() {

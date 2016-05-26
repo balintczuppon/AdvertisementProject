@@ -2,7 +2,6 @@ package com.mycompany.advertisementproject.view.vaadinviews;
 
 import com.mycompany.advertisementproject.enumz.StyleNames;
 import com.mycompany.advertisementproject.control.LoginController;
-import com.mycompany.advertisementproject.model.facades.AdvertiserFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.vaadin.cdi.CDIView;
@@ -34,6 +33,7 @@ public class LogInView extends VerticalLayout implements View {
     private FormLayout formLayout;
 
     private I18Helper i18Helper;
+    private String successVerification;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -88,7 +88,7 @@ public class LogInView extends VerticalLayout implements View {
                 try {
                     logincontroller.authentication(user, password);
                 } catch (Exception e) {
-                    Notification.show(e.getMessage());
+                    Notification.show(errorText());
                     tfEmail.setComponentError(new UserError(errorText()));
                     pfPassWord.setComponentError(new UserError(errorText()));
                 } finally {
@@ -110,5 +110,10 @@ public class LogInView extends VerticalLayout implements View {
         tfEmail.setCaption(i18Helper.getMessage("TfEmail"));
         pfPassWord.setCaption(i18Helper.getMessage("PfPassword"));
         btnLogin.setCaption(i18Helper.getMessage("Login"));
+        successVerification = i18Helper.getMessage("successVerification");
+    }
+
+    public String successVerification() {
+        return successVerification;
     }
 }

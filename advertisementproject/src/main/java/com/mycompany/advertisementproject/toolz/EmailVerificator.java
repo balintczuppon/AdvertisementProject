@@ -3,23 +3,38 @@ package com.mycompany.advertisementproject.toolz;
 public class EmailVerificator {
 
     private MailSender ms;
+    private I18Helper i18Helper;
+
+    private String pageLink;
+    private String login;
+    private String message;
+    private String subject;
 
     public EmailVerificator() {
+        i18Helper = new I18Helper(AppBundle.currentBundle());
         ms = new MailSender();
+        updateStrings();
     }
 
     public void sendVerification(String verificationID, String emailAdresse) {
         ms.setReceiver(emailAdresse);
         ms.setSender(ms.getUsername());
-        ms.setSubject("Email Verification");
+        ms.setSubject(subject);
         ms.setText(emailText(verificationID));
         ms.send();
     }
 
     private String emailText(String verificationID) {
-        String htmlLink = "<a href=http://localhost:8080/advertisementproject/#!LOGIN/" + verificationID + ">click here to verify your account.</a></br>";
+        String htmlLink = "<a " + pageLink + login + "/" + verificationID + ">" + message + "</a> </br>";
         String text = "<p>" + htmlLink + "</p>";
         System.out.println(htmlLink);
         return text;
+    }
+
+    private void updateStrings() {
+        subject = i18Helper.getMessage("EmialVerification.Subject");
+        pageLink = i18Helper.getMessage("Pagelink");
+        login = i18Helper.getMessage("Login.ViewName");
+        message = i18Helper.getMessage("VerificationMessage");
     }
 }

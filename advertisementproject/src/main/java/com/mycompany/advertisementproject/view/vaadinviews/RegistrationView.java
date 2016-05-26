@@ -45,6 +45,7 @@ public class RegistrationView extends VerticalLayout implements View {
     private FormLayout formLayout;
     
     private I18Helper i18Helper;
+    private String registrationSuccess;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -108,12 +109,8 @@ public class RegistrationView extends VerticalLayout implements View {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 try {
-                    controller.checkUser();
-                } catch (Exception ex) {
-                    Logger.getLogger(RegistrationView.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                try {
                     controller.registration();
+                    Notification.show(registrationSuccess);
                 } catch (Exception ex) {
                     Notification.show(ex.getMessage());
                 }
@@ -131,6 +128,7 @@ public class RegistrationView extends VerticalLayout implements View {
         chkBxNewsLetter.setCaption(i18Helper.getMessage("CbNewsLetter"));
         chkBxTerms.setCaption(i18Helper.getMessage("CbTerms"));
         btnRegistration.setCaption(i18Helper.getMessage("Registration"));
+        registrationSuccess = i18Helper.getMessage("SuccessRegistration");
     }
 
     public void goForward() {

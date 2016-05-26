@@ -19,21 +19,15 @@ public class RegistrationController implements Serializable {
     @Inject
     private AdvertiserFacade advertiserFacade;
 
-//    private Advertiser advertiser;
-      
-    private Advertiser advertiserToCheck;
-    
     private RegistrationView view;
-    
+
     private String verificationID;
-   
 
     /**
      *
      * @throws Exception
      */
     public void registration() throws Exception {
-        checkUserExists();
         checkDetails();
         registerNewUser();
     }
@@ -42,35 +36,24 @@ public class RegistrationController implements Serializable {
         Encryptor encryptor = new Encryptor();
         verificationID = Global.generatedId();
 
-        try {
-            Advertiser advertiser = new Advertiser();
-            advertiser.setEmail(view.getTfEmail().getValue().trim());
-            advertiser.setPassword(encryptor.hashPassword(view.getPfPassWord1().getValue().trim()));
-            advertiser.setName(view.getTfName().getValue().trim());
-            advertiser.setPhonenumber(view.getTfPhoneNumber().getValue().trim());
-            advertiser.setNewsletter(view.getChkBxNewsLetter().getValue());
-            advertiser.setAuthority(Global.DEFAULT_AUTHORITY);
-            advertiser.setVerificationID(verificationID);
-            advertiser.setIsVerificated(false);
-            advertiserFacade.create(advertiser);
-            view.goForward();
-            new EmailVerificator().sendVerification(verificationID,view.getTfEmail().getValue().trim());
-        } catch (Exception e) {
-            throw new Exception();
-        }
-    }
+        Advertiser advertiser = new Advertiser();
+        advertiser.setEmail(view.getTfEmail().getValue().trim());
+        advertiser.setPassword(encryptor.hashPassword(view.getPfPassWord1().getValue().trim()));
+        advertiser.setName(view.getTfName().getValue().trim());
+        advertiser.setPhonenumber(view.getTfPhoneNumber().getValue().trim());
+        advertiser.setNewsletter(view.getChkBxNewsLetter().getValue());
+        advertiser.setAuthority(Global.DEFAULT_AUTHORITY);
+        advertiser.setVerificationID(verificationID);
+        advertiser.setIsVerificated(false);
+        advertiserFacade.create(advertiser);
 
-    /**
-     *
-     * @throws Exception
-     */
-    public void checkUser() throws Exception {
-        advertiserToCheck = (Advertiser) advertiserFacade.getAdvertiserByMail(view.getTfEmail().getValue());
+        new EmailVerificator().sendVerification(verificationID, view.getTfEmail().getValue().trim());
+        view.goForward();
     }
 
     private void checkUserExists() throws Exception {
-        if (advertiserToCheck != null) {
-            advertiserToCheck = null;
+        long number = advertiserFacade.countUsers(view.getTfEmail().getValue());
+        if (number != 0) {
             throw new Exception(view.emailUsedError());
         }
     }
@@ -103,16 +86,13 @@ public class RegistrationController implements Serializable {
     }
 
     private void checkDetails() throws Exception {
+        checkUserExists();
         validateEmail(view.getTfEmail().getValue());
         checkFieldsFilled();
         checkPasswordsEquals();
         checkTermsChecked();
     }
 
-    /**
-     *
-     * @param view
-     */
     public void setView(RegistrationView view) {
         this.view = view;
     }

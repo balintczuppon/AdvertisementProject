@@ -1,15 +1,7 @@
 package com.mycompany.advertisementproject.view.vaadinviews;
 
-import com.mycompany.advertisementproject.model.facades.AdverttypeFacade;
-import com.mycompany.advertisementproject.model.facades.CountryFacade;
-import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
-import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
-import com.mycompany.advertisementproject.model.facades.CityFacade;
-import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
-import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
 import static com.mycompany.advertisementproject.enumz.Views.USERPAGE;
 import com.mycompany.advertisementproject.control.AdvertChangeController;
-import com.mycompany.advertisementproject.model.facades.MapFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.vaadin.cdi.CDIView;
@@ -21,7 +13,6 @@ import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import java.io.File;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -65,16 +56,16 @@ public class AdvertRegView extends VerticalLayout implements View {
     private Label labelPictureUpload;
 
     private TextField txtFieldTitle;
-    private TextField txtFldPrice;
-    private TextField txtFldCordX;
-    private TextField txtFldCordY;
+    protected TextField txtFldPrice;
+    protected TextField txtFldCordX;
+    protected TextField txtFldCordY;
 
     private TextArea txtAreaDescription;
 
     private FormLayout regFormLayout;
 
     private I18Helper i18Helper;
-    private String numberFormatError;
+    protected String numberFormatError;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -253,18 +244,18 @@ public class AdvertRegView extends VerticalLayout implements View {
 
     public void addRegButtonListener() {
         btnRegister.addClickListener(new Button.ClickListener() {
-            private String numberFormatError;
-
             @Override
             public void buttonClick(Button.ClickEvent event) {
+                txtFldPrice.setComponentError(null);
+                txtFldCordX.setComponentError(null);
+                txtFldCordY.setComponentError(null);
                 try {
                     controller.registerAdvert();
                     Notification.show(successUpload);
                     getUI().getNavigator().navigateTo(USERPAGE.toString());
                 } catch (NumberFormatException e) {
-                    txtFldPrice.setComponentError(new UserError(numberFormatError));
-                    txtFldCordX.setComponentError(new UserError(numberFormatError));
-                    txtFldCordY.setComponentError(new UserError(numberFormatError));
+                    Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, e);
+                    Notification.show(numberFormatError);
                 } catch (Exception e) {
                     Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, e);
                     Notification.show(failedUpload);
@@ -338,7 +329,7 @@ public class AdvertRegView extends VerticalLayout implements View {
         successModification = i18Helper.getMessage("operationSuccess");
         txtFldCordX.setInputPrompt(i18Helper.getMessage("googleMapX"));
         txtFldCordY.setInputPrompt(i18Helper.getMessage("googleMapY"));
-        numberFormatError = i18Helper.getMessage("NumberFormatError");
+        numberFormatError = i18Helper.getMessage("numberFormatError");
         btnRegister.setCaption(register);
     }
 
@@ -393,4 +384,9 @@ public class AdvertRegView extends VerticalLayout implements View {
     public static void setAvailability(boolean availability) {
         AdvertRegView.availability = availability;
     }
+
+    public String getNumberFormatError() {
+        return numberFormatError;
+    }
+
 }

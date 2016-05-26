@@ -229,7 +229,7 @@ public class LetterView extends VerticalLayout implements View {
         taLetterToWriteWidth = i18Helper.getMessage("Letter.TaLetterToWriteWidth");
         taLetterToWriteHeight = i18Helper.getMessage("Letter.TaLetterToWriteHeight");
         responsePrefix = i18Helper.getMessage("responsePrefix");
-        pageLink = i18Helper.getMessage("PageLink");
+        pageLink = i18Helper.getMessage("Pagelink");
         linkText = i18Helper.getMessage("Letter.LinkText");
         greetingText = i18Helper.getMessage("Letter.GreetingText");
         messageText1 = i18Helper.getMessage("Letter.MessageText1");

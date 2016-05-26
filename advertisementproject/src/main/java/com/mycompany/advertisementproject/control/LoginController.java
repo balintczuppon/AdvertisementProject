@@ -6,6 +6,7 @@ import com.mycompany.advertisementproject.model.entities.Advertiser;
 import com.mycompany.advertisementproject.model.facades.AdvertiserFacade;
 import com.mycompany.advertisementproject.toolz.Authorizator;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.ui.Notification;
 import java.io.Serializable;
 import javax.inject.Inject;
 
@@ -17,21 +18,16 @@ public class LoginController implements Serializable {
     private Advertiser current_advertiser = null;
 
     private LogInView view;
-    private Encryptor encryptor;
 
-    private int numberOfUsers = 0;
+    private long numberOfUsers = 0;
 
     public void authentication(String user, String password) throws Exception {
         checkIfUserExists(user);
         if (current_advertiser != null) {
-            encryptor = new Encryptor();
-            if (current_advertiser.getPassword().equals(encryptor.hashPassword(password))) {
-                revealSecuredContex(current_advertiser);
-            } else {
-                throw new Exception(view.errorText());
-            }
+            checkIfVerificated();
+            checkPassword(password);
         } else {
-            throw new Exception(view.errorText());
+            throw new Exception();
         }
     }
 
@@ -39,6 +35,29 @@ public class LoginController implements Serializable {
         numberOfUsers = advertiserFacade.countUsers(user);
         if (numberOfUsers == 1) {
             current_advertiser = (Advertiser) advertiserFacade.getAdvertiserByMail(user);
+        }
+    }
+
+    private void checkIfVerificated() throws Exception {
+        if (current_advertiser.getIsVerificated() == false) {
+            throw new Exception();
+        }
+    }
+
+    private void checkPassword(String passwd) throws Exception {
+        if (current_advertiser.getPassword().equals(new Encryptor().hashPassword(passwd))) {
+            revealSecuredContex(current_advertiser);
+        } else {
+            throw new Exception();
+        }
+    }
+
+    public void getParameter(ViewChangeListener.ViewChangeEvent event) {
+        String parameter = event.getParameters().split("/")[0];
+        if (!parameter.isEmpty()) {
+            System.out.println(parameter);
+            advertiserFacade.verifyUser(parameter);
+            Notification.show(view.successVerification());
         }
     }
 
@@ -54,15 +73,7 @@ public class LoginController implements Serializable {
         return view;
     }
 
-    public int getNumberOfUsers() {
+    public long getNumberOfUsers() {
         return numberOfUsers;
-    }
-
-    public void getParameter(ViewChangeListener.ViewChangeEvent event) {
-        String parameter = event.getParameters().split("/")[0];
-        if (!parameter.isEmpty()) {
-            System.out.println(parameter);
-            advertiserFacade.setEmailVerifyed(parameter);
-        }
     }
 }

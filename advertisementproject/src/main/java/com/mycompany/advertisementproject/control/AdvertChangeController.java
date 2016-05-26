@@ -23,12 +23,14 @@ import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
 import com.mycompany.advertisementproject.model.facades.MapFacade;
 import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
 import com.mycompany.advertisementproject.toolz.Global;
+import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinSession;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.vaadin.easyuploads.FileBuffer;
 
 public class AdvertChangeController implements Serializable {
@@ -39,10 +41,6 @@ public class AdvertChangeController implements Serializable {
     private SubcategoryFacade subcategoryFacade;
     @Inject
     private AdverttypeFacade adverttypeFacade;
-
-    /**
-     *
-     */
     @Inject
     protected AdvertisementFacade advertisementFacade;
     @Inject
@@ -67,18 +65,12 @@ public class AdvertChangeController implements Serializable {
     private Advertiser current_advertiser;
     private final Advertisement advert_to_mod;
 
-    /**
-     *
-     */
     public AdvertChangeController() {
         advert_to_mod = (Advertisement) VaadinSession.getCurrent().getAttribute(ADVERTTOMODIFY.toString());
     }
 
-    /**
-     *
-     * @throws Exception
-     */
     public void registerAdvert() throws Exception {
+        checkNumberFormat();
         current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
         Advertisement advertisement = new Advertisement();
         advertisement.setAdvertiserId(current_advertiser);
@@ -87,21 +79,14 @@ public class AdvertChangeController implements Serializable {
         advertisementFacade.create(advertisement);
     }
 
-    /**
-     *
-     * @throws Exception
-     */
     public void modifyAdvert() throws Exception {
+        checkNumberFormat();
         setAdvertisement(advert_to_mod);
         deleteUnUsedPictures();
         advert_to_mod.setPictureCollection(pictureCollection);
         advertisementFacade.edit(advert_to_mod);
     }
 
-    /**
-     *
-     * @throws Exception
-     */
     public void linkDataToFields() throws Exception {
         view.getTxtFieldTitle().setValue(advert_to_mod.getTitle());
         view.getTxtAreaDescription().setValue(advert_to_mod.getDescription());
@@ -125,10 +110,6 @@ public class AdvertChangeController implements Serializable {
         }
     }
 
-    /**
-     *
-     * @throws Exception
-     */
     public void fillComboBoxes() throws Exception {
         if (!filled) {
             view.getCmbbxCategory().addItems(maincategoryFacade.findAll());
@@ -139,11 +120,6 @@ public class AdvertChangeController implements Serializable {
         }
     }
 
-    /**
-     *
-     * @param value
-     * @throws Exception
-     */
     public void fillCmbBxSubCategory(Object value) throws Exception {
         view.getCmbbxSubCategory().removeAllItems();
         view.getCmbbxSubCategory().setEnabled(true);
@@ -152,11 +128,6 @@ public class AdvertChangeController implements Serializable {
         }
     }
 
-    /**
-     *
-     * @param value
-     * @throws Exception
-     */
     public void fillCmbBxCity(Object value) throws Exception {
         view.getCmbbxCity().removeAllItems();
         view.getCmbbxCity().setEnabled(true);
@@ -213,11 +184,6 @@ public class AdvertChangeController implements Serializable {
         }
     }
 
-    /**
-     *
-     * @param file
-     * @throws Exception
-     */
     public void removeFile(File file) throws Exception {
         files.remove(file);
         if (advert_to_mod == null) {
@@ -225,10 +191,6 @@ public class AdvertChangeController implements Serializable {
         }
     }
 
-    /**
-     *
-     * @throws Exception
-     */
     public void setUpLoadField() throws Exception {
         mfu = new MyMultiFileUpload() {
 
@@ -251,10 +213,6 @@ public class AdvertChangeController implements Serializable {
         mfu.setCaption(view.getDropHere());
     }
 
-    /**
-     *
-     * @throws Exception
-     */
     public void deleteUnUsedPictures() throws Exception {
         for (File file : originalFiles) {
             if (!files.contains(file)) {
@@ -263,11 +221,6 @@ public class AdvertChangeController implements Serializable {
         }
     }
 
-    /**
-     *
-     * @param advertisement
-     * @throws Exception
-     */
     public void addPictureToAdvert(Advertisement advertisement) throws Exception {
         for (File f : files) {
             picture = new Picture();
@@ -277,7 +230,7 @@ public class AdvertChangeController implements Serializable {
         }
     }
 
-    private void addMapToAdvert(Advertisement advertisement) {
+    private void addMapToAdvert(Advertisement advertisement) throws Exception{
         if (!view.getTxtFldCordX().isEmpty() && !view.getTxtFldCordY().isEmpty()) {
             Map map = new Map();
             map.setCordx(Float.valueOf(view.getTxtFldCordX().getValue()));
@@ -334,22 +287,25 @@ public class AdvertChangeController implements Serializable {
         addPictureToAdvert(advertisement);
     }
 
-    /**
-     *
-     * @return
-     */
     public MyMultiFileUpload getMfu() {
         return mfu;
     }
 
-    /**
-     *
-     * @param view
-     */
     public void setView(AdvertRegView view) {
         this.view = view;
     }
 
-
-   
+    private void checkNumberFormat() {
+        if (!NumberUtils.isNumber(view.getTxtFldPrice().getValue()) && !view.getTxtFldPrice().isEmpty()) {
+            view.getTxtFldPrice().setComponentError(new UserError(view.getNumberFormatError()));
+        }
+        if (!NumberUtils.isNumber(view.getTxtFldCordX().getValue()) && !view.getTxtFldCordX().isEmpty()) {
+            view.getTxtFldCordX().setComponentError(new UserError(view.getNumberFormatError()));
+            throw new NumberFormatException();
+        }
+        if (!NumberUtils.isNumber(view.getTxtFldCordY().getValue()) && !view.getTxtFldCordY().isEmpty()) {
+            view.getTxtFldCordY().setComponentError(new UserError(view.getNumberFormatError()));
+            throw new NumberFormatException();
+        }
+    }
 }

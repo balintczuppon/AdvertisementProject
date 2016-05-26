@@ -9,6 +9,7 @@ import com.mycompany.advertisementproject.model.entities.*;
 import com.mycompany.advertisementproject.model.facades.*;
 import com.mycompany.advertisementproject.toolz.MyAdvertPager;
 import com.vaadin.server.FileResource;
+import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
@@ -20,12 +21,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
+import org.apache.commons.lang3.math.NumberUtils;
 
 /**
  *
  * @author balin
  */
-public class AdvertListController implements Serializable{
+public class AdvertListController implements Serializable {
 
     @Inject
     private MaincategoryFacade maincategoryFacade;
@@ -103,6 +105,8 @@ public class AdvertListController implements Serializable{
      * @throws Exception
      */
     public void filterAdverts() throws Exception {
+        checkNumberFormat();
+
         Maincategory mcategory = null;
         Subcategory subCategory = null;
         Country country = null;
@@ -254,7 +258,7 @@ public class AdvertListController implements Serializable{
             sortAdverts(adverts, PRICE.toString(), Boolean.FALSE);
         }
         loadAdverts();
-    }  
+    }
 
     /**
      *
@@ -262,5 +266,14 @@ public class AdvertListController implements Serializable{
      */
     public void setView(AdvertListView view) {
         this.view = view;
+    }
+
+    private void checkNumberFormat() {
+        if (!NumberUtils.isNumber(view.getTxtFldMinPrice().getValue()) && !view.getTxtFldMinPrice().isEmpty()) {
+            view.getTxtFldMinPrice().setComponentError(new UserError(view.getNumberFormatError()));
+        }
+        if (!NumberUtils.isNumber(view.getTxtFldMaxPrice().getValue()) && !view.getTxtFldMaxPrice().isEmpty()) {
+            view.getTxtFldMaxPrice().setComponentError(new UserError(view.getNumberFormatError()));
+        }
     }
 }

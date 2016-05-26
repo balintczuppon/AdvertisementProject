@@ -20,6 +20,9 @@ public class AdvertModView extends AdvertRegView {
         }
     }
 
+    /**
+     *
+     */
     @Override
     public void addRegButtonListener() {
         btnRegister.setCaption(modify);
@@ -27,18 +30,21 @@ public class AdvertModView extends AdvertRegView {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
+                txtFldPrice.setComponentError(null);
+                txtFldCordX.setComponentError(null);
+                txtFldCordY.setComponentError(null);
                 try {
                     controller.modifyAdvert();
                     Notification.show(successModification);
+                    getUI().getNavigator().navigateTo(USERPAGE.toString());
+                } catch (NumberFormatException e) {
+                    Notification.show(numberFormatError);
+                    Logger.getLogger(AdvertModView.class.getName()).log(Level.SEVERE, null, e);
                 } catch (Exception e) {
                     Notification.show(failedModification);
                     Logger.getLogger(AdvertModView.class.getName()).log(Level.SEVERE, null, e);
                 }
-                getUI().getNavigator().navigateTo(USERPAGE.toString());
             }
         });
     }
-
-    
-    
 }

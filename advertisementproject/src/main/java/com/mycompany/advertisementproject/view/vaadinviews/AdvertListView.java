@@ -18,6 +18,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -363,11 +364,12 @@ public class AdvertListView extends VerticalLayout implements View {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
+                txtFldMinPrice.setComponentError(null);
+                txtFldMaxPrice.setComponentError(null);
                 try {
                     controller.filterAdverts();
                 } catch (NumberFormatException e) {
-                        txtFldMinPrice.setComponentError(new UserError(numberFormatError));
-                        txtFldMaxPrice.setComponentError(new UserError(numberFormatError));      
+                     Notification.show(numberFormatError);
                 } catch (Exception ex) {
                     Logger.getLogger(AdvertListView.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -451,7 +453,7 @@ public class AdvertListView extends VerticalLayout implements View {
         sortTypeDateDesc = i18Helper.getMessage("Newest");
         sortTypePriceAsc = i18Helper.getMessage("Cheapest");
         sortTypePriceDesc = i18Helper.getMessage("MostExpensive");
-        numberFormatError = i18Helper.getMessage("NumberFormatError");
+        numberFormatError = i18Helper.getMessage("numberFormatError");
     }
 
     public ComboBox getCmbBxSortType() {
@@ -528,5 +530,9 @@ public class AdvertListView extends VerticalLayout implements View {
 
     public AdvertListController getController() {
         return controller;
+    }
+
+    public String getNumberFormatError() {
+        return numberFormatError;
     }
 }

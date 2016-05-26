@@ -37,7 +37,7 @@ public class RootUI extends UI {
         navigator.setErrorView(new ErrorView());
 
         setContent(new VerticalLayout(appLayout, mainLayout));
-        navigator.navigateTo(START.toString());
+//        navigator.navigateTo(START.toString());
     }
 
     public static RootUI getCurrent() {
