@@ -1,8 +1,6 @@
 package com.mycompany.advertisementproject.toolz;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static org.hamcrest.CoreMatchers.*;
 import org.junit.Before;
 import org.junit.Test;

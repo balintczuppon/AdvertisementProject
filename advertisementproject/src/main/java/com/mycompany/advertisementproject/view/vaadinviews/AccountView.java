@@ -4,9 +4,6 @@ import static com.mycompany.advertisementproject.enumz.StyleNames.NAVBUTTON;
 import com.mycompany.advertisementproject.control.AccountController;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
 import com.mycompany.advertisementproject.model.entities.Letter;
-import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
-import com.mycompany.advertisementproject.model.facades.LetterFacade;
-import com.mycompany.advertisementproject.model.facades.PictureFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.vaadin.cdi.CDIView;
@@ -19,11 +16,11 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import org.vaadin.dialogs.ConfirmDialog;
 
 @CDIView("USERPAGE")
 public class AccountView extends VerticalLayout implements View {
@@ -53,7 +50,6 @@ public class AccountView extends VerticalLayout implements View {
     private String tableAdvertWidth;
     private String delButtonText;
     private String modButtonText;
-    private String letterTextBoundary;
 
     private VerticalLayout advertLayout;
     private VerticalLayout postBoxLayout;
@@ -76,9 +72,19 @@ public class AccountView extends VerticalLayout implements View {
     private Panel postBoxPanel;
 
     private I18Helper i18Helper;
+    private String confirmation;
+    private String confirmDelete;
+    private String confimYes;
+    private String confirmNo;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
+        try {
+            addAdvertContent();
+            addPostBoxContent();
+        } catch (Exception ex) {
+            Logger.getLogger(AccountView.class.getName()).log(Level.SEVERE, null, ex);
+        }
         getUI().focus();
     }
 
@@ -151,6 +157,7 @@ public class AccountView extends VerticalLayout implements View {
     }
 
     private void addAdvertContent() throws Exception {
+        innerAdvert.removeAllComponents();
         controller.fillAdverts();
         createAdvertTable();
         createAdvertButtons();
@@ -181,11 +188,23 @@ public class AccountView extends VerticalLayout implements View {
         btnDeleteAdvert.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                try {
-                    controller.deletePicture(a);
-                    refreshAdvertContent();
-                } catch (Exception ex) {
-                    Logger.getLogger(AccountView.class.getName()).log(Level.SEVERE, null, ex);
+                confirmDelete(a);
+            }
+        });
+    }
+
+    private void confirmDelete(final Advertisement a) {
+        ConfirmDialog.show(this.getUI(), confirmation, confirmDelete, confimYes, confirmNo, new ConfirmDialog.Listener() {
+            @Override
+            public void onClose(ConfirmDialog dialog) {
+                if (dialog.isConfirmed()) {
+                    try {
+                        controller.deletePicture(a);
+                        addAdvertContent();
+//                        refreshAdvertContent();
+                    } catch (Exception ex) {
+                        Logger.getLogger(AccountView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         });
@@ -201,12 +220,12 @@ public class AccountView extends VerticalLayout implements View {
         });
     }
 
-    private void refreshAdvertContent() throws Exception {
-        innerAdvert.removeAllComponents();
-        addAdvertContent();
-    }
-
+//    private void refreshAdvertContent() throws Exception {
+//        innerAdvert.removeAllComponents();
+//        addAdvertContent();
+//    }
     private void addPostBoxContent() throws Exception {
+        innerPostBox.removeAllComponents();
         controller.fillLetters();
         createLetterLayouts();
         createLetterTabSheet();
@@ -298,6 +317,11 @@ public class AccountView extends VerticalLayout implements View {
         letterTblMessage = i18Helper.getMessage("Message");
         letterTblSender = i18Helper.getMessage("Sender");
         letterTblSubject = i18Helper.getMessage("Subject");
+        confirmation = i18Helper.getMessage("comfirmation");
+        confirmDelete = i18Helper.getMessage("comfirmDelete");
+        confimYes = i18Helper.getMessage("ComfirmYes");
+        confirmNo = i18Helper.getMessage("ComfirmNo");
+
     }
 
     public Button getBtnDeleteAdvert() {

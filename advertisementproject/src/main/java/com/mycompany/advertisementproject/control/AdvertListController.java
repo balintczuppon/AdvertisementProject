@@ -23,10 +23,6 @@ import java.util.List;
 import javax.inject.Inject;
 import org.apache.commons.lang3.math.NumberUtils;
 
-/**
- *
- * @author balin
- */
 public class AdvertListController implements Serializable {
 
     @Inject
@@ -45,6 +41,7 @@ public class AdvertListController implements Serializable {
     private AdvertstateFacade advertstateFacade;
 
     private List<Advertisement> adverts = new ArrayList<>();
+    
     private final List<HorizontalLayout> advertlayouts = new ArrayList<>();
 
     private String filterText;
@@ -155,11 +152,6 @@ public class AdvertListController implements Serializable {
         loadAdverts();
     }
 
-    private void addLabelNoResult() {
-        Label lblNoResult = new Label(view.getNoResult());
-        view.getAdvertPanel().setContent(lblNoResult);
-    }
-
     /**
      *
      */
@@ -177,10 +169,9 @@ public class AdvertListController implements Serializable {
             advertlayouts.add(view.buildSingleAdvert(a));
         }
         if (adverts.isEmpty()) {
-            addLabelNoResult();
+            view.noResult();
         } else {
-            view.buildAdverts();
-            view.getAdvertPanel().setContent(view.getAdvertList());
+            view.getResult();
         }
     }
 

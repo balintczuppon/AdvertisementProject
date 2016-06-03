@@ -44,10 +44,12 @@ public class RegistrationController implements Serializable {
         advertiser.setNewsletter(view.getChkBxNewsLetter().getValue());
         advertiser.setAuthority(Global.DEFAULT_AUTHORITY);
         advertiser.setVerificationID(verificationID);
-        advertiser.setIsVerificated(false);
+//        advertiser.setIsVerificated(false);
+        advertiser.setIsVerificated(true);
+
         advertiserFacade.create(advertiser);
 
-        new EmailVerificator().sendVerification(verificationID, view.getTfEmail().getValue().trim());
+//        new EmailVerificator().sendVerification(verificationID, view.getTfEmail().getValue().trim());
         view.goForward();
     }
 

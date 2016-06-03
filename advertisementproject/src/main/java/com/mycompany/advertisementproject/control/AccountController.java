@@ -4,7 +4,6 @@ import static com.mycompany.advertisementproject.enumz.SessionAttributes.ADVERTT
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTUSER;
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.LETTERTOSHOW;
 import static com.mycompany.advertisementproject.enumz.Views.ADVERTMOD;
-import static com.mycompany.advertisementproject.enumz.Views.ADVERTREG;
 import static com.mycompany.advertisementproject.enumz.Views.LETTER;
 import com.mycompany.advertisementproject.view.vaadinviews.AccountView;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
@@ -15,7 +14,6 @@ import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
 import com.mycompany.advertisementproject.model.facades.LetterFacade;
 import com.mycompany.advertisementproject.model.facades.PictureFacade;
 import com.mycompany.advertisementproject.toolz.Global;
-import com.mycompany.advertisementproject.view.vaadinviews.AdvertRegView;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
@@ -25,6 +23,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 
 public class AccountController implements Serializable {
 
@@ -71,11 +70,12 @@ public class AccountController implements Serializable {
             }, i);
             i++;
         }
+        
     }
 
     private String getPrice(Advertisement a) {
         if (a.getPrice() != null) {
-            return Global.CURRENCY.format(a.getPrice());
+            return Global.CURRENCY.format(Global.exchange_huf_to_gbp(a.getPrice()));
         }
         return null;
     }
@@ -136,7 +136,7 @@ public class AccountController implements Serializable {
             Object object[] = new Object[]{
                 letter,
                 letter.getMailtitle(),
-                letter.getMailtext(),
+                StringUtils.substring(letter.getMailtext(), 0, 20)+"...",
                 letter.getSendername(),
                 date
 
@@ -154,13 +154,6 @@ public class AccountController implements Serializable {
             j++;
         }
     }
-
-//    private String formLetterText(String text) {
-//        if (text.length() > Integer.valueOf(view.getLetterTextBoundary())) {
-//            text = text.substring(0, Integer.valueOf(view.getLetterTextBoundary()));
-//        }
-//        return text;
-//    }
 
     /**
      *

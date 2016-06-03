@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 
-@CDIView("START")
+@CDIView("")
 public class StartView extends VerticalLayout implements View {
 
     private Button btnSearch;

@@ -8,6 +8,7 @@ package com.mycompany.advertisementproject.model.entities;
 import java.io.Serializable;
 import java.util.UUID;
 import javax.persistence.Basic;
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,6 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author balin
  */
 @Entity
+@Cacheable(false)
 @Table(name = "picture")
 @XmlRootElement
 @NamedQueries({

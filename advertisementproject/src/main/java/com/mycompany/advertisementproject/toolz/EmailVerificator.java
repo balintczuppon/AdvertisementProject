@@ -1,5 +1,7 @@
 package com.mycompany.advertisementproject.toolz;
 
+import com.vaadin.ui.Notification;
+
 public class EmailVerificator {
 
     private MailSender ms;
@@ -17,15 +19,19 @@ public class EmailVerificator {
     }
 
     public void sendVerification(String verificationID, String emailAdresse) {
+        try{
         ms.setReceiver(emailAdresse);
         ms.setSender(ms.getUsername());
         ms.setSubject(subject);
         ms.setText(emailText(verificationID));
         ms.send();
+        }catch(Exception e){
+            Notification.show("Sikeretelen üzenetküldés");
+        }
     }
 
     private String emailText(String verificationID) {
-        String htmlLink = "<a " + pageLink + login + "/" + verificationID + ">" + message + "</a> </br>";
+        String htmlLink = "<a href=" + pageLink + login + "/" + verificationID + " >" + message + "</a> </br>";
         String text = "<p>" + htmlLink + "</p>";
         System.out.println(htmlLink);
         return text;

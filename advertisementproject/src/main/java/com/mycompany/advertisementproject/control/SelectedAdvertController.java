@@ -7,6 +7,7 @@ import com.mycompany.advertisementproject.model.entities.Letter;
 import com.mycompany.advertisementproject.model.entities.Picture;
 import com.mycompany.advertisementproject.model.facades.LetterFacade;
 import com.mycompany.advertisementproject.toolz.Global;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.server.FileResource;
@@ -24,7 +25,7 @@ import javax.inject.Inject;
  *
  * @author balin
  */
-public class SelectedAdvertController implements Serializable{
+public class SelectedAdvertController implements Serializable {
 
     @Inject
     private LetterFacade letterFacade;
@@ -44,7 +45,7 @@ public class SelectedAdvertController implements Serializable{
         sendLetter(adv);
     }
 
-    private void createLetter(Advertisement adv) throws Exception{
+    private void createLetter(Advertisement adv) throws Exception {
         Letter letter = new Letter();
         letter.setMailtext(view.getTxtAreaMessage().getValue());
         letter.setMailtitle(adv.getTitle());
@@ -59,7 +60,7 @@ public class SelectedAdvertController implements Serializable{
         letterFacade.create(letter);
     }
 
-    private void sendLetter(Advertisement adv) throws Exception{
+    private void sendLetter(Advertisement adv) throws Exception {
         MailSender ms = new MailSender();
         ms.setReceiver(adv.getAdvertiserId().getEmail());
         ms.setSender(view.getTxtFldEmail().getValue());
@@ -67,15 +68,15 @@ public class SelectedAdvertController implements Serializable{
         /*
          * Test Sender & Receiver
          */
-        ms.setReceiver("balintczuppon@gmail.com");
-        ms.setSender("balintczuppon@gmail.com");
+//        ms.setReceiver("balintczuppon@gmail.com");
+//        ms.setSender("balintczuppon@gmail.com");
 
         ms.setSubject(view.getLetterSubject());
         ms.setText(letterText(adv));
         ms.send();
     }
 
-    private String letterText(Advertisement a) throws Exception{
+    private String letterText(Advertisement a) throws Exception {
         String htmlLink = "<a href=" + view.getPageLink() + view.getViewName() + " >" + view.getLinkText() + "</a></br>";
         String text
                 = "<p>"
@@ -151,9 +152,12 @@ public class SelectedAdvertController implements Serializable{
      * @param value
      * @throws Exception
      */
-    public void validateEmail(String value) throws Exception{
+    public void validateEmail(String value) throws Exception {
         EmailValidator validator = new EmailValidator(view.getValidatorMessage());
         validator.validate(value);
+        if(value.isEmpty()){
+            throw new InvalidValueException(view.getValidatorMessage());
+        }
     }
 
     /**

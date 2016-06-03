@@ -1,5 +1,7 @@
 package com.mycompany.advertisementproject.toolz;
 
+import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTLOCALE;
+import com.vaadin.server.VaadinSession;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -8,8 +10,8 @@ import java.util.UUID;
 public class Global {
 
     public static final int DEFAULT_AUTHORITY = 1;
-    
-    public static final int GBP = 400;
+
+    public static final int EXCHANGE_RATE = 400;
 
     public static final Locale Locale_HU = new Locale("hu", "HU");
     public static final Locale Locale_EN = new Locale("en", "GB");
@@ -18,6 +20,7 @@ public class Global {
     public static final String DateFormat_EN = "dd.MM.yyyy";
 
     public static final String TEMP_SERVER = "D:\\TempServer\\";
+//       public static final String TEMP_SERVER = "/root/pictures";
 
     public static SimpleDateFormat DATEFORMAT;
     public static NumberFormat CURRENCY;
@@ -41,6 +44,24 @@ public class Global {
 
     public static void setCURRENCY(NumberFormat CURRENCY) {
         Global.CURRENCY = CURRENCY;
+    }
+
+    public static Integer exchange_huf_to_gbp(Integer price) {
+        Locale locale = (Locale) VaadinSession.getCurrent().getAttribute(CURRENTLOCALE.toString());
+        if (locale == Locale_HU) {
+            return price;
+        } else {
+            return price / EXCHANGE_RATE;
+        }
+    }
+
+    public static Integer exchange_gbp_to_huf(Integer price) {
+        Locale locale = (Locale) VaadinSession.getCurrent().getAttribute(CURRENTLOCALE.toString());
+        if (locale == Locale_EN) {
+            return price * EXCHANGE_RATE;
+        } else {
+            return price;
+        }
     }
 
 }

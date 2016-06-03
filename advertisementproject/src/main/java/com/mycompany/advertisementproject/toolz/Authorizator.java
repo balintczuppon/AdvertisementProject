@@ -26,13 +26,12 @@ public class Authorizator {
     }
 
     private void setCurrentUser(Advertiser a) {
-        try {
-            VaadinSession.getCurrent().getLockInstance().lock();
+//        try {
+//            VaadinSession.getCurrent().getLockInstance().lock();
             VaadinSession.getCurrent().setAttribute(CURRENTUSER.toString(), a);
-        } finally {
-            VaadinSession.getCurrent().getLockInstance().unlock();
-        }
-        System.out.println(a.getName());
+//        } finally {
+//            VaadinSession.getCurrent().getLockInstance().unlock();
+//        }
     }
 
     private void maintainAvailability(Advertiser a) {

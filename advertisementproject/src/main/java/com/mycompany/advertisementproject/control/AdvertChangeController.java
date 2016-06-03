@@ -21,10 +21,12 @@ import com.mycompany.advertisementproject.model.facades.CityFacade;
 import com.mycompany.advertisementproject.model.facades.CountryFacade;
 import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
 import com.mycompany.advertisementproject.model.facades.MapFacade;
+import com.mycompany.advertisementproject.model.facades.PictureFacade;
 import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
 import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.Component;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,6 +53,8 @@ public class AdvertChangeController implements Serializable {
     private CityFacade cityFacade;
     @Inject
     private MapFacade mapFacade;
+    @Inject
+    private PictureFacade pictureFacade;
 
     private AdvertRegView view;
 
@@ -63,11 +67,7 @@ public class AdvertChangeController implements Serializable {
     private boolean filled = false;
 
     private Advertiser current_advertiser;
-    private final Advertisement advert_to_mod;
-
-    public AdvertChangeController() {
-        advert_to_mod = (Advertisement) VaadinSession.getCurrent().getAttribute(ADVERTTOMODIFY.toString());
-    }
+    private Advertisement advert_to_mod;
 
     public void registerAdvert() throws Exception {
         checkNumberFormat();
@@ -75,7 +75,6 @@ public class AdvertChangeController implements Serializable {
         Advertisement advertisement = new Advertisement();
         advertisement.setAdvertiserId(current_advertiser);
         setAdvertisement(advertisement);
-        advertisement.setPictureCollection(pictureCollection);
         advertisementFacade.create(advertisement);
     }
 
@@ -83,11 +82,11 @@ public class AdvertChangeController implements Serializable {
         checkNumberFormat();
         setAdvertisement(advert_to_mod);
         deleteUnUsedPictures();
-        advert_to_mod.setPictureCollection(pictureCollection);
         advertisementFacade.edit(advert_to_mod);
     }
 
     public void linkDataToFields() throws Exception {
+        advert_to_mod = (Advertisement) VaadinSession.getCurrent().getAttribute(ADVERTTOMODIFY.toString());
         view.getTxtFieldTitle().setValue(advert_to_mod.getTitle());
         view.getTxtAreaDescription().setValue(advert_to_mod.getDescription());
         view.getCmbbxCategory().select(advert_to_mod.getMainCategoryId());
@@ -197,6 +196,7 @@ public class AdvertChangeController implements Serializable {
             @Override
             protected void handleFile(File file, String fileName, String mimeType, long length) {
                 File properFile = new File(Global.TEMP_SERVER + "/" + Global.generatedId() + file.getName());
+
                 file.renameTo(properFile);
                 files.add(properFile);
                 view.showImage(properFile);
@@ -228,9 +228,10 @@ public class AdvertChangeController implements Serializable {
             picture.setAdvertisementId(advertisement);
             pictureCollection.add(picture);
         }
+        advertisement.setPictureCollection(pictureCollection);
     }
 
-    private void addMapToAdvert(Advertisement advertisement) throws Exception{
+    private void addMapToAdvert(Advertisement advertisement) throws Exception {
         if (!view.getTxtFldCordX().isEmpty() && !view.getTxtFldCordY().isEmpty()) {
             Map map = new Map();
             map.setCordx(Float.valueOf(view.getTxtFldCordX().getValue()));
@@ -280,7 +281,7 @@ public class AdvertChangeController implements Serializable {
         advertisement.setCountryId(selectedCountry());
         advertisement.setMainCategoryId(selectedMainCategory());
         advertisement.setSubCategoryId(selectedSubCategory());
-        advertisement.setPrice(checkPrice());
+        advertisement.setPrice(Global.exchange_gbp_to_huf(checkPrice()));
         advertisement.setRegistrationDate(Global.currentDate());
         advertisement.setTitle(view.getTxtFieldTitle().getValue());
         addMapToAdvert(advertisement);

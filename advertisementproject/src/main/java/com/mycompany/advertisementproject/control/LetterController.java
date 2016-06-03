@@ -98,8 +98,8 @@ public class LetterController implements Serializable {
         /*
          Test Sender & Receiver
          */
-        ms.setReceiver("balintczuppon@gmail.com");
-        ms.setSender("balintczuppon@gmail.com");
+//        ms.setReceiver("balintczuppon@gmail.com");
+//        ms.setSender("balintczuppon@gmail.com");
 
         ms.setSubject(view.getResponsePrefix() + letter.getMailtitle());
         ms.setText(letterText());

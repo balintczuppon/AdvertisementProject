@@ -10,7 +10,6 @@ import com.vaadin.data.Property;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -104,6 +103,7 @@ public class AdvertListView extends VerticalLayout implements View {
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         getUI().focus();
+        buildAdverts();
     }
 
     @PostConstruct
@@ -113,57 +113,65 @@ public class AdvertListView extends VerticalLayout implements View {
     }
 
     public void build() {
+        defaultSettings();
+        buildSearchBar();
+        createAdvertPanel();
+        buildFilters();
+        addListeners();
+    }
+
+    private void defaultSettings() {
+        controller.setView(this);
+        updateStrings();
+        setSizeFull();
+        setMargin(true);
+        setSpacing(true);
+        createContentLayout();
+    }
+
+    private void buildAdverts() {
         try {
-            controller.setView(this);
-            updateStrings();
-            setSizeFull();
-            setMargin(true);
-            setSpacing(true);
-            buildView();
-            addListeners();
+            controller.fillAdverts();
+            controller.loadAdverts();
         } catch (Exception ex) {
             Logger.getLogger(AdvertListView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void buildView() throws Exception {
-        buildSearchBar();
-        buildFilters();
-        controller.fillComboBoxes();
-        controller.fillAdverts();
-        controller.loadAdverts();
-        layoutSettings();
+    private void createContentLayout() {
+        contentLayout = new HorizontalLayout();
+        contentLayout.setSpacing(true);
+        contentLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
     }
 
-    private void layoutSettings() {
-        setComponentAlignment(searchBarPanel, Alignment.TOP_CENTER);
-        setComponentAlignment(contentLayout, Alignment.TOP_CENTER);
-        contentLayout.setComponentAlignment(filterPanel, Alignment.TOP_LEFT);
-        contentLayout.setComponentAlignment(advertPanel, Alignment.TOP_LEFT);
-    }
+    private void buildSearchBar() {
+        try {
+            searchBarLayout = new HorizontalLayout();
+            searchBarLayout.setSpacing(true);
+            searchBarLayout.setMargin(true);
 
-    private void buildSearchBar() throws Exception {
-        searchBarLayout = new HorizontalLayout();
-        searchBarLayout.setSpacing(true);
-        searchBarLayout.setMargin(true);
+            txtFldSearch = new TextField();
+            txtFldSearch.setWidth(searchTextFieldWidth);
 
-        txtFldSearch = new TextField();
-        txtFldSearch.setWidth(searchTextFieldWidth);
+            btnSearch = new Button(SearchButtonValue);
 
-        btnSearch = new Button(SearchButtonValue);
+            cmbBxSortType = new ComboBox();
+            cmbBxSortType.setInputPrompt(sortCmbbxPrompt);
+            addSortTypes();
 
-        cmbBxSortType = new ComboBox();
-        cmbBxSortType.setInputPrompt(sortCmbbxPrompt);
-        addSortTypes();
+            searchBarLayout.addComponent(txtFldSearch);
+            searchBarLayout.addComponent(btnSearch);
+            searchBarLayout.addComponent(cmbBxSortType);
 
-        searchBarLayout.addComponent(txtFldSearch);
-        searchBarLayout.addComponent(btnSearch);
-        searchBarLayout.addComponent(cmbBxSortType);
+            searchBarPanel = new Panel();
+            searchBarPanel.setWidth(searchbarPanelWidth);
+            searchBarPanel.setContent(searchBarLayout);
+            addComponent(searchBarPanel);
+            setComponentAlignment(searchBarPanel, Alignment.TOP_CENTER);
 
-        searchBarPanel = new Panel();
-        searchBarPanel.setWidth(searchbarPanelWidth);
-        searchBarPanel.setContent(searchBarLayout);
-        addComponent(searchBarPanel);
+        } catch (Exception ex) {
+            Logger.getLogger(AdvertListView.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public HorizontalLayout buildSingleAdvert(final Advertisement adv) throws Exception {
@@ -235,7 +243,7 @@ public class AdvertListView extends VerticalLayout implements View {
             lblTitle.setWidth(titleLabelWidth);
         }
         if (adv.getPrice() != null) {
-            lblPrice.setValue(Global.CURRENCY.format(adv.getPrice()));
+            lblPrice.setValue(Global.CURRENCY.format(Global.exchange_huf_to_gbp(adv.getPrice())));
         }
         if (adv.getMainCategoryId() != null) {
             lblCategory.setValue(adv.getMainCategoryId().getName());
@@ -251,17 +259,18 @@ public class AdvertListView extends VerticalLayout implements View {
         }
     }
 
-    private void buildFilters() throws Exception {
-        contentLayout = new HorizontalLayout();
-        contentLayout.setSpacing(true);
-
-        addFilterForm();
-        createElements();
-        setElements();
-        populateFilterForm();
-        createFilterPanel();
-
-        contentLayout.addComponent(filterPanel);
+    private void buildFilters() {
+        try {
+            addFilterForm();
+            createElements();
+            setElements();
+            populateFilterForm();
+            createFilterPanel();
+            contentLayout.addComponent(filterPanel);
+            controller.fillComboBoxes();
+        } catch (Exception ex) {
+            Logger.getLogger(AdvertListView.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void addFilterForm() {
@@ -319,30 +328,50 @@ public class AdvertListView extends VerticalLayout implements View {
         filterPanel.setContent(filterForm);
     }
 
-    public void buildAdverts() throws Exception {
+    public void createAdverts() throws Exception {
         advertList = new VerticalLayout();
         advertList.setSpacing(true);
         advertList.setMargin(true);
 
         final VerticalLayout itemsArea = new VerticalLayout();
         controller.pageAdverts(advertList, itemsArea);
+    }
 
-        if (advertPanel == null) {
-            advertPanel = new Panel();
-            advertPanel.setWidth(advertPanelWidth);
-            advertPanel.setHeightUndefined();
+    private void createAdvertPanel() {
+        addComponent(contentLayout);
+        setComponentAlignment(contentLayout, Alignment.TOP_CENTER);
+        
+        advertPanel = new Panel();
+        advertPanel.setWidth(advertPanelWidth);
+        advertPanel.setHeightUndefined();
+        advertPanel.setContent(advertList);
+        contentLayout.addComponent(advertPanel);
+    }
+
+    public void noResult() {
+        Label lblNoResult = new Label(getNoResult());
+        advertPanel.setContent(lblNoResult);
+    }
+
+    public void getResult() {
+        try {
+            createAdverts();
             advertPanel.setContent(advertList);
-            contentLayout.addComponent(advertPanel);
-            addComponent(contentLayout);
+        } catch (Exception ex) {
+            Logger.getLogger(AdvertListView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void addListeners() throws Exception {
-        addSearchButtonListener();
-        addFilterButtonListener();
-        addCountyComboListener();
-        addCategoryComboListener();
-        addSortTypeComboListener();
+    private void addListeners() {
+        try {
+            addSearchButtonListener();
+            addFilterButtonListener();
+            addCountyComboListener();
+            addCategoryComboListener();
+            addSortTypeComboListener();
+        } catch (Exception ex) {
+            Logger.getLogger(AdvertListView.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void addSearchButtonListener() {
@@ -352,8 +381,10 @@ public class AdvertListView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.searchAdverts(txtFldSearch.getValue());
+
                 } catch (Exception ex) {
-                    Logger.getLogger(AdvertListView.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(AdvertListView.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -369,9 +400,11 @@ public class AdvertListView extends VerticalLayout implements View {
                 try {
                     controller.filterAdverts();
                 } catch (NumberFormatException e) {
-                     Notification.show(numberFormatError);
+                    Notification.show(numberFormatError);
+
                 } catch (Exception ex) {
-                    Logger.getLogger(AdvertListView.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(AdvertListView.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -414,8 +447,10 @@ public class AdvertListView extends VerticalLayout implements View {
             public void valueChange(Property.ValueChangeEvent event) {
                 try {
                     controller.sort(event.getProperty().getValue());
+
                 } catch (Exception ex) {
-                    Logger.getLogger(AdvertListView.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(AdvertListView.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });

@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 
 @CDIView("LETTER")
 public class LetterView extends VerticalLayout implements View {
@@ -85,8 +86,6 @@ public class LetterView extends VerticalLayout implements View {
     @PostConstruct
     public void initComponents() {
         if (availability) {
-            i18Helper = new I18Helper(AppBundle.currentBundle());
-            defaultSettings();
             build();
         }
     }
@@ -100,39 +99,42 @@ public class LetterView extends VerticalLayout implements View {
     }
 
     public void build() {
+        i18Helper = new I18Helper(AppBundle.currentBundle());
+        defaultSettings();
         updateStrings();
         initPanel();
+        createFields();
+        addButtonLayout();
+        addLetterLayout();
     }
 
     private void initPanel() {
-        panel = new Panel();
-        panel.setWidth(panelWidth);
-        panel.setHeightUndefined();
+        if (panel == null) {
+            panel = new Panel();
+            panel.setWidth(panelWidth);
+            panel.setHeightUndefined();
+        }
         panel.setContent(vlLetter);
     }
 
     public void showLetter(final Letter letter) {
         initFields(letter);
-        initButtonLayout();
-        initLetterLayout();
         addClickListeners(letter);
     }
 
-    private void initFields(Letter letter) {
+    private void createFields() {
         lblEnquirer = new Label(lblEnquirerCaption);
-        lblEnquirerName = new Label(letter.getSendername());
-
+        lblEnquirerName = new Label();
         lblTitle = new Label(lblTitleCaption);
-        lblMailTitle = new Label(letter.getMailtitle());
+        lblMailTitle = new Label();
         lblMailTitle.setWidthUndefined();
-
         lblText = new Label(lblTextCaption);
+
         taLetterToShow = new TextArea();
         taLetterToShow.setWidth(taLetterToShowWidth);
-        taLetterToShow.setHeightUndefined();
-        taLetterToShow.setValue(letter.getMailtext());
-        taLetterToShow.setReadOnly(true);
+        taLetterToShow.setHeight(taLetterToWriteHeight);
         taLetterToShow.setWordwrap(true);
+        taLetterToShow.setEnabled(false);
 
         btnAnswerMail = new Button(btnAnswerMailCaption);
         btnDeleteMail = new Button(btnDeleteMailCaption);
@@ -147,7 +149,13 @@ public class LetterView extends VerticalLayout implements View {
         taLetterToWrite.setHeight(taLetterToWriteHeight);
     }
 
-    private void initButtonLayout() {
+    private void initFields(Letter letter) {
+        lblEnquirerName.setValue(StringUtils.defaultString(letter.getSendername()));
+        lblMailTitle.setValue(StringUtils.defaultString(letter.getMailtitle()));
+        taLetterToShow.setValue(StringUtils.defaultString(letter.getMailtext()));
+    }
+
+    private void addButtonLayout() {
         hl = new HorizontalLayout();
         hl.setWidthUndefined();
         hl.setSpacing(true);
@@ -157,7 +165,7 @@ public class LetterView extends VerticalLayout implements View {
         hl.addComponent(btnBack);
     }
 
-    private void initLetterLayout() {
+    private void addLetterLayout() {
         vlLetter.addComponent(lblEnquirer);
         vlLetter.addComponent(lblEnquirerName);
         vlLetter.addComponent(lblTitle);

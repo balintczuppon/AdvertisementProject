@@ -1,10 +1,10 @@
-
 package com.mycompany.advertisementproject.model.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
+@Cacheable(false)
 @Table(name = "advertisement")
 @XmlRootElement
 @NamedQueries({
@@ -118,11 +119,18 @@ public class Advertisement implements Serializable {
     }
 
     public Integer getPrice() {
+        if (price == null) {
+            return 0;
+        }
         return price;
     }
 
     public void setPrice(Integer price) {
-        this.price = price;
+        if (price == null) {
+            this.price = 0;
+        } else {
+            this.price = price;
+        }
     }
 
     public Advertiser getAdvertiserId() {
@@ -188,7 +196,7 @@ public class Advertisement implements Serializable {
     public void setCityId(City cityId) {
         this.cityId = cityId;
     }
-    
+
     @XmlTransient
     public Collection<Picture> getPictureCollection() {
         return pictureCollection;

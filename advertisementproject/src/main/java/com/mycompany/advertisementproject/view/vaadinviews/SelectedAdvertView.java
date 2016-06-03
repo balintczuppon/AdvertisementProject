@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 
 @CDIView("SELECTED")
 public class SelectedAdvertView extends HorizontalLayout implements View {
@@ -79,7 +80,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
 
     private HorizontalLayout hlMeta;
     private HorizontalLayout hlPictures;
-    private HorizontalLayout hlFields;
+    private VerticalLayout vlFields;
 
     private TextField txtFldName;
     private TextField txtFldEmail;
@@ -104,11 +105,11 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     @PostConstruct
     public void initComponent() {
         i18Helper = new I18Helper(AppBundle.currentBundle());
-        buildView();
     }
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
+        buildView();
         getUI().focus();
     }
 
@@ -120,6 +121,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
 
     public void build() {
         try {
+            this.removeAllComponents();
             updateStrings();
             addTitle();
             addMeta();
@@ -136,6 +138,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     }
 
     private void addPanel() {
+
         advertPanel = new Panel();
         advertPanel.setWidth(advertPanelWidth);
         advertPanel.setHeightUndefined();
@@ -148,10 +151,11 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
 
         setContent();
         addComponentsToContent();
+
     }
 
     private void addTitle() {
-        lblTitle = new Label(advertisement.getTitle());
+        lblTitle = new Label(StringUtils.defaultString(advertisement.getTitle()));
         lblTitle.setStyleName(TITLE.toString());
         lblTitle.setWidthUndefined();
     }
@@ -160,9 +164,9 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         hlMeta = new HorizontalLayout();
         hlMeta.setSpacing(true);
 
-        lblAdvertiser = new Label(lblAdvertiserCaption + advertisement.getAdvertiserId().getName());
-        lblAdvertiserPhoneNumber = new Label(lblAdvertiserPhoneCaption + advertisement.getAdvertiserId().getPhonenumber());
-        lblRegDate = new Label(lblRegDateCaption + Global.DATEFORMAT.format(advertisement.getRegistrationDate()));
+        lblAdvertiser = new Label(lblAdvertiserCaption + ": " + StringUtils.defaultString(advertisement.getAdvertiserId().getName()));
+        lblAdvertiserPhoneNumber = new Label(lblAdvertiserPhoneCaption + ": " + StringUtils.defaultString(advertisement.getAdvertiserId().getPhonenumber()));
+        lblRegDate = new Label(lblRegDateCaption + ": " + StringUtils.defaultString(Global.DATEFORMAT.format(advertisement.getRegistrationDate())));
 
         hlMeta.addComponent(lblAdvertiser);
         hlMeta.addComponent(lblAdvertiserPhoneNumber);
@@ -181,14 +185,14 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
 
     private void addPrice() {
         if (advertisement.getPrice() != null) {
-            lblPrice = new Label(lblPriceCaption + ": " + Global.CURRENCY.format(advertisement.getPrice()));
+            lblPrice = new Label(lblPriceCaption + ": " + StringUtils.defaultString(Global.CURRENCY.format(Global.exchange_huf_to_gbp(advertisement.getPrice()))));
             lblPrice.setWidthUndefined();
             lblPrice.setStyleName(TITLE.toString());
         }
     }
 
     private void addDescription() {
-        lblDescription = new Label(advertisement.getDescription());
+        lblDescription = new Label(StringUtils.defaultString(advertisement.getDescription()));
         lblDescription.setWidth(lblDescriptionWidth);
         lblDescription.setHeightUndefined();
     }
@@ -223,9 +227,9 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     }
 
     private void addFields() {
-        hlFields = new HorizontalLayout();
-        hlFields.setWidth(hlFieldsWidth);
-        hlFields.setSpacing(true);
+        vlFields = new VerticalLayout();
+        vlFields.setWidth(hlFieldsWidth);
+        vlFields.setSpacing(true);
 
         txtFldName = new TextField();
         txtFldName.setInputPrompt(txtFldNameCaption);
@@ -234,16 +238,16 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         txtFldCustomerPhoneNumber = new TextField();
         txtFldCustomerPhoneNumber.setInputPrompt(txtFldPhoneCaption);
 
-        hlFields.addComponent(txtFldName);
-        hlFields.addComponent(txtFldEmail);
-        hlFields.addComponent(txtFldCustomerPhoneNumber);
+        vlFields.addComponent(txtFldName);
+        vlFields.addComponent(txtFldEmail);
+        vlFields.addComponent(txtFldCustomerPhoneNumber);
     }
 
     private void addMessageArea() {
         txtAreaMessage = new TextArea();
         txtAreaMessage.setWidth(txtAreaMessageWidth);
         txtAreaMessage.setHeightUndefined();
-        txtAreaMessage.setValue(txtAreaMessagePrompt);
+        txtAreaMessage.setInputPrompt(txtAreaMessagePrompt);
     }
 
     private void addSendButton() {
@@ -294,6 +298,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
             vlContent.addComponent(mainImage);
         }
         vlContent.addComponent(hlPictures);
+        separeate();
         vlContent.addComponent(lblPrice);
         separeate();
         vlContent.addComponent(lblDescription);
@@ -301,8 +306,9 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         if (googleMap != null) {
             vlContent.addComponent(googleMap);
         }
+        separeate();
         vlContent.addComponent(lblConnection);
-        vlContent.addComponent(hlFields);
+        vlContent.addComponent(vlFields);
         vlContent.addComponent(txtAreaMessage);
         vlContent.addComponent(btnSendMessage);
         advertPanel.setContent(vlContent);

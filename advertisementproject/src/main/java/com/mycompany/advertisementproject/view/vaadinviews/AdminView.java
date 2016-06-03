@@ -109,6 +109,10 @@ public class AdminView extends VerticalLayout implements View {
         AdminView.availability = availability;
     }
 
+    public static boolean isAvailability() {
+        return availability;
+    }
+
     public void buildView() {
         try {
             updateStrings();

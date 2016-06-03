@@ -2,6 +2,7 @@ package com.mycompany.advertisementproject.view.vaadinviews;
 
 import static com.mycompany.advertisementproject.enumz.Views.USERPAGE;
 import com.vaadin.cdi.CDIView;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import java.util.logging.Level;
@@ -11,18 +12,15 @@ import java.util.logging.Logger;
 public class AdvertModView extends AdvertRegView {
 
     @Override
-    public void build() {
+    public void enter(ViewChangeListener.ViewChangeEvent event) {
+        super.enter(event);
         try {
-            super.build();
             controller.linkDataToFields();
         } catch (Exception ex) {
             Logger.getLogger(AdvertModView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    /**
-     *
-     */
     @Override
     public void addRegButtonListener() {
         btnRegister.setCaption(modify);

@@ -68,8 +68,6 @@ public class LogInView extends VerticalLayout implements View {
         formLayout = new FormLayout();
         tfEmail = new TextField();
         pfPassWord = new PasswordField();
-        tfEmail.setValue("admin@vaadinthesis.java");
-        pfPassWord.setValue("admin");
         formLayout.addComponents(tfEmail, pfPassWord);
         formLayout.setWidthUndefined();
         addComponent(formLayout);
