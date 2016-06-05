@@ -4,7 +4,6 @@ import static com.mycompany.advertisementproject.enumz.SessionAttributes.SELECTE
 import static com.mycompany.advertisementproject.enumz.StyleNames.TITLE;
 import com.mycompany.advertisementproject.control.SelectedAdvertController;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
-import com.mycompany.advertisementproject.model.facades.LetterFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.mycompany.advertisementproject.toolz.Global;
 import com.mycompany.advertisementproject.toolz.I18Helper;
@@ -12,6 +11,7 @@ import com.vaadin.cdi.CDIView;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
@@ -69,6 +69,8 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     private String messageText2;
     private String goodbyeText;
     private String senderName;
+    private String generatedMessage;
+    private String emailSendFailed;
 
     private Label lblTitle;
     private Label lblAdvertiser;
@@ -104,19 +106,28 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
 
     @PostConstruct
     public void initComponent() {
-        i18Helper = new I18Helper(AppBundle.currentBundle());
+
     }
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         buildView();
+        updateView();
         getUI().focus();
     }
 
     private void buildView() {
-        advertisement = (Advertisement) VaadinSession.getCurrent().getAttribute(SELECTEDADVERT.toString());
+        initAdvertisement();
+        i18Helper = new I18Helper(AppBundle.currentBundle());
         controller.setView(this);
         build();
+    }
+
+    private void initAdvertisement() {
+        advertisement = (Advertisement) VaadinSession.getCurrent().getAttribute(SELECTEDADVERT.toString());
+        if (advertisement == null) {
+            getUI().getNavigator().navigateTo("");
+        }
     }
 
     public void build() {
@@ -132,13 +143,13 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
             addMap();
             addOtherDetails();
             addPanel();
+            addComponentsToContent();
         } catch (Exception ex) {
             Logger.getLogger(SelectedAdvertView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     private void addPanel() {
-
         advertPanel = new Panel();
         advertPanel.setWidth(advertPanelWidth);
         advertPanel.setHeightUndefined();
@@ -150,12 +161,10 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         this.setSizeFull();
 
         setContent();
-        addComponentsToContent();
-
     }
 
     private void addTitle() {
-        lblTitle = new Label(StringUtils.defaultString(advertisement.getTitle()));
+        lblTitle = new Label();
         lblTitle.setStyleName(TITLE.toString());
         lblTitle.setWidthUndefined();
     }
@@ -164,9 +173,9 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         hlMeta = new HorizontalLayout();
         hlMeta.setSpacing(true);
 
-        lblAdvertiser = new Label(lblAdvertiserCaption + ": " + StringUtils.defaultString(advertisement.getAdvertiserId().getName()));
-        lblAdvertiserPhoneNumber = new Label(lblAdvertiserPhoneCaption + ": " + StringUtils.defaultString(advertisement.getAdvertiserId().getPhonenumber()));
-        lblRegDate = new Label(lblRegDateCaption + ": " + StringUtils.defaultString(Global.DATEFORMAT.format(advertisement.getRegistrationDate())));
+        lblAdvertiser = new Label();
+        lblAdvertiserPhoneNumber = new Label();
+        lblRegDate = new Label();
 
         hlMeta.addComponent(lblAdvertiser);
         hlMeta.addComponent(lblAdvertiserPhoneNumber);
@@ -177,22 +186,26 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         controller.addMainPicture();
     }
 
-    private void addOtherPictures() throws Exception {
-        hlPictures = new HorizontalLayout();
-        hlPictures.setSpacing(true);
-        controller.addOtherPictures(hlPictures);
+    private void addOtherPictures() {
+        try {
+            hlPictures = new HorizontalLayout();
+            hlPictures.setSpacing(true);
+            controller.addOtherPictures(hlPictures);
+        } catch (Exception ex) {
+            Logger.getLogger(SelectedAdvertView.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void addPrice() {
         if (advertisement.getPrice() != null) {
-            lblPrice = new Label(lblPriceCaption + ": " + StringUtils.defaultString(Global.CURRENCY.format(Global.exchange_huf_to_gbp(advertisement.getPrice()))));
+            lblPrice = new Label();
             lblPrice.setWidthUndefined();
             lblPrice.setStyleName(TITLE.toString());
         }
     }
 
     private void addDescription() {
-        lblDescription = new Label(StringUtils.defaultString(advertisement.getDescription()));
+        lblDescription = new Label();
         lblDescription.setWidth(lblDescriptionWidth);
         lblDescription.setHeightUndefined();
     }
@@ -260,10 +273,12 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
                     controller.validateEmail(txtFldEmail.getValue());
                     controller.sendMail(advertisement);
                     clearFields();
-                    commitMessageSend();
+                    Notification.show(commitMessage);
                 } catch (InvalidValueException ex) {
                     Notification.show(ex.getMessage());
                 } catch (Exception ex) {
+                    Notification.show(emailSendFailed);
+                    clearFields();
                     Logger.getLogger(SelectedAdvertView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -275,10 +290,6 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         txtFldName.clear();
         txtFldCustomerPhoneNumber.clear();
         txtAreaMessage.clear();
-    }
-
-    private void commitMessageSend() {
-        Notification.show(commitMessage);
     }
 
     private void setContent() {
@@ -318,6 +329,19 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         vlContent.addComponent(new Label("<hr />", ContentMode.HTML));
     }
 
+    private void updateView() {
+        try {
+            lblTitle.setValue(StringUtils.defaultString(advertisement.getTitle()));
+            lblAdvertiser.setValue(lblAdvertiserCaption + ": " + StringUtils.defaultString(advertisement.getAdvertiserId().getName()));
+            lblAdvertiserPhoneNumber.setValue(lblAdvertiserPhoneCaption + ": " + StringUtils.defaultString(advertisement.getAdvertiserId().getPhonenumber()));
+            lblRegDate.setValue(lblRegDateCaption + ": " + StringUtils.defaultString(Global.DATEFORMAT.format(advertisement.getRegistrationDate())));
+            lblPrice.setValue(lblPriceCaption + ": " + StringUtils.defaultString(Global.CURRENCY.format(Global.exchange_huf_to_gbp(advertisement.getPrice()))));
+            lblDescription.setValue(StringUtils.defaultString(advertisement.getDescription()));
+        } catch (Exception ex) {
+            Logger.getLogger(SelectedAdvertView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public void updateStrings() {
         advertPanelWidth = i18Helper.getMessage("Selected.AdvertPanelWidth");
         lblAdvertiserCaption = i18Helper.getMessage("Advertiser");
@@ -350,6 +374,12 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         messageText2 = i18Helper.getMessage("Selected.MessageText2");
         goodbyeText = i18Helper.getMessage("Selected.GoodbyeText");
         senderName = i18Helper.getMessage("Selected.SenderName");
+        generatedMessage = i18Helper.getMessage("GeneratedMessage");
+        emailSendFailed = i18Helper.getMessage("EmailSendFailed");
+    }
+
+    public String getGeneratedMessage() {
+        return generatedMessage;
     }
 
     public TextField getTxtFldName() {

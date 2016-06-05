@@ -19,13 +19,13 @@ public class EmailVerificator {
     }
 
     public void sendVerification(String verificationID, String emailAdresse) {
-        try{
-        ms.setReceiver(emailAdresse);
-        ms.setSender(ms.getUsername());
-        ms.setSubject(subject);
-        ms.setText(emailText(verificationID));
-        ms.send();
-        }catch(Exception e){
+        try {
+            ms.setReceiver(emailAdresse);
+            ms.setSender(Global.username);
+            ms.setSubject(subject);
+            ms.setText(emailText(verificationID));
+            ms.send();
+        } catch (Exception e) {
             Notification.show("Sikeretelen üzenetküldés");
         }
     }

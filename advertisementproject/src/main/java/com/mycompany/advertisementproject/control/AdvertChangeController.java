@@ -21,12 +21,10 @@ import com.mycompany.advertisementproject.model.facades.CityFacade;
 import com.mycompany.advertisementproject.model.facades.CountryFacade;
 import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
 import com.mycompany.advertisementproject.model.facades.MapFacade;
-import com.mycompany.advertisementproject.model.facades.PictureFacade;
 import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
 import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.server.UserError;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.Component;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -53,8 +51,6 @@ public class AdvertChangeController implements Serializable {
     private CityFacade cityFacade;
     @Inject
     private MapFacade mapFacade;
-    @Inject
-    private PictureFacade pictureFacade;
 
     private AdvertRegView view;
 
@@ -101,12 +97,15 @@ public class AdvertChangeController implements Serializable {
         view.getTxtFldCordX().setValue(getCordX());
         view.getTxtFldCordY().setValue(getCordY());
 
+        files.clear();
+        originalFiles.clear();
         for (Picture p : advert_to_mod.getPictureCollection()) {
             File file = new File(p.getAccessPath());
             files.add(file);
             originalFiles.add(file);
             view.showImage(file);
         }
+
     }
 
     public void fillComboBoxes() throws Exception {
@@ -222,13 +221,21 @@ public class AdvertChangeController implements Serializable {
     }
 
     public void addPictureToAdvert(Advertisement advertisement) throws Exception {
+        pictureCollection.clear();
         for (File f : files) {
             picture = new Picture();
             picture.setAccessPath(f.getAbsolutePath());
             picture.setAdvertisementId(advertisement);
             pictureCollection.add(picture);
         }
-        advertisement.setPictureCollection(pictureCollection);
+        if (advertisement.getPictureCollection() == null) {
+            advertisement.setPictureCollection(pictureCollection);
+        } else {
+            advertisement.getPictureCollection().clear();
+            for (Picture pic : pictureCollection) {
+                advertisement.addPicture(pic);
+            }
+        }
     }
 
     private void addMapToAdvert(Advertisement advertisement) throws Exception {
@@ -308,5 +315,11 @@ public class AdvertChangeController implements Serializable {
             view.getTxtFldCordY().setComponentError(new UserError(view.getNumberFormatError()));
             throw new NumberFormatException();
         }
+    }
+
+    public void clearLists() {
+        files.clear();
+        originalFiles.clear();
+        pictureCollection.clear();
     }
 }

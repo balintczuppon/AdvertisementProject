@@ -8,11 +8,13 @@ import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
@@ -50,6 +52,8 @@ public class LetterView extends VerticalLayout implements View {
     private String messageText2;
     private String goodbyeText;
     private String senderName;
+    private String generatedMessage;
+    private String emailSendFailed;
 
     private Label lblMailTitle;
     private Label lblText;
@@ -71,6 +75,7 @@ public class LetterView extends VerticalLayout implements View {
     private Panel panel;
 
     private I18Helper i18Helper;
+    private String commitMessage;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -193,7 +198,9 @@ public class LetterView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.response(letter);
+                    Notification.show(commitMessage);
                 } catch (Exception ex) {
+                    Notification.show(emailSendFailed);
                     Logger.getLogger(LetterView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -245,6 +252,9 @@ public class LetterView extends VerticalLayout implements View {
         goodbyeText = i18Helper.getMessage("Letter.GoodbyeText");
         senderName = i18Helper.getMessage("Letter.Sendername");
         viewName = i18Helper.getMessage("Letter.ViewName");
+        generatedMessage = i18Helper.getMessage("GeneratedMessage");
+        commitMessage = i18Helper.getMessage("CommitMessage");
+        emailSendFailed = i18Helper.getMessage("EmailSendFailed");
     }
 
     public TextArea getTaLetterToWrite() {
@@ -293,6 +303,10 @@ public class LetterView extends VerticalLayout implements View {
 
     public static void setAvailability(boolean availability) {
         LetterView.availability = availability;
+    }
+
+    public String getGeneratedMessage() {
+        return generatedMessage;
     }
 
 }

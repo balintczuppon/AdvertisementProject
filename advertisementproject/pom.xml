@@ -140,6 +140,12 @@
 	  <type>jar</type>
 	 </dependency>
 	 <dependency>
+	  <groupId>de.steinwedel.vaadin.addon</groupId>
+	  <artifactId>messagebox</artifactId>
+	  <version>3.0.16</version>
+	  <scope>compile</scope>
+	 </dependency>
+	 <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
             <version>7.0</version>

@@ -9,6 +9,7 @@ import com.mycompany.advertisementproject.toolz.Global;
 import com.vaadin.data.validator.EmailValidator;
 import java.io.Serializable;
 import javax.inject.Inject;
+import de.steinwedel.messagebox.MessageBox;
 
 /**
  *
@@ -23,10 +24,6 @@ public class RegistrationController implements Serializable {
 
     private String verificationID;
 
-    /**
-     *
-     * @throws Exception
-     */
     public void registration() throws Exception {
         checkDetails();
         registerNewUser();
@@ -44,13 +41,10 @@ public class RegistrationController implements Serializable {
         advertiser.setNewsletter(view.getChkBxNewsLetter().getValue());
         advertiser.setAuthority(Global.DEFAULT_AUTHORITY);
         advertiser.setVerificationID(verificationID);
-//        advertiser.setIsVerificated(false);
-        advertiser.setIsVerificated(true);
-
+        advertiser.setIsVerificated(false);
         advertiserFacade.create(advertiser);
 
-//        new EmailVerificator().sendVerification(verificationID, view.getTfEmail().getValue().trim());
-        view.goForward();
+        verification();
     }
 
     private void checkUserExists() throws Exception {
@@ -97,6 +91,12 @@ public class RegistrationController implements Serializable {
 
     public void setView(RegistrationView view) {
         this.view = view;
+    }
+
+    private void verification() {
+        new EmailVerificator().sendVerification(verificationID, view.getTfEmail().getValue().trim());
+        MessageBox.createInfo().withCaption("Visszaigazolás").withMessage("Please verify your email address!").withOkButton().open();
+        view.goForward();
     }
 
 }

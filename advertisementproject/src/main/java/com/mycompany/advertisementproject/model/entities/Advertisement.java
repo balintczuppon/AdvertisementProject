@@ -22,6 +22,7 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.apache.commons.collections.ListUtils;
 
 @Entity
 @Cacheable(false)
@@ -207,8 +208,8 @@ public class Advertisement implements Serializable {
     }
 
     public void addPicture(Picture p) {
-        pictureCollection.add(p);
         p.setAdvertisementId(this);
+        this.pictureCollection.add(p);
     }
 
     public void removePicture(Picture p) {

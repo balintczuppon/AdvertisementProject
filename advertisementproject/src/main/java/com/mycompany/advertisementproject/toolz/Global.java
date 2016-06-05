@@ -9,6 +9,9 @@ import java.util.UUID;
 
 public class Global {
 
+    public static String username = "vaadinproject2016@gmail.com";
+    public static String password = "vaadin2016";
+
     public static final int DEFAULT_AUTHORITY = 1;
 
     public static final int EXCHANGE_RATE = 400;
@@ -19,8 +22,8 @@ public class Global {
     public static final String DateFormat_HU = "yyyy.MM.dd";
     public static final String DateFormat_EN = "dd.MM.yyyy";
 
-    public static final String TEMP_SERVER = "D:\\TempServer\\";
-//       public static final String TEMP_SERVER = "/root/pictures";
+    public static final String TEMP_SERVER = "D:/TempServer/";
+//    public static final String TEMP_SERVER = "/root/pictures";
 
     public static SimpleDateFormat DATEFORMAT;
     public static NumberFormat CURRENCY;

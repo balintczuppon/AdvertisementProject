@@ -58,7 +58,7 @@ public class Letter implements Serializable {
     @Size(max = 30)
     @Column(name = "sendermail")
     private String sendermail;
-    @Size(max = 30)
+    @Size(max = 50)
     @Column(name = "mailtitle")
     private String mailtitle;
     @Lob

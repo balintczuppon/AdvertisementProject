@@ -46,6 +46,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
 
     public AppLayout() {
         super();
+        localeSetting(Global.Locale_HU);
         i18Helper = new I18Helper(AppBundle.currentBundle());
         buildHeader();
         addListeners();
@@ -91,12 +92,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                try {
-                    VaadinSession.getCurrent().getLockInstance().lock();
-                    VaadinSession.getCurrent().setAttribute(CURRENTLOCALE.toString(), (Locale) Global.Locale_HU);
-                } finally {
-                    VaadinSession.getCurrent().getLockInstance().unlock();
-                }
+                localeSetting(Global.Locale_HU);
                 i18Helper = new I18Helper(AppBundle.currentBundle());
                 updateStrings();
             }
@@ -109,16 +105,20 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                try {
-                    VaadinSession.getCurrent().getLockInstance().lock();
-                    VaadinSession.getCurrent().setAttribute(CURRENTLOCALE.toString(), (Locale) Global.Locale_EN);
-                } finally {
-                    VaadinSession.getCurrent().getLockInstance().unlock();
-                }
+                localeSetting(Global.Locale_EN);
                 i18Helper = new I18Helper(AppBundle.currentBundle());
                 updateStrings();
             }
         });
+    }
+
+    public void localeSetting(Locale locale) {
+        try {
+            VaadinSession.getCurrent().getLockInstance().lock();
+            VaadinSession.getCurrent().setAttribute(CURRENTLOCALE.toString(), locale);
+        } finally {
+            VaadinSession.getCurrent().getLockInstance().unlock();
+        }
     }
 
     private void hidebuttons() {

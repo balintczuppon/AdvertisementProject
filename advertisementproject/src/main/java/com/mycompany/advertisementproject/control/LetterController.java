@@ -75,7 +75,7 @@ public class LetterController implements Serializable {
         Advertiser current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
 
         Letter responseLetter = new Letter();
-        responseLetter.setMailtext(view.getTaLetterToWrite().getValue());
+//        responseLetter.setMailtext(view.getTaLetterToWrite().getValue().trim());
         responseLetter.setMailtitle(view.getResponsePrefix() + letter.getMailtitle());
         responseLetter.setSendermail(current_advertiser.getEmail());
         responseLetter.setSendername(current_advertiser.getName());
@@ -100,7 +100,6 @@ public class LetterController implements Serializable {
          */
 //        ms.setReceiver("balintczuppon@gmail.com");
 //        ms.setSender("balintczuppon@gmail.com");
-
         ms.setSubject(view.getResponsePrefix() + letter.getMailtitle());
         ms.setText(letterText());
         ms.send();
@@ -134,6 +133,8 @@ public class LetterController implements Serializable {
                 + current_advertiser.getName() + view.getMessageText1() + "<br><br>"
                 + view.getMessageText2() + "<br>"
                 + htmlLink + "<br><br>"
+                + view.getGeneratedMessage()
+                + "<br><br>"
                 + view.getGoodbyeText() + "<br>"
                 + view.getSenderName()
                 + "</p>";

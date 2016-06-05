@@ -9,7 +9,6 @@ import com.vaadin.data.Property;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileResource;
-import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import java.io.File;
@@ -69,11 +68,14 @@ public class AdvertRegView extends VerticalLayout implements View {
     private I18Helper i18Helper;
     protected String numberFormatError;
     private List<HorizontalLayout> pictures = new ArrayList();
+    private String uploadPictureCaption;
     
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         try {
             clearLayout();
+            clearfields();
+            controller.clearLists();
             controller.fillComboBoxes();
         } catch (Exception ex) {
             Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, ex);
@@ -85,6 +87,8 @@ public class AdvertRegView extends VerticalLayout implements View {
     public void initComponent() {
         if (availability) {
             build();
+        }else{
+            getUI().getNavigator().navigateTo("");
         }
     }
     
@@ -241,7 +245,7 @@ public class AdvertRegView extends VerticalLayout implements View {
             pictureLayout.setSizeFull();
             pictureLayout.setSpacing(true);
             pictureLayout.setMargin(true);
-            labelPictureUpload = new Label();
+            labelPictureUpload = new Label(uploadPictureCaption);
             pictureLayout.addComponent(labelPictureUpload);
             pictureLayout.addComponent(new Label("<hr />", ContentMode.HTML));
             
@@ -277,6 +281,20 @@ public class AdvertRegView extends VerticalLayout implements View {
                 }
             }
         });
+    }
+    
+    private void clearfields(){
+        txtAreaDescription.clear();
+        txtFieldTitle.clear();
+        txtFldCordX.clear();
+        txtFldCordY.clear();
+        txtFldPrice.clear();
+        cmbbxAdvertState.clear();
+        cmbbxAdvertType.clear();
+        cmbbxCategory.clear();
+        cmbbxCity.clear();
+        cmbbxCountry.clear();
+        cmbbxSubCategory.clear();
     }
     
     private void addCmbBxCategoryListener() {
@@ -333,7 +351,7 @@ public class AdvertRegView extends VerticalLayout implements View {
         imageWidth = i18Helper.getMessage("AdvertReg.imageWidth");
         imageHeight = i18Helper.getMessage("AdvertReg.imageHeight");
         removeButtonText = i18Helper.getMessage("Remove(X)");
-        labelPictureUpload.setValue(i18Helper.getMessage("UploadPicture"));
+        uploadPictureCaption = i18Helper.getMessage("UploadPicture");
         picturePanel.setWidth(i18Helper.getMessage("AdvertReg.PicturePanelWidth"));
         dropHere = i18Helper.getMessage("DropHere");
         failedUpload = i18Helper.getMessage("UpLoadFail");
