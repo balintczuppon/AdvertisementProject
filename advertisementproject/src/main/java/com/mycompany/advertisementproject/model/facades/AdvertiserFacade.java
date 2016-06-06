@@ -1,17 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.mycompany.advertisementproject.model.facades;
 
 import com.mycompany.advertisementproject.model.entities.Advertiser;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
-
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 @Stateless
 public class AdvertiserFacade extends AbstractFacade<Advertiser> {
 

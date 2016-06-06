@@ -2,13 +2,11 @@ package com.mycompany.advertisementproject.view.vaadinviews;
 
 import com.mycompany.advertisementproject.control.LetterController;
 import com.mycompany.advertisementproject.model.entities.Letter;
-import com.mycompany.advertisementproject.model.facades.LetterFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.Page;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -23,7 +21,12 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.vaadin.dialogs.ConfirmDialog;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 @CDIView("LETTER")
 public class LetterView extends VerticalLayout implements View {
 
@@ -44,7 +47,6 @@ public class LetterView extends VerticalLayout implements View {
     private String taLetterToWriteWidth;
     private String taLetterToWriteHeight;
     private String responsePrefix;
-    private String pageLink;
     private String viewName;
     private String linkText;
     private String greetingText;
@@ -54,6 +56,10 @@ public class LetterView extends VerticalLayout implements View {
     private String senderName;
     private String generatedMessage;
     private String emailSendFailed;
+    private String confirmation;
+    private String confirmDelete;
+    private String confimYes;
+    private String confirmNo;
 
     private Label lblMailTitle;
     private Label lblText;
@@ -79,8 +85,12 @@ public class LetterView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
+        if (!availability) {
+            getUI().getNavigator().navigateTo("");
+        } else {
+            getUI().focus();
+        }
         controller.getParameter(event);
-        getUI().focus();
         try {
             controller.checkSessionAttribute();
         } catch (Exception ex) {
@@ -90,9 +100,7 @@ public class LetterView extends VerticalLayout implements View {
 
     @PostConstruct
     public void initComponents() {
-        if (availability) {
-            build();
-        }
+        build();
     }
 
     public void defaultSettings() {
@@ -208,14 +216,15 @@ public class LetterView extends VerticalLayout implements View {
     }
 
     private void addDeleteButtonListener(final Letter letter) {
-        btnDeleteMail.addClickListener(new Button.ClickListener() {
-
+        ConfirmDialog.show(this.getUI(), confirmation, confirmDelete, confimYes, confirmNo, new ConfirmDialog.Listener() {
             @Override
-            public void buttonClick(Button.ClickEvent event) {
-                try {
-                    controller.deleteLetter(letter);
-                } catch (Exception ex) {
-                    Logger.getLogger(LetterView.class.getName()).log(Level.SEVERE, null, ex);
+            public void onClose(ConfirmDialog dialog) {
+                if (dialog.isConfirmed()) {
+                    try {
+                        controller.deleteLetter(letter);
+                    } catch (Exception ex) {
+                        Logger.getLogger(AccountView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         });
@@ -244,7 +253,6 @@ public class LetterView extends VerticalLayout implements View {
         taLetterToWriteWidth = i18Helper.getMessage("Letter.TaLetterToWriteWidth");
         taLetterToWriteHeight = i18Helper.getMessage("Letter.TaLetterToWriteHeight");
         responsePrefix = i18Helper.getMessage("responsePrefix");
-        pageLink = i18Helper.getMessage("Pagelink");
         linkText = i18Helper.getMessage("Letter.LinkText");
         greetingText = i18Helper.getMessage("Letter.GreetingText");
         messageText1 = i18Helper.getMessage("Letter.MessageText1");
@@ -255,6 +263,10 @@ public class LetterView extends VerticalLayout implements View {
         generatedMessage = i18Helper.getMessage("GeneratedMessage");
         commitMessage = i18Helper.getMessage("CommitMessage");
         emailSendFailed = i18Helper.getMessage("EmailSendFailed");
+        confirmation = i18Helper.getMessage("comfirmation");
+        confirmDelete = i18Helper.getMessage("comfirmDelete");
+        confimYes = i18Helper.getMessage("ComfirmYes");
+        confirmNo = i18Helper.getMessage("ComfirmNo");
     }
 
     public TextArea getTaLetterToWrite() {
@@ -267,10 +279,6 @@ public class LetterView extends VerticalLayout implements View {
 
     public String getResponsePrefix() {
         return responsePrefix;
-    }
-
-    public String getPageLink() {
-        return pageLink;
     }
 
     public String getViewName() {

@@ -13,6 +13,10 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 @Stateless
 public class AdvertisementFacade extends AbstractFacade<Advertisement> {
 
@@ -56,8 +60,8 @@ public class AdvertisementFacade extends AbstractFacade<Advertisement> {
     }
 
     public List<Advertisement> findByText(String value) {
-        return em.createQuery("SELECT a FROM Advertisement a WHERE a.title like :text OR a.description like :text")
-                .setParameter("text", value)
+        return em.createQuery("SELECT a FROM Advertisement a WHERE a.title LIKE :text OR a.description LIKE :text")
+                .setParameter("text", "%"+value+"%")
                 .getResultList();
     }
 

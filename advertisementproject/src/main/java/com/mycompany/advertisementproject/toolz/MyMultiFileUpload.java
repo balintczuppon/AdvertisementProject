@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.mycompany.advertisementproject.toolz;
 
 import java.io.File;
@@ -10,7 +6,7 @@ import org.vaadin.easyuploads.MultiFileUpload;
 
 /**
  *
- * @author balin
+ * @author Czuppon Balint Peter
  */
 public class MyMultiFileUpload extends MultiFileUpload {
 
@@ -18,6 +14,7 @@ public class MyMultiFileUpload extends MultiFileUpload {
     protected void handleFile(File file, String fileName, String mimeType, long length) {
     }
 
+    @Override
     protected String getAreaText() {
         return "";
     }

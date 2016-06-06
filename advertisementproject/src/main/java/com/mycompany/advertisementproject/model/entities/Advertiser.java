@@ -1,14 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.mycompany.advertisementproject.model.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,14 +12,13 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author balin
+ * @author Czuppon Balint Peter
  */
 @Entity
 @Table(name = "advertiser")
@@ -34,7 +28,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Advertiser.findById", query = "SELECT a FROM Advertiser a WHERE a.id = :id"),
     @NamedQuery(name = "Advertiser.findByAuthority", query = "SELECT a FROM Advertiser a WHERE a.authority = :authority"),
     @NamedQuery(name = "Advertiser.findByPassword", query = "SELECT a FROM Advertiser a WHERE a.password = :password"),
-    @NamedQuery(name = "Advertiser.findByName", query = "SELECT a FROM Advertiser a WHERE a.name = :name"),
     @NamedQuery(name = "Advertiser.findByPhonenumber", query = "SELECT a FROM Advertiser a WHERE a.phonenumber = :phonenumber"),
     @NamedQuery(name = "Advertiser.findByEmail", query = "SELECT a FROM Advertiser a WHERE a.email = :email"),
     @NamedQuery(name = "Advertiser.findByNewsletter", query = "SELECT a FROM Advertiser a WHERE a.newsletter = :newsletter")})
@@ -52,9 +45,12 @@ public class Advertiser implements Serializable {
     @Column(name = "password")
     private String password;
     @Size(max = 30)
-    @Column(name = "name")
-    private String name;
-    @Size(max = 12)
+    @Column(name = "surname")
+    private String surname;
+    @Size(max = 30)
+    @Column(name = "firstname")
+    private String firstname;
+    @Size(max = 14)
     @Column(name = "phonenumber")
     private String phonenumber;
     @Size(max = 30)
@@ -101,12 +97,20 @@ public class Advertiser implements Serializable {
         this.password = password;
     }
 
-    public String getName() {
-        return name;
+    public String getSurname() {
+        return surname;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
     }
 
     public String getPhonenumber() {
@@ -176,7 +180,6 @@ public class Advertiser implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Advertiser)) {
             return false;
         }

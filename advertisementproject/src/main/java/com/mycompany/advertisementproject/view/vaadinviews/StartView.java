@@ -1,7 +1,8 @@
+
 package com.mycompany.advertisementproject.view.vaadinviews;
 
 import com.mycompany.advertisementproject.enumz.Views;
-import com.mycompany.advertisementproject.model.facades.AdvertisementFacade;
+import static com.mycompany.advertisementproject.enumz.Views.ADVERTS;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.mycompany.advertisementproject.view.UIs.RootUI;
@@ -17,6 +18,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 @CDIView("")
 public class StartView extends VerticalLayout implements View {
 
@@ -60,7 +65,7 @@ public class StartView extends VerticalLayout implements View {
 
                 getUI().getNavigator().navigateTo(Views.ADVERTS.toString());
                 try {
-                    advListView = (AdvertListView) RootUI.getCurrent().getViewProvider().getView("ADVERTS");
+                    advListView = (AdvertListView) RootUI.getCurrent().getViewProvider().getView(ADVERTS.toString());
                     advListView.getController().searchAdverts(txtFldSearch.getValue());
                 } catch (Exception ex) {
                     Logger.getLogger(StartView.class.getName()).log(Level.SEVERE, null, ex);

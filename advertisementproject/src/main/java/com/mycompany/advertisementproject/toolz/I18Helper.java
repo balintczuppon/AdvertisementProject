@@ -1,3 +1,4 @@
+
 package com.mycompany.advertisementproject.toolz;
 
 import java.util.MissingResourceException;
@@ -5,6 +6,10 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 public class I18Helper {
 
     private final ResourceBundle resourceBundle;

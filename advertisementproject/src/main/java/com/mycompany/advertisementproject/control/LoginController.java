@@ -1,3 +1,4 @@
+
 package com.mycompany.advertisementproject.control;
 
 import com.mycompany.advertisementproject.toolz.Encryptor;
@@ -10,6 +11,10 @@ import com.vaadin.ui.Notification;
 import java.io.Serializable;
 import javax.inject.Inject;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 public class LoginController implements Serializable {
 
     @Inject

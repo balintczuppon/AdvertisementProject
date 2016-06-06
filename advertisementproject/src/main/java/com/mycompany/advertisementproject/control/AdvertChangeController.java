@@ -1,3 +1,4 @@
+
 package com.mycompany.advertisementproject.control;
 
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.ADVERTTOMODIFY;
@@ -33,6 +34,10 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.vaadin.easyuploads.FileBuffer;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 public class AdvertChangeController implements Serializable {
 
     @Inject
@@ -67,6 +72,7 @@ public class AdvertChangeController implements Serializable {
 
     public void registerAdvert() throws Exception {
         checkNumberFormat();
+        checkTextFieldTitle();
         current_advertiser = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
         Advertisement advertisement = new Advertisement();
         advertisement.setAdvertiserId(current_advertiser);
@@ -76,6 +82,7 @@ public class AdvertChangeController implements Serializable {
 
     public void modifyAdvert() throws Exception {
         checkNumberFormat();
+        checkTextFieldTitle();
         setAdvertisement(advert_to_mod);
         deleteUnUsedPictures();
         advertisementFacade.edit(advert_to_mod);
@@ -321,5 +328,11 @@ public class AdvertChangeController implements Serializable {
         files.clear();
         originalFiles.clear();
         pictureCollection.clear();
+    }
+
+    private void checkTextFieldTitle() throws Exception{
+        if(view.getTxtFieldTitle().isEmpty()){
+            throw new Exception(view.emptyTitleError());
+        }
     }
 }

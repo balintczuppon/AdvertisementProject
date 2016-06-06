@@ -1,28 +1,32 @@
+
 package com.mycompany.advertisementproject.view.layouts;
 
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTLOCALE;
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTUSER;
 import static com.mycompany.advertisementproject.enumz.StyleNames.*;
 import static com.mycompany.advertisementproject.enumz.Views.*;
+import com.mycompany.advertisementproject.model.entities.Advertiser;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.mycompany.advertisementproject.toolz.Global;
 import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.mycompany.advertisementproject.view.vaadinviews.*;
 import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.JavaScript;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 public class AppLayout extends VerticalLayout implements ViewDisplay {
 
     private I18Helper i18Helper;
@@ -42,12 +46,15 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
 
     private VerticalLayout header;
 
+    private static String loggedIn;
     private String nodePath;
+
+    private static Label userLabel;
 
     public AppLayout() {
         super();
-        localeSetting(Global.Locale_HU);
         i18Helper = new I18Helper(AppBundle.currentBundle());
+        loggedIn = i18Helper.getMessage("loggedIn");
         buildHeader();
         addListeners();
     }
@@ -63,6 +70,12 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
     }
 
     private void addNavigation() {
+
+        userLabel = new Label();
+        userLabel.setSizeFull();
+        HorizontalLayout informtaion = new HorizontalLayout();
+        informtaion.addComponent(userLabel);
+
         HorizontalLayout navigation = new HorizontalLayout();
         navigation.addComponents(btnAdverts, btnLogin,
                 btnRegistration, btnAdvertReg,
@@ -72,9 +85,10 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         languages.addComponents(btnHun, btnEng);
 
         HorizontalLayout headersplitter = new HorizontalLayout();
-        headersplitter.addComponents(navigation, languages);
+        headersplitter.addComponents(informtaion, navigation, languages);
         headersplitter.setWidth(i18Helper.getMessage("size_100"));
-        headersplitter.setComponentAlignment(navigation, Alignment.TOP_RIGHT);
+        headersplitter.setComponentAlignment(informtaion, Alignment.TOP_LEFT);
+        headersplitter.setComponentAlignment(navigation, Alignment.TOP_CENTER);
         headersplitter.setComponentAlignment(languages, Alignment.TOP_RIGHT);
 
         header.addComponent(headersplitter);
@@ -161,6 +175,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         } finally {
             VaadinSession.getCurrent().getLockInstance().unlock();
         }
+        userLabel.setValue("");
     }
 
     public static void userLogin() {
@@ -169,6 +184,12 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         btnAdvertReg.setVisible(true);
         btnMyAccout.setVisible(true);
         btnLogout.setVisible(true);
+        setUserLabel();
+    }
+
+    private static void setUserLabel() {
+        Advertiser a = (Advertiser) VaadinSession.getCurrent().getAttribute(CURRENTUSER.toString());
+        userLabel.setValue(loggedIn + a.getEmail());
     }
 
     public static void adminLogin() {
@@ -288,6 +309,7 @@ public class AppLayout extends VerticalLayout implements ViewDisplay {
         btnMyAccout.setCaption(i18Helper.getMessage("Account"));
         btnLogout.setCaption(i18Helper.getMessage("Logout"));
         btnAdminAccount.setCaption(i18Helper.getMessage("AdminAccount"));
+        loggedIn = i18Helper.getMessage("LoggedIn");
         reloadWindow();
     }
 

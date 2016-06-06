@@ -26,6 +26,10 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 @CDIView("ADVERTS")
 public class AdvertListView extends VerticalLayout implements View {
 
@@ -102,8 +106,8 @@ public class AdvertListView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        getUI().focus();
         buildAdverts();
+        getUI().focus();
     }
 
     @PostConstruct
@@ -235,30 +239,6 @@ public class AdvertListView extends VerticalLayout implements View {
         lblDate = new Label();
     }
 
-    private void linkDataToLabels(Advertisement adv) {
-        createLabels();
-
-        if (adv.getTitle() != null) {
-            lblTitle.setValue(adv.getTitle());
-            lblTitle.setWidth(titleLabelWidth);
-        }
-        if (adv.getPrice() != null) {
-            lblPrice.setValue(Global.CURRENCY.format(Global.exchange_huf_to_gbp(adv.getPrice())));
-        }
-        if (adv.getMainCategoryId() != null) {
-            lblCategory.setValue(adv.getMainCategoryId().getName());
-        }
-        if (adv.getSubCategoryId() != null) {
-            lblSubCategory.setValue(adv.getSubCategoryId().getName());
-        }
-        if (adv.getCityId() != null) {
-            lblCity.setValue(adv.getCityId().getCityName());
-        }
-        if (adv.getRegistrationDate() != null) {
-            lblDate.setValue(Global.DATEFORMAT.format(adv.getRegistrationDate()));
-        }
-    }
-
     private void buildFilters() {
         try {
             addFilterForm();
@@ -340,7 +320,7 @@ public class AdvertListView extends VerticalLayout implements View {
     private void createAdvertPanel() {
         addComponent(contentLayout);
         setComponentAlignment(contentLayout, Alignment.TOP_CENTER);
-        
+
         advertPanel = new Panel();
         advertPanel.setWidth(advertPanelWidth);
         advertPanel.setHeightUndefined();
@@ -454,6 +434,30 @@ public class AdvertListView extends VerticalLayout implements View {
                 }
             }
         });
+    }
+
+    private void linkDataToLabels(Advertisement adv) {
+        createLabels();
+
+        if (adv.getTitle() != null) {
+            lblTitle.setValue(adv.getTitle());
+            lblTitle.setWidth(titleLabelWidth);
+        }
+        if (adv.getPrice() != null) {
+            lblPrice.setValue(Global.CURRENCY.format(Global.exchange_huf_to_gbp(adv.getPrice())));
+        }
+        if (adv.getMainCategoryId() != null) {
+            lblCategory.setValue(adv.getMainCategoryId().getName());
+        }
+        if (adv.getSubCategoryId() != null) {
+            lblSubCategory.setValue(adv.getSubCategoryId().getName());
+        }
+        if (adv.getCityId() != null) {
+            lblCity.setValue(adv.getCityId().getCityName());
+        }
+        if (adv.getRegistrationDate() != null) {
+            lblDate.setValue(Global.DATEFORMAT.format(adv.getRegistrationDate()));
+        }
     }
 
     private void addSortTypes() throws Exception {

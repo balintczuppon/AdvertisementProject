@@ -7,23 +7,30 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.UUID;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 public class Global {
 
-    public static String username = "vaadinproject2016@gmail.com";
-    public static String password = "vaadin2016";
+    public static final String ENCRYPT_ALG = "SHA-256";
+    public static final String PHONE_REGEX = "\\d{11}|\\d{14}";
+    
+    public static final String PAGE_LINK = "http://213.181.208.30:8080/advertisementproject/#!";
+    public static final String USERNAME = "vaadinproject2016@gmail.com";
+    public static final String PASSWORD = "vaadin2016";
 
     public static final int DEFAULT_AUTHORITY = 1;
-
     public static final int EXCHANGE_RATE = 400;
-
+    public static final int MIN_PASS_LENGHT = 6;
+    
     public static final Locale Locale_HU = new Locale("hu", "HU");
     public static final Locale Locale_EN = new Locale("en", "GB");
 
     public static final String DateFormat_HU = "yyyy.MM.dd";
     public static final String DateFormat_EN = "dd.MM.yyyy";
 
-    public static final String TEMP_SERVER = "D:/TempServer/";
-//    public static final String TEMP_SERVER = "/root/pictures";
+    public static final String TEMP_SERVER = "/root/pictures";
 
     public static SimpleDateFormat DATEFORMAT;
     public static NumberFormat CURRENCY;

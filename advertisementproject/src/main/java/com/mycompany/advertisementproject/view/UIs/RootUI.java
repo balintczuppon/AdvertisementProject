@@ -1,8 +1,7 @@
 package com.mycompany.advertisementproject.view.UIs;
 
-import static com.mycompany.advertisementproject.enumz.Views.*;
 import com.mycompany.advertisementproject.view.layouts.AppLayout;
-import com.mycompany.advertisementproject.view.vaadinviews.ErrorView;
+import com.mycompany.advertisementproject.view.vaadinviews.StartView;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
@@ -14,6 +13,10 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import javax.inject.Inject;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 @Theme("mytheme")
 @Widgetset("com.mycompany.advertisementproject.MyAppWidgetset")
 @CDIUI("")
@@ -32,12 +35,11 @@ public class RootUI extends UI {
         VerticalLayout mainLayout = new VerticalLayout();
 
         navigator = new Navigator(this, mainLayout);
-
+        
         navigator.addProvider(viewProvider);
-        navigator.setErrorView(new ErrorView());
+        navigator.setErrorView(new StartView());
 
         setContent(new VerticalLayout(appLayout, mainLayout));
-//        navigator.navigateTo(START.toString());
     }
 
     public static RootUI getCurrent() {

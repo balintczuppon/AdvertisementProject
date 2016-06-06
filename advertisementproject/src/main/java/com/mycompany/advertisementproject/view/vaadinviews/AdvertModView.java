@@ -1,3 +1,4 @@
+
 package com.mycompany.advertisementproject.view.vaadinviews;
 
 import static com.mycompany.advertisementproject.enumz.Views.USERPAGE;
@@ -8,6 +9,10 @@ import com.vaadin.ui.Notification;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 @CDIView("ADVERTMOD")
 public class AdvertModView extends AdvertRegView {
 

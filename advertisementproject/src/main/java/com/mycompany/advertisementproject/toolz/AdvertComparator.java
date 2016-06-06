@@ -4,6 +4,10 @@ package com.mycompany.advertisementproject.toolz;
 import com.mycompany.advertisementproject.model.entities.Advertisement;
 import java.util.Comparator;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 public class AdvertComparator implements Comparator<Advertisement> {
 
         private String attribute;

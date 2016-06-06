@@ -1,3 +1,4 @@
+
 package com.mycompany.advertisementproject.toolz;
 
 import java.security.NoSuchAlgorithmException;
@@ -6,6 +7,10 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 public class EncryptorTest {
 
     private String plainText;
@@ -27,7 +32,7 @@ public class EncryptorTest {
             cipherText = encryptor.hashPassword(plainText);
             assertThat(cipherText, not(plainText));
     }
-//
+
 //    @Test
 //    public void shouldFailTheEncryptionTest() throws NoSuchAlgorithmException {
 //            cipherText = encryptor.hashPassword(plainText);

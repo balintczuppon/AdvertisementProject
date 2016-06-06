@@ -1,13 +1,8 @@
+
 package com.mycompany.advertisementproject.view.vaadinviews;
 
 import com.mycompany.advertisementproject.control.AdminController;
 import static com.mycompany.advertisementproject.enumz.Views.ERRORVIEW;
-import com.mycompany.advertisementproject.model.facades.AdvertstateFacade;
-import com.mycompany.advertisementproject.model.facades.AdverttypeFacade;
-import com.mycompany.advertisementproject.model.facades.CityFacade;
-import com.mycompany.advertisementproject.model.facades.CountryFacade;
-import com.mycompany.advertisementproject.model.facades.MaincategoryFacade;
-import com.mycompany.advertisementproject.model.facades.SubcategoryFacade;
 import com.mycompany.advertisementproject.toolz.AppBundle;
 import com.mycompany.advertisementproject.toolz.I18Helper;
 import com.vaadin.cdi.CDIView;
@@ -23,12 +18,15 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 @CDIView("ADMINPAGE")
 public class AdminView extends VerticalLayout implements View {
 
@@ -83,6 +81,7 @@ public class AdminView extends VerticalLayout implements View {
     private String create;
     private String modify;
     private String delete;
+    private String accordionWidth;
 
     private String operationSuccess;
     private String operationFailed;
@@ -92,17 +91,17 @@ public class AdminView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        getUI().focus();
+        if (!availability) {
+            getUI().getNavigator().navigateTo("");
+        } else {
+            getUI().focus();
+        }
     }
 
     @PostConstruct
     public void initComponent() {
-        if (availability) {
-            i18Helper = new I18Helper(AppBundle.currentBundle());
-            buildView();
-        } else {
-//            getUI().getNavigator().navigateTo(ERRORVIEW.toString());
-        }
+        i18Helper = new I18Helper(AppBundle.currentBundle());
+        buildView();
     }
 
     public static void setAvailability(boolean availability) {
@@ -131,6 +130,7 @@ public class AdminView extends VerticalLayout implements View {
 
     private void buildAccoordion() {
         accordion = new Accordion();
+        accordion.setWidth("800");
         addCountryTab();
         addCity();
         addCategory();
@@ -703,5 +703,6 @@ public class AdminView extends VerticalLayout implements View {
         delete = i18Helper.getMessage("Delete");
         operationSuccess = i18Helper.getMessage("operationSuccess");
         operationFailed = i18Helper.getMessage("operationFailed");
+        accordionWidth = i18Helper.getMessage("accordionWidth");
     }
 }

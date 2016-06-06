@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.mycompany.advertisementproject.model.entities;
 
 import java.io.Serializable;
@@ -25,7 +21,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author balin
+ * @author Czuppon Balint Peter
  */
 @Entity
 @Table(name = "subcategory")
@@ -47,8 +43,6 @@ public class Subcategory implements Serializable {
     private String name;
     @OneToMany(mappedBy = "subCategoryId")
     private Collection<Advertisement> advertisementCollection;
-    @OneToMany(mappedBy = "subCategoryId")
-    private Collection<Subsubcategory> subsubcategoryCollection;
     @JoinColumn(name = "mainCategoryId", referencedColumnName = "id")
     @ManyToOne
     private Maincategory mainCategoryId;
@@ -74,15 +68,6 @@ public class Subcategory implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @XmlTransient
-    public Collection<Subsubcategory> getSubsubcategoryCollection() {
-        return subsubcategoryCollection;
-    }
-
-    public void setSubsubcategoryCollection(Collection<Subsubcategory> subsubcategoryCollection) {
-        this.subsubcategoryCollection = subsubcategoryCollection;
     }
 
     public Maincategory getMainCategoryId() {
@@ -111,7 +96,6 @@ public class Subcategory implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Subcategory)) {
             return false;
         }

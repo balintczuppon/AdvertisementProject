@@ -21,6 +21,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 public class SelectedAdvertController implements Serializable {
 
     @Inject
@@ -32,6 +36,7 @@ public class SelectedAdvertController implements Serializable {
     private SelectedAdvertView view;
 
     public void sendMail(Advertisement adv) throws Exception {
+        checkPhoneNumber(view.getTxtFldCustomerPhoneNumber().getValue().trim());
         createLetter(adv);
         sendLetter(adv);
     }
@@ -61,7 +66,7 @@ public class SelectedAdvertController implements Serializable {
     }
 
     private String letterText(Advertisement a) throws Exception {
-        String htmlLink = "<a href=" + view.getPageLink() + view.getViewName() + " >" + view.getLinkText() + "</a></br>";
+        String htmlLink = "<a href=" + Global.PAGE_LINK + view.getViewName() + " >" + view.getLinkText() + "</a></br>";
         String text
                 = "<p>"
                 + view.getGreetingText() + "<br><br>"
@@ -73,7 +78,6 @@ public class SelectedAdvertController implements Serializable {
                 + view.getGoodbyeText() + "<br>"
                 + view.getSenderName()
                 + "</p>";
-        System.out.println(htmlLink);
         return text;
     }
 
@@ -129,6 +133,14 @@ public class SelectedAdvertController implements Serializable {
         validator.validate(value);
         if (value.isEmpty()) {
             throw new InvalidValueException(view.getValidatorMessage());
+        }
+    }
+
+    private void checkPhoneNumber(String phoneNumber) throws Exception {
+        if (!phoneNumber.isEmpty()) {
+            if (!phoneNumber.matches(Global.PHONE_REGEX)) {
+                throw new Exception(view.getPhoneNumberError());
+            }
         }
     }
 

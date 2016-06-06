@@ -12,6 +12,10 @@ import com.mycompany.advertisementproject.view.vaadinviews.LetterView;
 import com.mycompany.advertisementproject.view.vaadinviews.LogInView;
 import com.vaadin.server.VaadinSession;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 public class Authorizator {
 
     private LogInView view;
@@ -26,12 +30,12 @@ public class Authorizator {
     }
 
     private void setCurrentUser(Advertiser a) {
-//        try {
-//            VaadinSession.getCurrent().getLockInstance().lock();
+        try {
+            VaadinSession.getCurrent().getLockInstance().lock();
             VaadinSession.getCurrent().setAttribute(CURRENTUSER.toString(), a);
-//        } finally {
-//            VaadinSession.getCurrent().getLockInstance().unlock();
-//        }
+        } finally {
+            VaadinSession.getCurrent().getLockInstance().unlock();
+        }
     }
 
     private void maintainAvailability(Advertiser a) {

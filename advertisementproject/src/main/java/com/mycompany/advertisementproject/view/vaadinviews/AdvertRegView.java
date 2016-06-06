@@ -11,6 +11,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
+import de.steinwedel.messagebox.MessageBox;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,59 +20,70 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 @CDIView("ADVERTREG")
 public class AdvertRegView extends VerticalLayout implements View {
-    
+
     @Inject
     protected AdvertChangeController controller;
-    
+
     private static boolean availability = false;
-    
+
     protected String modify;
     private String register;
     private String failedUpload;
     private String successUpload;
+    protected String numberFormatError;
+    private String emptyTitleError;
     protected String failedModification;
     protected String successModification;
     private String dropHere;
     private String removeButtonText;
     private String imageHeight;
     private String imageWidth;
-    
+    private String errorCaption;
+
     private ComboBox cmbbxCategory;
     private ComboBox cmbbxSubCategory;
     private ComboBox cmbbxAdvertType;
     private ComboBox cmbbxAdvertState;
     private ComboBox cmbbxCountry;
     private ComboBox cmbbxCity;
-    
+
     private VerticalLayout pictureLayout;
     private VerticalLayout advertDataLayout;
-    
+
     private Panel adverRegPanel;
     private Panel picturePanel;
-    
+
     protected Button btnRegister;
-    
+
     private Label lblAdvertDetails;
     private Label labelPictureUpload;
-    
+
     private TextField txtFieldTitle;
     protected TextField txtFldPrice;
     protected TextField txtFldCordX;
     protected TextField txtFldCordY;
-    
+
     private TextArea txtAreaDescription;
-    
+
     private FormLayout regFormLayout;
-    
+
     private I18Helper i18Helper;
-    protected String numberFormatError;
+
     private List<HorizontalLayout> pictures = new ArrayList();
-    private String uploadPictureCaption;
-    
+
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
+        if (!availability) {
+            getUI().getNavigator().navigateTo("");
+        } else {
+            getUI().focus();
+        }
         try {
             clearLayout();
             clearfields();
@@ -80,18 +92,13 @@ public class AdvertRegView extends VerticalLayout implements View {
         } catch (Exception ex) {
             Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, ex);
         }
-        getUI().focus();
     }
-    
+
     @PostConstruct
     public void initComponent() {
-        if (availability) {
-            build();
-        }else{
-            getUI().getNavigator().navigateTo("");
-        }
+        build();
     }
-    
+
     public void build() {
         try {
             i18Helper = new I18Helper(AppBundle.currentBundle());
@@ -103,14 +110,17 @@ public class AdvertRegView extends VerticalLayout implements View {
             Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private void defaultSettings() {
         setSizeFull();
         setMargin(true);
         setSpacing(true);
         controller.setView(this);
+        dropHere = i18Helper.getMessage("DropHere");
+        modify = i18Helper.getMessage("Modify");
+        register = i18Helper.getMessage("Register");
     }
-    
+
     private void addForm() {
         initRegForm();
         initFields();
@@ -121,14 +131,14 @@ public class AdvertRegView extends VerticalLayout implements View {
         addComponent(adverRegPanel);
         setComponentAlignment(adverRegPanel, Alignment.TOP_CENTER);
     }
-    
+
     private void initRegForm() {
         regFormLayout = new FormLayout();
         regFormLayout.setSpacing(true);
         regFormLayout.setMargin(true);
         regFormLayout.setDefaultComponentAlignment(Alignment.TOP_CENTER);
     }
-    
+
     private void initFields() {
         txtFieldTitle = new TextField();
         txtAreaDescription = new TextArea();
@@ -145,11 +155,10 @@ public class AdvertRegView extends VerticalLayout implements View {
         addCmbBxCountryListener();
         cmbbxCity = new ComboBox();
         cmbbxCity.setEnabled(false);
-        btnRegister = new Button();
-        btnRegister.setCaption(register);
+        btnRegister = new Button(register);
         addRegButtonListener();
     }
-    
+
     private void addFieldsToLayoout() {
         regFormLayout.addComponent(txtFieldTitle);
         regFormLayout.addComponent(txtAreaDescription);
@@ -164,12 +173,12 @@ public class AdvertRegView extends VerticalLayout implements View {
         regFormLayout.addComponent(txtFldCordY);
         regFormLayout.setSizeFull();
     }
-    
+
     private void initRegPanel() {
         adverRegPanel = new Panel();
         adverRegPanel.setHeightUndefined();
     }
-    
+
     private void initDataLayout() {
         advertDataLayout = new VerticalLayout();
         advertDataLayout.setSpacing(true);
@@ -181,7 +190,7 @@ public class AdvertRegView extends VerticalLayout implements View {
         advertDataLayout.addComponent(regFormLayout);
         advertDataLayout.addComponent(btnRegister);
     }
-    
+
     public void showImage(File file) {
         Embedded image = imageToShow(file);
         HorizontalLayout innerPictureLayout = innerPicture(file);
@@ -191,19 +200,19 @@ public class AdvertRegView extends VerticalLayout implements View {
         pictures.add(innerPictureLayout);
         pictureLayout.addComponent(innerPictureLayout);
     }
-    
+
     private void clearLayout() {
         for (Layout layout : pictures) {
             pictureLayout.removeComponent(layout);
         }
     }
-    
+
     private void addRemoveButtonToPicture(
             final File file,
             final Button button,
             final HorizontalLayout layout,
             final Embedded image) {
-        
+
         button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -218,7 +227,7 @@ public class AdvertRegView extends VerticalLayout implements View {
             }
         });
     }
-    
+
     private Embedded imageToShow(File file) {
         Embedded imageToShow = new Embedded();
         imageToShow.setHeight(imageHeight);
@@ -226,7 +235,7 @@ public class AdvertRegView extends VerticalLayout implements View {
         imageToShow.setSource(new FileResource(file));
         return imageToShow;
     }
-    
+
     private HorizontalLayout innerPicture(File file) {
         HorizontalLayout innerPictureLayout = new HorizontalLayout();
         innerPictureLayout.setSpacing(true);
@@ -234,33 +243,32 @@ public class AdvertRegView extends VerticalLayout implements View {
         innerPictureLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         return innerPictureLayout;
     }
-    
+
     private void addPictureUpload() {
         try {
             picturePanel = new Panel();
-            
             controller.setUpLoadField();
-            
+
             pictureLayout = new VerticalLayout();
             pictureLayout.setSizeFull();
             pictureLayout.setSpacing(true);
             pictureLayout.setMargin(true);
-            labelPictureUpload = new Label(uploadPictureCaption);
+            labelPictureUpload = new Label();
+
             pictureLayout.addComponent(labelPictureUpload);
             pictureLayout.addComponent(new Label("<hr />", ContentMode.HTML));
-            
             pictureLayout.addComponent(controller.getMfu());
-            
+
             pictureLayout.setDefaultComponentAlignment(Alignment.TOP_CENTER);
             picturePanel.setContent(pictureLayout);
-            
+
             addComponent(picturePanel);
             setComponentAlignment(picturePanel, Alignment.TOP_CENTER);
         } catch (Exception ex) {
             Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void addRegButtonListener() {
         btnRegister.addClickListener(new Button.ClickListener() {
             @Override
@@ -274,16 +282,20 @@ public class AdvertRegView extends VerticalLayout implements View {
                     getUI().getNavigator().navigateTo(USERPAGE.toString());
                 } catch (NumberFormatException e) {
                     Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, e);
-                    Notification.show(numberFormatError);
+                    MessageBox.createInfo().withOkButton().withCaption(errorCaption).withMessage(numberFormatError).open();
                 } catch (Exception e) {
                     Logger.getLogger(AdvertRegView.class.getName()).log(Level.SEVERE, null, e);
-                    Notification.show(failedUpload);
+                    if (e.getMessage().equals(emptyTitleError)) {
+                        MessageBox.createInfo().withOkButton().withCaption(errorCaption).withMessage(e.getMessage()).open();
+                    } else {
+                        MessageBox.createInfo().withOkButton().withCaption(errorCaption).withMessage(failedUpload).open();
+                    }
                 }
             }
         });
     }
-    
-    private void clearfields(){
+
+    private void clearfields() {
         txtAreaDescription.clear();
         txtFieldTitle.clear();
         txtFldCordX.clear();
@@ -296,10 +308,10 @@ public class AdvertRegView extends VerticalLayout implements View {
         cmbbxCountry.clear();
         cmbbxSubCategory.clear();
     }
-    
+
     private void addCmbBxCategoryListener() {
         cmbbxCategory.addValueChangeListener(new Property.ValueChangeListener() {
-            
+
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (cmbbxCategory.getValue() != null) {
@@ -314,10 +326,10 @@ public class AdvertRegView extends VerticalLayout implements View {
             }
         });
     }
-    
+
     private void addCmbBxCountryListener() {
         cmbbxCountry.addValueChangeListener(new Property.ValueChangeListener() {
-            
+
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (cmbbxCountry.getValue() != null) {
@@ -332,7 +344,7 @@ public class AdvertRegView extends VerticalLayout implements View {
             }
         });
     }
-    
+
     public void updateStrings() {
         txtFieldTitle.setInputPrompt(i18Helper.getMessage("AdvertTitle"));
         txtFieldTitle.setWidth(i18Helper.getMessage("AdvertReg.TxtFldTitleWidth"));
@@ -351,75 +363,78 @@ public class AdvertRegView extends VerticalLayout implements View {
         imageWidth = i18Helper.getMessage("AdvertReg.imageWidth");
         imageHeight = i18Helper.getMessage("AdvertReg.imageHeight");
         removeButtonText = i18Helper.getMessage("Remove(X)");
-        uploadPictureCaption = i18Helper.getMessage("UploadPicture");
+        labelPictureUpload.setValue(i18Helper.getMessage("UploadPicture"));
         picturePanel.setWidth(i18Helper.getMessage("AdvertReg.PicturePanelWidth"));
-        dropHere = i18Helper.getMessage("DropHere");
         failedUpload = i18Helper.getMessage("UpLoadFail");
-        modify = i18Helper.getMessage("Modify");
-        register = i18Helper.getMessage("Register");
         successUpload = i18Helper.getMessage("UpLoadSuccess");
         failedModification = i18Helper.getMessage("operationFailed");
         successModification = i18Helper.getMessage("operationSuccess");
         txtFldCordX.setInputPrompt(i18Helper.getMessage("googleMapX"));
         txtFldCordY.setInputPrompt(i18Helper.getMessage("googleMapY"));
         numberFormatError = i18Helper.getMessage("numberFormatError");
-        btnRegister.setCaption(register);
+        emptyTitleError = i18Helper.getMessage("emptyTitleError");
+        errorCaption = i18Helper.getMessage("error");
+
     }
-    
+
     public ComboBox getCmbbxCategory() {
         return cmbbxCategory;
     }
-    
+
     public ComboBox getCmbbxSubCategory() {
         return cmbbxSubCategory;
     }
-    
+
     public ComboBox getCmbbxAdvertType() {
         return cmbbxAdvertType;
     }
-    
+
     public ComboBox getCmbbxAdvertState() {
         return cmbbxAdvertState;
     }
-    
+
     public ComboBox getCmbbxCountry() {
         return cmbbxCountry;
     }
-    
+
     public ComboBox getCmbbxCity() {
         return cmbbxCity;
     }
-    
+
     public TextField getTxtFieldTitle() {
         return txtFieldTitle;
     }
-    
+
     public TextField getTxtFldCordX() {
         return txtFldCordX;
     }
-    
+
     public TextField getTxtFldCordY() {
         return txtFldCordY;
     }
-    
+
     public TextArea getTxtAreaDescription() {
         return txtAreaDescription;
     }
-    
+
     public TextField getTxtFldPrice() {
         return txtFldPrice;
     }
-    
+
     public String getDropHere() {
         return dropHere;
     }
-    
+
     public static void setAvailability(boolean availability) {
         AdvertRegView.availability = availability;
     }
-    
+
     public String getNumberFormatError() {
         return numberFormatError;
     }
-    
+
+    public String emptyTitleError() {
+        return emptyTitleError;
+    }
+
 }

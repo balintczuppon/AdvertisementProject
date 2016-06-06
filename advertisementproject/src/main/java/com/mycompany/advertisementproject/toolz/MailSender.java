@@ -1,3 +1,4 @@
+
 package com.mycompany.advertisementproject.toolz;
 
 import java.util.Properties;
@@ -9,6 +10,10 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 public class MailSender {
 
     String sender;
@@ -28,7 +33,7 @@ public class MailSender {
 
         Session session = Session.getInstance(props, new javax.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(Global.username, Global.password);
+                return new PasswordAuthentication(Global.USERNAME, Global.PASSWORD);
             }
         });
         try {

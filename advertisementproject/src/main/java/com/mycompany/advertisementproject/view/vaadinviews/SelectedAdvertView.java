@@ -11,7 +11,6 @@ import com.vaadin.cdi.CDIView;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.tapio.googlemaps.GoogleMap;
@@ -32,6 +31,10 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 @CDIView("SELECTED")
 public class SelectedAdvertView extends HorizontalLayout implements View {
 
@@ -61,7 +64,6 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     private String mainImageWidth;
     private String mainImageHeight;
     private String validatorMessage;
-    private String pageLink;
     private String viewName;
     private String linkText;
     private String greetingText;
@@ -71,6 +73,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     private String senderName;
     private String generatedMessage;
     private String emailSendFailed;
+    private String phoneNumberError;
 
     private Label lblTitle;
     private Label lblAdvertiser;
@@ -113,7 +116,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         buildView();
         updateView();
-        getUI().focus();
+//        getUI().focus();
     }
 
     private void buildView() {
@@ -277,7 +280,11 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
                 } catch (InvalidValueException ex) {
                     Notification.show(ex.getMessage());
                 } catch (Exception ex) {
-                    Notification.show(emailSendFailed);
+                    if (ex.getMessage().equals(phoneNumberError)) {
+                        Notification.show(phoneNumberError);
+                    } else {
+                        Notification.show(emailSendFailed);
+                    }
                     clearFields();
                     Logger.getLogger(SelectedAdvertView.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -332,7 +339,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
     private void updateView() {
         try {
             lblTitle.setValue(StringUtils.defaultString(advertisement.getTitle()));
-            lblAdvertiser.setValue(lblAdvertiserCaption + ": " + StringUtils.defaultString(advertisement.getAdvertiserId().getName()));
+            lblAdvertiser.setValue(lblAdvertiserCaption + ": " + StringUtils.defaultString(advertisement.getAdvertiserId().getSurname() + " " + advertisement.getAdvertiserId().getFirstname()));
             lblAdvertiserPhoneNumber.setValue(lblAdvertiserPhoneCaption + ": " + StringUtils.defaultString(advertisement.getAdvertiserId().getPhonenumber()));
             lblRegDate.setValue(lblRegDateCaption + ": " + StringUtils.defaultString(Global.DATEFORMAT.format(advertisement.getRegistrationDate())));
             lblPrice.setValue(lblPriceCaption + ": " + StringUtils.defaultString(Global.CURRENCY.format(Global.exchange_huf_to_gbp(advertisement.getPrice()))));
@@ -366,7 +373,6 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         mainImageHeight = i18Helper.getMessage("Selected.mainImageHeight");
         mainImageWidth = i18Helper.getMessage("Selected.mainImageWidth");
         validatorMessage = i18Helper.getMessage("Selected.vaildatorMessage");
-        pageLink = i18Helper.getMessage("Pagelink");
         viewName = i18Helper.getMessage("Selected.ViewName");
         linkText = i18Helper.getMessage("Selected.LinkText");
         greetingText = i18Helper.getMessage("Selected.GreetingText");
@@ -376,6 +382,7 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         senderName = i18Helper.getMessage("Selected.SenderName");
         generatedMessage = i18Helper.getMessage("GeneratedMessage");
         emailSendFailed = i18Helper.getMessage("EmailSendFailed");
+        phoneNumberError = i18Helper.getMessage("PhoneNumberError");
     }
 
     public String getGeneratedMessage() {
@@ -434,10 +441,6 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
         return validatorMessage;
     }
 
-    public String getPageLink() {
-        return pageLink;
-    }
-
     public String getViewName() {
         return viewName;
     }
@@ -464,5 +467,9 @@ public class SelectedAdvertView extends HorizontalLayout implements View {
 
     public String getSenderName() {
         return senderName;
+    }
+
+    public String getPhoneNumberError() {
+        return phoneNumberError;
     }
 }

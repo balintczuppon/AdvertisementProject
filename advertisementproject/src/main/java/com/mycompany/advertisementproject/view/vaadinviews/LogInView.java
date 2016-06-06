@@ -1,3 +1,4 @@
+
 package com.mycompany.advertisementproject.view.vaadinviews;
 
 import com.mycompany.advertisementproject.enumz.StyleNames;
@@ -19,6 +20,10 @@ import com.vaadin.ui.VerticalLayout;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 @CDIView("LOGIN")
 public class LogInView extends VerticalLayout implements View {
 

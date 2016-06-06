@@ -10,15 +10,12 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -29,11 +26,9 @@ public class RegistrationView extends VerticalLayout implements View {
     private RegistrationController controller;
 
     private TextField tfEmail;
-    private TextField tfName;
+    private TextField tfSurName;
+    private TextField tfFirstName;
     private TextField tfPhoneNumber;
-
-    private CheckBox chkBxTerms;
-    private CheckBox chkBxNewsLetter;
 
     private PasswordField pfPassWord1;
     private PasswordField pfPassWord2;
@@ -43,9 +38,11 @@ public class RegistrationView extends VerticalLayout implements View {
     private Button btnRegistration;
 
     private FormLayout formLayout;
-    
+
     private I18Helper i18Helper;
-    private String registrationSuccess;
+
+    private String verification;
+    private String verificationWarning;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -88,16 +85,15 @@ public class RegistrationView extends VerticalLayout implements View {
 
     private void createFields() {
         tfEmail = new TextField();
-        tfName = new TextField();
+        tfSurName = new TextField();
+        tfFirstName = new TextField();
         tfPhoneNumber = new TextField();
         pfPassWord1 = new PasswordField();
         pfPassWord2 = new PasswordField();
-        chkBxNewsLetter = new CheckBox();
-        chkBxTerms = new CheckBox();
     }
 
     private void addComponentsToContent() {
-        formLayout.addComponents(tfEmail, pfPassWord1, pfPassWord2, tfName, tfPhoneNumber, chkBxNewsLetter, chkBxTerms);
+        formLayout.addComponents(tfEmail, pfPassWord1, pfPassWord2, tfSurName, tfFirstName, tfPhoneNumber);
     }
 
     private void addButton() {
@@ -110,7 +106,7 @@ public class RegistrationView extends VerticalLayout implements View {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     controller.registration();
-                    Notification.show(registrationSuccess);
+                    clearFields();
                 } catch (Exception ex) {
                     Notification.show(ex.getMessage());
                 }
@@ -121,18 +117,27 @@ public class RegistrationView extends VerticalLayout implements View {
     public void updateStrings() {
         lblTitle.setValue(i18Helper.getMessage("Registration"));
         tfEmail.setCaption(i18Helper.getMessage("TfEmail"));
-        tfName.setCaption(i18Helper.getMessage("TfName"));
+        tfSurName.setCaption(i18Helper.getMessage("TfSurName"));
+        tfFirstName.setCaption(i18Helper.getMessage("TfFirstName"));
         tfPhoneNumber.setCaption(i18Helper.getMessage("TfPhone"));
         pfPassWord1.setCaption(i18Helper.getMessage("PfPassword"));
         pfPassWord2.setCaption(i18Helper.getMessage("PfPassword"));
-        chkBxNewsLetter.setCaption(i18Helper.getMessage("CbNewsLetter"));
-        chkBxTerms.setCaption(i18Helper.getMessage("CbTerms"));
         btnRegistration.setCaption(i18Helper.getMessage("Registration"));
-        registrationSuccess = i18Helper.getMessage("SuccessRegistration");
+        verificationWarning = i18Helper.getMessage("VerificationWarning");
+        verification = i18Helper.getMessage("Verification");
     }
 
     public void goForward() {
         getUI().getNavigator().navigateTo(LOGIN.toString());
+    }
+    
+    private void clearFields(){
+        tfEmail.clear();
+        tfFirstName.clear();
+        tfSurName.clear();
+        tfPhoneNumber.clear();
+        pfPassWord1.clear();
+        pfPassWord2.clear();
     }
 
     public String emailUsedError() {
@@ -155,20 +160,24 @@ public class RegistrationView extends VerticalLayout implements View {
         return i18Helper.getMessage("ValidatorMessage");
     }
 
-    public CheckBox getChkBxTerms() {
-        return chkBxTerms;
+    public String passwordWeak() {
+        return i18Helper.getMessage("PasswordWeak");
     }
 
-    public CheckBox getChkBxNewsLetter() {
-        return chkBxNewsLetter;
+    public String phoneNumberError() {
+        return i18Helper.getMessage("PhoneNumberError");
     }
-
+    
     public TextField getTfEmail() {
         return tfEmail;
     }
 
-    public TextField getTfName() {
-        return tfName;
+    public TextField getTfSurName() {
+        return tfSurName;
+    }
+
+    public TextField getTfFirstName() {
+        return tfFirstName;
     }
 
     public TextField getTfPhoneNumber() {
@@ -181,5 +190,13 @@ public class RegistrationView extends VerticalLayout implements View {
 
     public PasswordField getPfPassWord2() {
         return pfPassWord2;
+    }
+
+    public String getVerificationWarning() {
+        return verificationWarning;
+    }
+
+    public String getVerification() {
+        return verification;
     }
 }

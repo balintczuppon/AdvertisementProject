@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.mycompany.advertisementproject.model.facades;
 
 import java.util.List;
@@ -10,7 +6,7 @@ import javax.persistence.EntityManager;
 
 /**
  *
- * @author balin
+ * @author Czuppon Balint Peter
  */
 public abstract class AbstractFacade<T> {
 
@@ -29,7 +25,7 @@ public abstract class AbstractFacade<T> {
 
     public void edit(T entity) {
         getEntityManager().merge(entity);
-//        getEntityManager().flush();
+        getEntityManager().flush();
     }
 
     public void remove(T entity) {

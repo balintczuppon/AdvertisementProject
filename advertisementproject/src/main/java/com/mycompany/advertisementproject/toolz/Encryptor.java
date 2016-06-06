@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.mycompany.advertisementproject.toolz;
 
 import java.security.MessageDigest;
@@ -10,12 +6,12 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  *
- * @author balin
+ * @author Czuppon Balint Peter
  */
 public class Encryptor {
     
     public String hashPassword(String password) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        MessageDigest md = MessageDigest.getInstance(Global.ENCRYPT_ALG);
         md.update(password.getBytes());
         byte[] bytes = md.digest();
         StringBuilder sb = new StringBuilder();

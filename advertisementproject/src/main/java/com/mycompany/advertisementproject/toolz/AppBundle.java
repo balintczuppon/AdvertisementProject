@@ -1,3 +1,4 @@
+
 package com.mycompany.advertisementproject.toolz;
 
 import static com.mycompany.advertisementproject.enumz.SessionAttributes.CURRENTLOCALE;
@@ -7,6 +8,10 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 public class AppBundle {
     
     private static Locale currentLocale;

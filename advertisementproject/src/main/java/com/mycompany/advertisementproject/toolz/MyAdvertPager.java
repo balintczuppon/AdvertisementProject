@@ -17,6 +17,10 @@ import org.vaadin.pagingcomponent.button.ButtonPageNavigator;
 import org.vaadin.pagingcomponent.customizer.adaptator.GlobalCustomizer;
 import org.vaadin.pagingcomponent.listener.impl.LazyPagingComponentListener;
 
+/**
+ *
+ * @author Czuppon Balint Peter
+ */
 public class MyAdvertPager {
 
     public void pageAdverts(VerticalLayout advertList, VerticalLayout itemsArea,final List<HorizontalLayout> advertlayouts) {
@@ -82,7 +86,7 @@ public class MyAdvertPager {
 
             @Override
             public void styleTheOthersElements(ComponentsManager manager, ElementsBuilder builder) {
-                // Do nothing
+
             }
         };
 
